@@ -1,0 +1,9 @@
+{
+    "banner": "/banner.png",
+    "apiBaseEndpoint": "http://192.168.29.3:5001/",
+    "apiTimeout": 10000,
+    "CAPTCHA": {
+        "siteKey": "6LcNScYfAAAAAJH8fauA-okTZrmAxYqfF9gOmujf",
+        "action": "faucetdrip"
+    }
+}
