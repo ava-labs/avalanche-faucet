@@ -16,7 +16,6 @@ const FaucetForm = (props: any) => {
     const recaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION);
 
     useEffect(() => {
-        console.log(props.config.banner)
         getDripAmount();
     }, [])
 
@@ -54,14 +53,14 @@ const FaucetForm = (props: any) => {
                 address: address,
                 token: captchaToken
             });
-            data = response.data;
+            data = response?.data;
         } catch(err: any) {
-            data = err.response.data;            
+            data = err?.response?.data;            
         }
 
         setSendTokenResponse({
-            txHash: data.txHash,
-            message: data.message
+            txHash: data?.txHash,
+            message: data?.message
         })
     }
 

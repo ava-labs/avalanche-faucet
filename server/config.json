@@ -1,0 +1,41 @@
+{
+    "GLOBAL_RL": {
+        "REVERSE_PROXIES": 2,
+        "MAX_LIMIT": 15,
+        "WINDOW_SIZE": 1,
+        "PATH": "/",
+        "SKIP_FAILED_REQUESTS": false
+    },
+    "SEND_TOKEN_RL": {
+        "REVERSE_PROXIES": 2,
+        "MAX_LIMIT": 1,
+        "WINDOW_SIZE": 60,
+        "PATH": "/api/sendToken",
+        "SKIP_FAILED_REQUESTS": true
+    },
+    "evmchains": {
+        "C": {
+            "RPC": "https://api.avax-test.network/ext/C/rpc",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 10000000000
+        },
+        "WAGMI": {
+            "rpc": "https://api.avax.network/ext/wagmi/rpc"
+        }
+    },
+    "pvmchains": {
+        "P": {
+            "PROTOCOL": "https",
+            "IP": "api.avax-test.network",
+            "PORT": 443
+        }
+    },
+    "avmchains": {
+        "X": {
+            "PROTOCOL": "https",
+            "IP": "api.avax-test.network",
+            "PORT": 443
+        }
+    }
+}

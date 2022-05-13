@@ -15,8 +15,10 @@
     "typescript": "^4.4.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "postinstall": "npm install --prefix server",
+    "build": "npx --yes concurrently \"react-scripts build\" \"npm run build --prefix server\"",
+    "start": "npx --yes concurrently \"npx --yes serve -s build\" \"npm start --prefix server\"",
+    "dev": "npx --yes concurrently \"npm run dev --prefix server\" \"sleep 5 && react-scripts start\"",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
