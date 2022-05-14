@@ -5,9 +5,10 @@ import './styles/FaucetForm.css'
 import ReCaptcha from './ReCaptcha';
 
 const FaucetForm = (props: any) => {
+    const [chain, setChain] = useState<number | null>(null)
+    const [chainConfigs, setChainConfigs] = useState<any>([])
     const [address, setAddress] = useState<string | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-    const [dripAmount, setDripAmount] = useState<number>(0);
     const [sendTokenResponse, setSendTokenResponse] = useState<any>({
         txHash: null,
         message: null
@@ -16,7 +17,7 @@ const FaucetForm = (props: any) => {
     const recaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION);
 
     useEffect(() => {
-        getDripAmount();
+        updateChainConfigs();
     }, [])
 
     function updateAddress(addr: string | null): void {
@@ -37,10 +38,17 @@ const FaucetForm = (props: any) => {
         setCaptchaToken(token)
     }
 
-    async function getDripAmount() {
-        const response = await props.axios.get(props.config.api.getDripAmount);
-        const amt = response.data.dripAmount;
-        setDripAmount(amt);
+    async function updateChainConfigs() {
+        const response = await props.axios.get(props.config.api.getChainConfigs);
+        console.log(response?.data)
+        setChainConfigs(response?.data);
+        setChain(0);
+    }
+
+    async function updateChain(chain: number) {
+        if(chain >= 0 &&  chain < chainConfigs.length) {
+            setChain(chain)
+        }
     }
 
     async function sendToken() {
@@ -51,11 +59,13 @@ const FaucetForm = (props: any) => {
         try {
             const response = await props.axios.post(props.config.api.sendToken, {
                 address: address,
-                token: captchaToken
+                token: captchaToken,
+                chain: chainConfigs[chain || 0].NAME
             });
             data = response?.data;
         } catch(err: any) {
-            data = err?.response?.data;            
+            console.log(err?.response?.data || err?.message)
+            data = err?.response?.data || err
         }
 
         setSendTokenResponse({
@@ -64,13 +74,29 @@ const FaucetForm = (props: any) => {
         })
     }
 
+    const GelElement = () => {
+        let elements: any = [];
+        chainConfigs.forEach((chain: any, i: number) => {
+            elements.push(
+                <option value={i}>{chain.NAME}</option>
+            )
+        })
+        return elements;
+    }
+
     return (
         <div className = "box">
             <div className='banner' style={{backgroundImage: `url(${props.config.banner})`}}/>
 
             <div className='box-content'>
-                <div className='card-title'>
-                    AVAX Fuji Testnet Faucet
+                <div className='box-header'>
+                    <div className='card-title'>
+                        AVAX Fuji Testnet Faucet
+                    </div>
+
+                    <select value={chain || 0} onChange={(e) => updateChain(parseInt(e.target.value))}>
+                        <GelElement/>
+                    </select>
                 </div>
 
                 {
@@ -85,7 +111,7 @@ const FaucetForm = (props: any) => {
                         </p>
 
                         <div className='address-input'>
-                            <input placeholder='Address (C-Chain)' onChange={(e) => updateAddress(e.target.value)} autoFocus/>
+                            <input placeholder='Hexadecimal Address (0x...)' onChange={(e) => updateAddress(e.target.value)} autoFocus/>
                         </div>
                         <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
 
@@ -94,7 +120,7 @@ const FaucetForm = (props: any) => {
                         </div>
                     
                         <button className={address ? 'send-button' : 'send-button-disabled'} onClick={sendToken}>
-                            <span>Request {dripAmount} AVAX</span>
+                            <span>Request {chainConfigs[chain || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[chain || 0]?.TOKEN}</span>
                         </button>
                     </div>
                     :

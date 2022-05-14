@@ -11,6 +11,11 @@
     height: fit-content;
 }
 
+.box-header {
+    display: flex;
+    justify-content: space-between;
+}
+
 .banner {
     background-position: center center;
     background-size: cover;
