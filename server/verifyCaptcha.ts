@@ -4,8 +4,9 @@ export default class VerifyCaptcha {
     secret: string;
     middleware = (req: any, res: any, next: () => void) => this.verifyCaptcha(req, res, next)
 
-    constructor(CAPTCHA_SECRET: any) {
+    constructor(app: any, path: string, CAPTCHA_SECRET: any) {
         this.secret = CAPTCHA_SECRET
+        app.use(path, this.middleware)
     }
 
     async shouldAllow(token: string): Promise<boolean> {

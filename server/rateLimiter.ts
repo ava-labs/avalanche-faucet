@@ -28,6 +28,9 @@ export default class RateLimiter {
             skipFailedRequests: this.SKIP_FAILED_REQUESTS,
             message: {
                 message: `Too many requests. Please try again after ${this.WINDOW_SIZE} minutes`
+            },
+            keyGenerator: (req, res) => {
+                return req.ip + req.body?.chain
             }
         });
 

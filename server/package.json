@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node build/server.js",
-    "dev": "npx ts-node server.ts"
+    "dev": "npx nodemon server.ts"
   },
   "keywords": [],
   "author": "",

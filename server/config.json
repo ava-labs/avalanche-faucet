@@ -13,17 +13,24 @@
         "PATH": "/api/sendToken",
         "SKIP_FAILED_REQUESTS": true
     },
-    "evmchains": {
-        "C": {
+    "evmchains": [
+        {
+            "NAME": "C",
+            "TOKEN": "AVAX",
             "RPC": "https://api.avax-test.network/ext/C/rpc",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 10000000000
         },
-        "WAGMI": {
-            "rpc": "https://api.avax.network/ext/wagmi/rpc"
+        {
+            "NAME": "WAGMI",
+            "TOKEN": "WGM",
+            "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 10000000
         }
-    },
+    ],
     "pvmchains": {
         "P": {
             "PROTOCOL": "https",

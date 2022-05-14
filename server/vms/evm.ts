@@ -5,6 +5,7 @@ import { ConfigType, SendTokenResponse, RequestType } from './evmTypes';
 export default class EVM {
     web3: any;
     account: any;
+    NAME: string;
     DRIP_AMOUNT: number | BN;
     MAX_PRIORITY_FEE: string;
     MAX_FEE: string;
@@ -24,6 +25,7 @@ export default class EVM {
         this.web3 = new Web3(config.RPC);
         this.account = this.web3.eth.accounts.privateKeyToAccount(PK);
 
+        this.NAME = config.NAME;
         this.DRIP_AMOUNT = (new BN(config.DRIP_AMOUNT)).mul(new BN(1e9));
         this.MAX_PRIORITY_FEE = config.MAX_PRIORITY_FEE;
         this.MAX_FEE = config.MAX_FEE;
@@ -64,7 +66,7 @@ export default class EVM {
                 const nonce = this.hasNonce.get(receiver);
                 this.hasNonce.set(receiver, undefined);
                 const { txHash } = await this.getTransaction(receiver, amount, nonce);
-                cb({ status: 200, message: "Transaction successful!", txHash });
+                cb({ status: 200, message: `Transaction successful on ${this.NAME} chain!`, txHash });
             } else if(this.hasError.get(receiver) != undefined) {
                 clearInterval(waitingForNonce);
                 const errorMessage = this.hasError.get(receiver)!;
@@ -87,13 +89,19 @@ export default class EVM {
 
     async updateNonceAndBalance() {
         this.isUpdating = true;
-        this.nonce = await this.web3.eth.getTransactionCount(this.account.address, 'latest');
-        this.balance = new BN(await this.web3.eth.getBalance(this.account.address));
-        this.isFetched = true;
-        this.isUpdating = false;
 
-        while(this.waitArr.length != 0) {
-            this.putInQueue(this.waitArr.shift())
+        try{
+            this.nonce = await this.web3.eth.getTransactionCount(this.account.address, 'latest');
+            this.balance = new BN(await this.web3.eth.getBalance(this.account.address));
+
+            this.isFetched = true;
+            this.isUpdating = false;
+    
+            while(this.waitArr.length != 0) {
+                this.putInQueue(this.waitArr.shift())
+            }
+        } catch(err: any) {
+            console.log(err.message)
         }
     }
 
@@ -139,7 +147,12 @@ export default class EVM {
             value
         };
 
-        const signedTx = await this.account.signTransaction(tx);
+        let signedTx;
+        try{
+            signedTx = await this.account.signTransaction(tx);
+        } catch(err: any) {
+            console.log(err.message)
+        }
         const txHash = signedTx.transactionHash;
         const rawTransaction = signedTx.rawTransaction;
 
@@ -148,8 +161,10 @@ export default class EVM {
 
     async recaliberNonceAndBalance(): Promise<void> {
         this.waitingForRecaliber = true;
+        console.log("started recaliber")
 
         if (this.pendingTxNonces.size === 0 && this.isUpdating === false) {
+            console.log("Recalibered")
             this.isFetched = false;
             this.recaliber = true;
             this.waitingForRecaliber = false;
