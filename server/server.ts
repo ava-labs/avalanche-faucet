@@ -3,8 +3,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
 
-import RateLimiter from './rateLimiter'
-import VerifyCaptcha from './verifyCaptcha';
+import { RateLimiter, VerifyCaptcha, VerifyTOTP } from './middlewares'
 import EVM from './vms/evm'
 
 import { SendTokenResponse } from './types'
@@ -21,7 +20,9 @@ app.use(bodyParser.json())
 
 new RateLimiter(app, GLOBAL_RL);
 new RateLimiter(app, SEND_TOKEN_RL);
-new VerifyCaptcha(app, '/api/sendToken', process.env.CAPTCHA_SECRET);
+
+const captcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!);
+const totp = new VerifyTOTP(process.env.TOTPKEY!);
 
 let evms: any = {};
 
@@ -34,7 +35,7 @@ evmchains.forEach((chain) => {
     }
 });
 
-router.post('/sendToken', async (req: any, res: any) => {
+router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     const address = req.body?.address;
     const chain = req.body?.chain;
 
@@ -44,16 +45,10 @@ router.post('/sendToken', async (req: any, res: any) => {
     });
 })
 
-router.get('/getDripAmount', (req: any, res: any) => {
+router.get('/recalibrate', totp.middleware, (req: any, res: any) => {
     const chain = req.query?.chain;
-    let amt = evms[chain]?.config?.DRIP_AMOUNT / 1e9
-    res.send({dripAmount: amt})
-})
-
-router.get('/recaliber', (req: any, res: any) => {
-    const chain = req.query?.chain;
-    evms[chain]?.instance?.recaliberNonceAndBalance();
-    res.send("Recalibering now!")
+    evms[chain]?.instance?.recalibrateNonceAndBalance();
+    res.send("Recalibrating now.")
 })
 
 router.get('/getChainConfigs', (req: any, res: any) => {

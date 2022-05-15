@@ -1,7 +1,7 @@
 import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
-import { RateLimiterConfig } from './types';
+import { RateLimiterConfig } from '../types';
 
-export default class RateLimiter {
+export class RateLimiter {
     REVERSE_PROXIES: number;
     MAX_LIMIT: number;
     WINDOW_SIZE: number;

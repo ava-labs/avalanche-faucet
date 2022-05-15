@@ -40,14 +40,14 @@ const FaucetForm = (props: any) => {
 
     async function updateChainConfigs() {
         const response = await props.axios.get(props.config.api.getChainConfigs);
-        console.log(response?.data)
         setChainConfigs(response?.data);
         setChain(0);
     }
 
     async function updateChain(chain: number) {
         if(chain >= 0 &&  chain < chainConfigs.length) {
-            setChain(chain)
+            setChain(chain);
+            back();
         }
     }
 
@@ -72,6 +72,14 @@ const FaucetForm = (props: any) => {
             txHash: data?.txHash,
             message: data?.message
         })
+    }
+
+    const back = () => {
+        setSendTokenResponse({
+            txHash: null,
+            message: null
+        });
+        updateCaptchaToken();
     }
 
     const GelElement = () => {
@@ -111,7 +119,7 @@ const FaucetForm = (props: any) => {
                         </p>
 
                         <div className='address-input'>
-                            <input placeholder='Hexadecimal Address (0x...)' onChange={(e) => updateAddress(e.target.value)} autoFocus/>
+                            <input placeholder='Hexadecimal Address (0x...)' value={address || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
                         </div>
                         <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
 
@@ -135,6 +143,8 @@ const FaucetForm = (props: any) => {
                                 {sendTokenResponse.txHash}
                             </p>
                         </div>
+
+                        <button onClick={back}>Back</button>
                     </div>
                 }
             </div>

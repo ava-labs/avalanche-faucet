@@ -8,7 +8,6 @@ export default axios.create({
 
 export const config = {
     api: {
-        getDripAmount: '/getDripAmount',
         sendToken: '/sendToken',
         getChainConfigs: '/getChainConfigs'
     },

@@ -1,12 +1,14 @@
 const axios = require('axios');
 
-export default class VerifyCaptcha {
+export class VerifyCaptcha {
     secret: string;
     middleware = (req: any, res: any, next: () => void) => this.verifyCaptcha(req, res, next)
 
-    constructor(app: any, path: string, CAPTCHA_SECRET: any) {
+    constructor(app: any, CAPTCHA_SECRET: string) {
+        if(typeof CAPTCHA_SECRET != "string") {
+            throw "Captcha Secret should be string";
+        }
         this.secret = CAPTCHA_SECRET
-        app.use(path, this.middleware)
     }
 
     async shouldAllow(token: string): Promise<boolean> {

@@ -16,8 +16,8 @@ export default class EVM {
     balance: any;
     isFetched: boolean;
     isUpdating: boolean;
-    recaliber: boolean;
-    waitingForRecaliber: boolean;
+    recalibrate: boolean;
+    waitingForRecalibration: boolean;
     waitArr: any[];
     queue: any[];
 
@@ -39,14 +39,14 @@ export default class EVM {
 
         this.isFetched = false;
         this.isUpdating = false;
-        this.recaliber = false;
-        this.waitingForRecaliber = false;
+        this.recalibrate = false;
+        this.waitingForRecalibration = false;
 
         this.waitArr = [];
         this.queue = [];
 
         setInterval(() => {
-            this.recaliberNonceAndBalance();
+            this.recalibrateNonceAndBalance();
         }, 60 * 60 * 1000);
     }
 
@@ -77,9 +77,9 @@ export default class EVM {
     }
 
     async processRequest(req: RequestType): Promise<void> {
-        if (!this.isFetched || this.recaliber || this.waitingForRecaliber) {
+        if (!this.isFetched || this.recalibrate || this.waitingForRecalibration) {
             this.waitArr.push(req);
-            if (!this.isUpdating && !this.waitingForRecaliber) {
+            if (!this.isUpdating && !this.waitingForRecalibration) {
                 await this.updateNonceAndBalance();
             }
         } else {
@@ -159,23 +159,23 @@ export default class EVM {
         return { txHash, rawTransaction };
     }
 
-    async recaliberNonceAndBalance(): Promise<void> {
-        this.waitingForRecaliber = true;
-        console.log("started recaliber")
+    async recalibrateNonceAndBalance(): Promise<void> {
+        this.waitingForRecalibration = true;
+        console.log("Started Recalibration")
 
         if (this.pendingTxNonces.size === 0 && this.isUpdating === false) {
-            console.log("Recalibered")
+            console.log("Recalibrated")
             this.isFetched = false;
-            this.recaliber = true;
-            this.waitingForRecaliber = false;
+            this.recalibrate = true;
+            this.waitingForRecalibration = false;
             this.pendingTxNonces.clear();
             this.updateNonceAndBalance();
         } else {
-            const recaliberNow = setInterval(() => {
+            const recalibrateNow = setInterval(() => {
                 if(this.pendingTxNonces.size === 0 && this.isUpdating === false) {
-                    clearInterval(recaliberNow);
-                    this.waitingForRecaliber = false;
-                    this.recaliberNonceAndBalance();
+                    clearInterval(recalibrateNow);
+                    this.waitingForRecalibration = false;
+                    this.recalibrateNonceAndBalance();
                 }
             }, 300)
         }
