@@ -7,6 +7,7 @@ import ReCaptcha from './ReCaptcha';
 const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null)
     const [chainConfigs, setChainConfigs] = useState<any>([])
+    const [inputAddress, setInputAddress] = useState("")
     const [address, setAddress] = useState<string | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [sendTokenResponse, setSendTokenResponse] = useState<any>({
@@ -21,6 +22,7 @@ const FaucetForm = (props: any) => {
     }, [])
 
     function updateAddress(addr: string | null): void {
+        setInputAddress(addr!)
         if (addr) {
             if (ethers.utils.isAddress(addr)) {
                 setAddress(addr);
@@ -119,7 +121,7 @@ const FaucetForm = (props: any) => {
                         </p>
 
                         <div className='address-input'>
-                            <input placeholder='Hexadecimal Address (0x...)' value={address || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
+                            <input placeholder='Hexadecimal Address (0x...)' value={inputAddress || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
                         </div>
                         <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
 
