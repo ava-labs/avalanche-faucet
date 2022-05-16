@@ -100,7 +100,7 @@ export default class EVM {
 
             this.isFetched = true;
             this.isUpdating = false;
-    
+
             while(this.waitArr.length != 0) {
                 this.putInQueue(this.waitArr.shift())
             }
@@ -136,7 +136,7 @@ export default class EVM {
             this.pendingTxNonces.delete(nonce);
         } catch (err: any) {
             console.log(err.message);
-            console.log(`Error with nonce ${nonce}`);
+            console.log(`Error with nonce ${nonce} while sending signed transaction.`);
         }
     }
 

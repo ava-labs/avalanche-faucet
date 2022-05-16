@@ -17,8 +17,9 @@
 }
 
 .banner {
-    background-position: center center;
-    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 380px;
     border-radius: 4px 4px 0px 0px;
     height: 140px;
 }
