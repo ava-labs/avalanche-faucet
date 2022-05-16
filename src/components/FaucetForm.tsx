@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import { ClipLoader } from "react-spinners"
 
 import './styles/FaucetForm.css'
 import ReCaptcha from './ReCaptcha';
@@ -14,6 +15,7 @@ const FaucetForm = (props: any) => {
         txHash: null,
         message: null
     })
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const recaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION);
 
@@ -59,6 +61,8 @@ const FaucetForm = (props: any) => {
         } 
         let data: any;
         try {
+            setIsLoading(true);
+
             const response = await props.axios.post(props.config.api.sendToken, {
                 address: address,
                 token: captchaToken,
@@ -66,7 +70,6 @@ const FaucetForm = (props: any) => {
             });
             data = response?.data;
         } catch(err: any) {
-            console.log(err?.response?.data || err?.message)
             data = err?.response?.data || err
         }
 
@@ -74,6 +77,8 @@ const FaucetForm = (props: any) => {
             txHash: data?.txHash,
             message: data?.message
         })
+
+        setIsLoading(false);
     }
 
     const back = () => {
@@ -130,7 +135,13 @@ const FaucetForm = (props: any) => {
                         </div>
                     
                         <button className={address ? 'send-button' : 'send-button-disabled'} onClick={sendToken}>
-                            <span>Request {chainConfigs[chain || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[chain || 0]?.TOKEN}</span>
+                            {
+                                isLoading
+                                ?
+                                <ClipLoader size="20px" speedMultiplier={0.3} color="403F40"/>
+                                :
+                                <span>Request {chainConfigs[chain || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[chain || 0]?.TOKEN}</span>
+                            }
                         </button>
                     </div>
                     :

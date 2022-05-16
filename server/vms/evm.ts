@@ -91,8 +91,12 @@ export default class EVM {
         this.isUpdating = true;
 
         try{
-            this.nonce = await this.web3.eth.getTransactionCount(this.account.address, 'latest');
-            this.balance = new BN(await this.web3.eth.getBalance(this.account.address));
+            [this.nonce, this.balance] = await Promise.all([
+                this.web3.eth.getTransactionCount(this.account.address, 'latest'),
+                this.web3.eth.getBalance(this.account.address)
+            ])
+
+            this.balance = new BN(this.balance);
 
             this.isFetched = true;
             this.isUpdating = false;
@@ -101,7 +105,7 @@ export default class EVM {
                 this.putInQueue(this.waitArr.shift())
             }
         } catch(err: any) {
-            console.log(err.message)
+            console.log("Error in function updateNonceAndBalance():", err.message)
         }
     }
 
