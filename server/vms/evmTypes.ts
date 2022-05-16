@@ -1,6 +1,7 @@
 import { BN } from 'avalanche';
 
 export type ConfigType = {
+    ID: string,
     NAME: string,
     RPC: string,
     MAX_PRIORITY_FEE: string,

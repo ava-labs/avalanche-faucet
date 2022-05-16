@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { ClipLoader } from "react-spinners"
+import Select from 'react-select';
 
 import './styles/FaucetForm.css'
 import ReCaptcha from './ReCaptcha';
@@ -11,11 +12,14 @@ const FaucetForm = (props: any) => {
     const [inputAddress, setInputAddress] = useState("")
     const [address, setAddress] = useState<string | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [options, setOptions] = useState([])
+    const [balance, setBalance] = useState(0);
+    const [shouldAllowSend, setShouldAllowSend] = useState(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [sendTokenResponse, setSendTokenResponse] = useState<any>({
         txHash: null,
         message: null
     })
-    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const recaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION);
 
@@ -23,8 +27,39 @@ const FaucetForm = (props: any) => {
         updateChainConfigs();
     }, [])
 
+    useEffect(() => {
+        updateBalance()
+    }, [chain, sendTokenResponse]);
+
+    useEffect(() => {
+        if(address) {
+            if(balance > chainConfigs[chain!]?.DRIP_AMOUNT) {
+                setShouldAllowSend(true);
+                return;
+            }
+        }
+        
+        setShouldAllowSend(false);
+    }, [address, balance]);
+
+    useEffect(() => {
+        let newOptions: any = []
+        
+        chainConfigs.forEach((chain: any, i: number) => {
+            let item =  <div className='select-dropdown'>
+                <img src = { chain.IMAGE } />
+                { chain.NAME }
+            </div>
+
+            newOptions.push({label: item, value: i});
+        });
+
+        setOptions(newOptions)
+    }, [chainConfigs]);
+
     function updateAddress(addr: string | null): void {
         setInputAddress(addr!)
+        
         if (addr) {
             if (ethers.utils.isAddress(addr)) {
                 setAddress(addr);
@@ -34,6 +69,16 @@ const FaucetForm = (props: any) => {
             }
         } else if (address != null) {
             setAddress(null);
+        }
+    }
+
+    async function updateBalance() {
+        const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
+        
+        if(response?.data) {
+            let fetchedBalance = response?.data;
+            fetchedBalance = fetchedBalance / 1e9
+            setBalance(response?.data);
         }
     }
 
@@ -48,15 +93,17 @@ const FaucetForm = (props: any) => {
         setChain(0);
     }
 
-    async function updateChain(chain: number) {
-        if(chain >= 0 &&  chain < chainConfigs.length) {
-            setChain(chain);
+    async function updateChain(option: any) {
+        let chainNum = option.value
+        
+        if(chainNum >= 0 &&  chainNum < chainConfigs.length) {
+            setChain(chainNum);
             back();
         }
     }
 
     async function sendToken() {
-        if(!address) {
+        if(!shouldAllowSend) {
             return;
         } 
         let data: any;
@@ -66,7 +113,7 @@ const FaucetForm = (props: any) => {
             const response = await props.axios.post(props.config.api.sendToken, {
                 address: address,
                 token: captchaToken,
-                chain: chainConfigs[chain || 0].NAME
+                chain: chainConfigs[chain || 0].ID
             });
             data = response?.data;
         } catch(err: any) {
@@ -81,6 +128,12 @@ const FaucetForm = (props: any) => {
         setIsLoading(false);
     }
 
+    const ChainDropdown = () => (
+        <div style={{width: "100%", marginTop: "5px"}}>
+            <Select options={options} value={options[chain || 0]} onChange={updateChain}/>
+        </div>
+    )
+
     const back = () => {
         setSendTokenResponse({
             txHash: null,
@@ -89,29 +142,18 @@ const FaucetForm = (props: any) => {
         updateCaptchaToken();
     }
 
-    const GelElement = () => {
-        let elements: any = [];
-        chainConfigs.forEach((chain: any, i: number) => {
-            elements.push(
-                <option value={i}>{chain.NAME}</option>
-            )
-        })
-        return elements;
-    }
-
     return (
         <div className = "box">
             <div className='banner' style={{backgroundImage: `url(${props.config.banner})`}}/>
 
             <div className='box-content'>
                 <div className='box-header'>
-                    <div className='card-title'>
-                        AVAX Fuji Testnet Faucet
-                    </div>
+                    <span>
+                        <span>Select chain</span>
+                        <span style={{color: "grey"}}>Balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[chain!]?.TOKEN}</span>
+                    </span>
 
-                    <select value={chain || 0} onChange={(e) => updateChain(parseInt(e.target.value))}>
-                        <GelElement/>
-                    </select>
+                    <ChainDropdown />
                 </div>
 
                 {
@@ -131,10 +173,10 @@ const FaucetForm = (props: any) => {
                         <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
 
                         <div className="beta-alert">
-                            <p>This is a beta faucet. Funds are not real.</p>
+                            <p>This is a testnet faucet. Funds are not real.</p>
                         </div>
                     
-                        <button className={address ? 'send-button' : 'send-button-disabled'} onClick={sendToken}>
+                        <button className={shouldAllowSend ? 'send-button' : 'send-button-disabled'} onClick={sendToken}>
                             {
                                 isLoading
                                 ?

@@ -45,6 +45,8 @@ export default class EVM {
         this.waitArr = [];
         this.queue = [];
 
+        this.recalibrateNonceAndBalance();
+
         setInterval(() => {
             this.recalibrateNonceAndBalance();
         }, 60 * 60 * 1000);
@@ -100,6 +102,7 @@ export default class EVM {
 
             this.isFetched = true;
             this.isUpdating = false;
+            this.recalibrate = false;
 
             while(this.waitArr.length != 0) {
                 this.putInQueue(this.waitArr.shift())

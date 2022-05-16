@@ -9,6 +9,7 @@ import EVM from './vms/evm'
 import { SendTokenResponse } from './types'
 
 import { evmchains, GLOBAL_RL, SEND_TOKEN_RL } from './config.json'
+import { BN } from 'avalanche'
 
 dotenv.config()
 
@@ -27,9 +28,9 @@ const totp = new VerifyTOTP(process.env.TOTPKEY!);
 let evms: any = {};
 
 evmchains.forEach((chain) => {
-    const chainInstance = new EVM(chain, process.env[chain.NAME] || process.env.PK);
+    const chainInstance = new EVM(chain, process.env[chain.ID] || process.env.PK);
     
-    evms[chain.NAME] = {
+    evms[chain.ID] = {
         config: chain,
         instance: chainInstance
     }
@@ -46,13 +47,19 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 })
 
 router.get('/recalibrate', totp.middleware, (req: any, res: any) => {
-    const chain = req.query?.chain;
+    let chain = req.query?.chain;
     evms[chain]?.instance?.recalibrateNonceAndBalance();
     res.send("Recalibrating now.")
 })
 
 router.get('/getChainConfigs', (req: any, res: any) => {
     res.send(evmchains)
+})
+
+router.get('/getBalance', (req: any, res: any) => {
+    let chain = req.query?.chain;
+    let balance = evms[chain]?.instance?.balance?.div(new BN(1e9))?.toString();
+    res.send(balance)
 })
 
 router.get('/ip', (req: any, res: any) => {

@@ -9,7 +9,8 @@ export default axios.create({
 export const config = {
     api: {
         sendToken: '/sendToken',
-        getChainConfigs: '/getChainConfigs'
+        getChainConfigs: '/getChainConfigs',
+        getBalance: '/getBalance'
     },
     SITE_KEY: configurations.CAPTCHA.siteKey,
     ACTION: configurations.CAPTCHA.action,

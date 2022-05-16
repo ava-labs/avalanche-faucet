@@ -12,8 +12,16 @@
 }
 
 .box-header {
+    width: 100%;
+}
+
+.box-header > span {
     display: flex;
     justify-content: space-between;
+}
+
+.box-header > span > span {
+    font-size: 13px;
 }
 
 .banner {
@@ -32,6 +40,18 @@
     letter-spacing: .0125em;
     line-height: 2rem;
     word-break: break-all;
+}
+
+.select-dropdown {
+    display: flex;
+    align-items: center;
+}
+
+.select-dropdown > img{
+    width: 25px;
+    height: 25px;
+    border-radius: 25px;
+    margin-right: 10px;
 }
 
 .box-content {
