@@ -1,6 +1,7 @@
 {
     "banner": "/banner.png",
-    "apiBaseEndpoint": "http://localhost:8000/api/",
+    "apiBaseEndpointProduction": "/api/",
+    "apiBaseEndpointDevelopment": "http://localhost:8000/api/",
     "apiTimeout": 10000,
     "CAPTCHA": {
         "siteKey": "6LcNScYfAAAAAJH8fauA-okTZrmAxYqfF9gOmujf",

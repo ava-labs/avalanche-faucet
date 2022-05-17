@@ -6,7 +6,8 @@ export type ConfigType = {
     RPC: string,
     MAX_PRIORITY_FEE: string,
     MAX_FEE: string,
-    DRIP_AMOUNT: number
+    DRIP_AMOUNT: number,
+    RECALIBRATE?: number
 }
 
 export type SendTokenResponse = {

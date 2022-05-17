@@ -9,6 +9,7 @@ export default class EVM {
     DRIP_AMOUNT: number | BN;
     MAX_PRIORITY_FEE: string;
     MAX_FEE: string;
+    RECALIBRATE: number;
     hasNonce: Map<string, number | undefined>;
     pendingTxNonces: Set<unknown>;
     hasError: Map<string, string | undefined>;
@@ -29,6 +30,7 @@ export default class EVM {
         this.DRIP_AMOUNT = (new BN(config.DRIP_AMOUNT)).mul(new BN(1e9));
         this.MAX_PRIORITY_FEE = config.MAX_PRIORITY_FEE;
         this.MAX_FEE = config.MAX_FEE;
+        this.RECALIBRATE = config.RECALIBRATE || 30;
 
         this.hasNonce = new Map();
         this.hasError = new Map();
@@ -49,7 +51,7 @@ export default class EVM {
 
         setInterval(() => {
             this.recalibrateNonceAndBalance();
-        }, 60 * 60 * 1000);
+        }, this.RECALIBRATE * 1000);
     }
 
     async sendToken(receiver: string, cb: (param: SendTokenResponse) => void): Promise<void> {
@@ -168,10 +170,8 @@ export default class EVM {
 
     async recalibrateNonceAndBalance(): Promise<void> {
         this.waitingForRecalibration = true;
-        console.log("Started Recalibration")
 
         if (this.pendingTxNonces.size === 0 && this.isUpdating === false) {
-            console.log("Recalibrated")
             this.isFetched = false;
             this.recalibrate = true;
             this.waitingForRecalibration = false;

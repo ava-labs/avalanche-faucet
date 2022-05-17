@@ -1,45 +1,31 @@
 {
-  "name": "faucet-client",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@types/jest": "^27.0.1",
-    "@types/node": "^16.7.13",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "axios": "^0.27.2",
-    "ethers": "^5.6.5",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "react-scripts": "5.0.1",
-    "react-select": "^5.3.2",
-    "react-spinners": "^0.12.0",
-    "typescript": "^4.4.2"
-  },
+  "name": "faucet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
   "scripts": {
-    "postinstall": "npm install --prefix server",
-    "build": "npx --yes concurrently \"react-scripts build\" \"npm run build --prefix server\"",
-    "start": "npx --yes concurrently \"npx --yes serve -s build\" \"npm start --prefix server\"",
-    "dev": "npx --yes concurrently \"react-scripts start\" \"npm run dev --prefix server\"",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "postinstall": "npm install --prefix client",
+    "build": "npx tsc && npm run build --prefix client",
+    "start": "node build/server.js",
+    "dev": "npx --yes concurrently \"npx --yes nodemon server.ts\" \"npm run dev --prefix client\""
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "avalanche": "^3.13.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.1",
+    "express-rate-limit": "^6.4.0",
+    "totp-generator": "^0.0.13",
+    "typescript": "^4.6.4",
+    "web3": "^1.7.3"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/totp-generator": "^0.0.4"
   }
 }

@@ -2,7 +2,7 @@ import axios from 'axios';
 import configurations from './config.json';
 
 export default axios.create({
-    baseURL: configurations.apiBaseEndpoint,
+    baseURL: process.env.NODE_ENV == "production" ? configurations.apiBaseEndpointProduction : configurations.apiBaseEndpointDevelopment,
     timeout: configurations.apiTimeout,
 });
 

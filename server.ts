@@ -1,6 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
+import path from 'path'
 import dotenv from 'dotenv'
 
 import { RateLimiter, VerifyCaptcha, VerifyTOTP } from './middlewares'
@@ -16,6 +17,7 @@ dotenv.config()
 const app: any = express()
 const router: any = express.Router();
 
+app.use(express.static(path.join(__dirname, "client")));
 app.use(cors())
 app.use(bodyParser.json())
 
@@ -66,7 +68,11 @@ router.get('/ip', (req: any, res: any) => {
     res.send(req.ip)
 })
 
-app.use('/api', router)
+app.use('/api', router);
+
+app.get('*', async (req: any, res: any) => {
+    res.sendFile(path.join(__dirname, "client", "index.html"))
+});
 
 app.listen(process.env.PORT || 8000, () => {
     console.log(`Server started at port ${process.env.PORT || 8000}`)

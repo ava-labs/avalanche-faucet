@@ -1,124 +1,83 @@
-# Faucet Server and Client
+# Faucet Server
 
-This repository has both server and client that is required to host a faucet for your EVM subnet. We have used ReactJS client for interacting with the Node.js Faucet Server.
+This is a facuet server for subnets with rate limiter, concurrency control and captcha verification.
 
-## Requirements
+## API Endpoints
 
-* [Node](https://nodejs.org/en) >= 17.0 and [npm](https://www.npmjs.com/) >= 8.0
-* [Google's ReCaptcha](https://www.google.com/recaptcha/intro/v3.html) v3 keys
+This server will expose the following APIs
 
-## Installation
+### Get Drop Size
 
-Clone this repository at your preferred location.
+This api will be used for fetching the drop amount that the faucet server is providing per request.
 
 ```bash
-git clone https://github.com/ava-labs/faucet
+curl http://localhost:8000/api/getDripAmount
 ```
 
-## Client Side Configurations
+It will give the following response
 
-We need to configure our application with the server API endpoints and Captcha site keys. All the client-side configurations are there in `src/config.json` file. Since there are no secrets on the client side, we do not need any environment variables. Update the config files according to your need.
-
-```json
+```bash
 {
-    "banner": "/banner.png",
-    "apiBaseEndpoint": "https://test-faucet.network/api",
-    "apiTimeout": 10000,
-    "CAPTCHA": {
-        "siteKey": "6LcNScYfAAAAAJH8fauA-okTZrmAxYqfF9gOmujf",
-        "action": "faucetdrip"
-    }
+    "dripAmount": 10
 }
 ```
 
-Put the Google's ReCaptcha site-key without which the faucet client can't send the necessary captcha response to the server. This key is not a secret and could be public.
+### Send Token
 
-In the above file, `apiBaseEndpoint` is the base endpoint of the faucet server. It should be a valid URL where the server's APIs are hosted. If the endpoints for API has a leading `/v1/api` and the server is running on localhost at port 3000, then you should use `http://localhost:3000/v1/api`.
-
-## Server Side Configuration
-
-On server-side, we need to configure 2 files - `server/.env` for secret keys and `server/config.json` for chain and API's rate limiting configurations.
-
-### Setup Environment Variables
-
-Setup the environment variable with your private key and recaptcha secret. Make a `.env` file inside the `/server` directory with following credentials. The faucet server can handle multiple EVM chains, and threfore requires private keys for addresses with funds on each of the chain.
-
-If you have funds on the same address on every chain, then you can just use `PK` variable. But if you have funds on different addresses on different chains, then you can provide each of the private key against their chain name, as shown below.
-
-```env
-C="C chain private key"
-WAGMI="Wagmi chain private key"
-PK="Sender Private Key with Funds in it"
-CAPTCHA_SECRET="Google ReCaptcha Secret"
-TOTPKEY="Base32 string with minimum 16 characters"
-```
-
-**TOTP** Key is a [Base32](https://en.wikipedia.org/wiki/Base32) string with minimum 16 characters, that will be used for authenticating secured API endpoints like `/api/recalibration`. These APIs are requested with a `token` query parameter, which is a time based 6-digit token, created with the help of `TOTPKEY`. A new key will be passively generated every 30 seconds on the basis of current timestamp. You can use **Google Auth** mobile application or any TOTP providers and setup them with the `TOTPKEY` for getting a new token every 30 seconds.
+This API endpoint will handle token requests from users. It will return the transaction hash as a receipt of faucet drip.
 
 ```bash
-curl -X GET "http://localhost:8000/api/recalibrate?token=617840"
+curl -d '{
+        "address": "0x3EA53fA26b41885cB9149B62f0b7c0BAf76C78D4"
+}' -H 'Content-Type: application/json' http://localhost:8000/api/sendToken
 ```
 
-### Setup EVM Chain Configurations
+Send token API requires Captcha response token that is generated using Captcha site key on the client side. Since we can't generate and pass this token while making curl request, we have to disable the captcha verification for testing purpose. You can find the steps to disable it in the next sections. Response is shown below
 
-You can create faucet server for any EVM chain by making changes in the `config.json` file. Add your chain configuration like shown below in the `evmchains` object. Configuration for Fuji's C-Chain and WAGMI chain is shown below for example.
+```bash
+{
+    "message": "Transaction successful!",
+    "txHash": "0x3d1f1c3facf59c5cd7d6937b3b727d047a1e664f52834daf20b0555e89fc8317"
+}
+```
+
+## Rate Limiters
+
+The rate limiters are applied on the global as well as on `/api/sendToken` API. These can be configured from `config.json` file. Currently 
 
 ```json
-"evmchains": [
-    {
-        "NAME": "C",
-        "TOKEN": "AVAX",
-        "RPC": "https://api.avax-test.network/ext/C/rpc",
-        "MAX_PRIORITY_FEE": "2000000000",
-        "MAX_FEE": "100000000000",
-        "DRIP_AMOUNT": 10000000000
-    },
-    {
-        "NAME": "WAGMI",
-        "TOKEN": "WGM",
-        "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
-        "MAX_PRIORITY_FEE": "2000000000",
-        "MAX_FEE": "100000000000",
-        "DRIP_AMOUNT": 10000000
-    }
-]
+"GLOBAL_RL": {
+    "REVERSE_PROXIES": 2,
+    "MAX_LIMIT": 15,
+    "WINDOW_SIZE": 1,
+    "PATH": "/",
+    "SKIP_FAILED_REQUESTS": false
+},
+"SEND_TOKEN_RL": {
+    "REVERSE_PROXIES": 2,
+    "MAX_LIMIT": 1,
+    "WINDOW_SIZE": 60,
+    "PATH": "/sendToken",
+    "SKIP_FAILED_REQUESTS": true
+}
 ```
-In the above configuration drip amount is in `nAVAX` or `gwei`, whereas fees are in `wei`. For example, with the above configurations, the faucet will send `1 AVAX` with maximum fees per gas being `100 nAVAX` and priority fee as `2 nAVAX`.
+With the above configurations the `SEND_TOKEN` rate limiter will only 1 request in 60 minutes. Though it will skip any failed requests, so that users can request tokens again, even if there is some internal error in the application. On the other hand, global rate limiter will allow 15 requests per minute on every API. This time failed requests will also get countend so that no one can abuse the APIs.
 
-## Starting the Faucet
+## Captcha Verification
 
-Follow the below commands to start your local faucet.
+Captcha is required to prove the user is a human and not a bot. For this purpose we will use [Google's Recaptcha](https://www.google.com/recaptcha/intro/v3.html). Server side will require `CAPTCHA_SECRET` that should not be exposed.
 
-### Installing Dependencies
+You can disable these Captcha verifications and rate limiters for testing the purpose, by tweaking in the `server.ts` file.
 
-This will concurrently install dependencies for both client and server.
+### Disabling Rate Limiters
 
-```bash
-npm install
-```
+Comment or remove these 2 lines from `server.ts` file
 
-If ports have default configuration, then the client will start at port 3000 and the server will start at port 8000.
-
-### Starting in Development Mode
-
-This will concurrently start server and client in development mode.
-
-```bash
-npm run dev
+```javascript
+new RateLimiter(app, GLOBAL_RL);
+new RateLimiter(app, SEND_TOKEN_RL);
 ```
 
-### Building for Production
+### Disabling Captcha Verification
 
-The following command will build server and client at `server/build` and `build` directories.
-
-```bash
-npm run build
-```
-
-### Starting in Production Mode
-
-This command should only be run after successfully building the client and server side code.
-
-```bash
-npm start
-```
+Remove the  `captcha.middleware` from `sendToken` API.
