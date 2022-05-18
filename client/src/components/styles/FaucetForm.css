@@ -101,6 +101,11 @@
     margin-top: 20px;
 }
 
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .send-button {
     margin-top: 20px;
     height: 36px;

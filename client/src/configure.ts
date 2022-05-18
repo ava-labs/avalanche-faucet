@@ -10,7 +10,8 @@ export const config = {
     api: {
         sendToken: '/sendToken',
         getChainConfigs: '/getChainConfigs',
-        getBalance: '/getBalance'
+        getBalance: '/getBalance',
+        faucetAddress: 'faucetAddress'
     },
     SITE_KEY: configurations.CAPTCHA.siteKey,
     ACTION: configurations.CAPTCHA.action,

@@ -56,6 +56,10 @@ router.get('/recalibrate', totp.middleware, (req: any, res: any) => {
 
 router.get('/getChainConfigs', (req: any, res: any) => {
     res.send(evmchains)
+});
+
+router.get('/faucetAddress', (req: any, res: any) => {
+    res.send(evms[req.query?.chain!]?.instance?.account?.address)
 })
 
 router.get('/getBalance', (req: any, res: any) => {

@@ -5,12 +5,14 @@ import Select from 'react-select';
 
 import './styles/FaucetForm.css'
 import ReCaptcha from './ReCaptcha';
+import FooterBox from './FooterBox';
 
 const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null)
     const [chainConfigs, setChainConfigs] = useState<any>([])
     const [inputAddress, setInputAddress] = useState("")
     const [address, setAddress] = useState<string | null>(null);
+    const [faucetAddress, setFaucetAddress] = useState(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [options, setOptions] = useState([])
     const [balance, setBalance] = useState(0);
@@ -57,6 +59,18 @@ const FaucetForm = (props: any) => {
         setOptions(newOptions)
     }, [chainConfigs]);
 
+    useEffect(() => {
+        updateFaucetAddress()
+    }, [chain]);
+
+    async function updateFaucetAddress() {
+        const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
+        
+        if(response?.data) {
+            setFaucetAddress(response?.data);
+        }
+    }
+
     function updateAddress(addr: string | null): void {
         setInputAddress(addr!)
         
@@ -76,8 +90,6 @@ const FaucetForm = (props: any) => {
         const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
         
         if(response?.data) {
-            let fetchedBalance = response?.data;
-            fetchedBalance = fetchedBalance / 1e9
             setBalance(response?.data);
         }
     }
@@ -143,67 +155,75 @@ const FaucetForm = (props: any) => {
     }
 
     return (
-        <div className = "box">
-            <div className='banner' style={{backgroundImage: `url(${props.config.banner})`}}/>
+        <div>
+            <div className = "box">
+                <div className='banner' style={{backgroundImage: `url(${props.config.banner})`}}/>
 
-            <div className='box-content'>
-                <div className='box-header'>
-                    <span>
-                        <span>Select chain</span>
-                        <span style={{color: "grey"}}>Balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[chain!]?.TOKEN}</span>
-                    </span>
+                <div className='box-content'>
+                    <div className='box-header'>
+                        <span>
+                            <span>Select chain</span>
+                            <span style={{color: "grey"}}>Balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[chain!]?.TOKEN}</span>
+                        </span>
 
-                    <ChainDropdown />
-                </div>
-
-                {
-                    !sendTokenResponse.txHash
-                    ?
-                    <div>
-                        <p className='rate-limit-text'>
-                            Drops are limited to 
-                            <span>
-                                1 request per hour.
-                            </span>
-                        </p>
-
-                        <div className='address-input'>
-                            <input placeholder='Hexadecimal Address (0x...)' value={inputAddress || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
-                        </div>
-                        <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
-
-                        <div className="beta-alert">
-                            <p>This is a testnet faucet. Funds are not real.</p>
-                        </div>
-                    
-                        <button className={shouldAllowSend ? 'send-button' : 'send-button-disabled'} onClick={sendToken}>
-                            {
-                                isLoading
-                                ?
-                                <ClipLoader size="20px" speedMultiplier={0.3} color="403F40"/>
-                                :
-                                <span>Request {chainConfigs[chain || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[chain || 0]?.TOKEN}</span>
-                            }
-                        </button>
+                        <ChainDropdown />
                     </div>
-                    :
-                    <div>
-                        <p className='rate-limit-text'>
-                            {sendTokenResponse.message}
-                        </p>
 
+                    {
+                        !sendTokenResponse.txHash
+                        ?
                         <div>
-                            <span className='bold-text'>Transaction ID</span>
                             <p className='rate-limit-text'>
-                                {sendTokenResponse.txHash}
+                                Drops are limited to 
+                                <span>
+                                    1 request per hour.
+                                </span>
                             </p>
-                        </div>
 
-                        <button onClick={back}>Back</button>
-                    </div>
-                }
+                            <div className='address-input'>
+                                <input placeholder='Hexadecimal Address (0x...)' value={inputAddress || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
+                            </div>
+                            <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
+
+                            <div className="beta-alert">
+                                <p>This is a testnet faucet. Funds are not real.</p>
+                            </div>
+                        
+                            <button className={shouldAllowSend ? 'send-button' : 'send-button-disabled'} onClick={sendToken}>
+                                {
+                                    isLoading
+                                    ?
+                                    <ClipLoader size="20px" speedMultiplier={0.3} color="403F40"/>
+                                    :
+                                    <span>Request {chainConfigs[chain || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[chain || 0]?.TOKEN}</span>
+                                }
+                            </button>
+                        </div>
+                        :
+                        <div>
+                            <p className='rate-limit-text'>
+                                {sendTokenResponse.message}
+                            </p>
+
+                            <div>
+                                <span className='bold-text'>Transaction ID</span>
+                                <p className='rate-limit-text'>
+                                    {sendTokenResponse.txHash}
+                                </p>
+                            </div>
+
+                            <button onClick={back}>Back</button>
+                        </div>
+                    }
+                </div>
             </div>
+
+            <br/><br/>
+
+            <FooterBox chain={chain} chainConfigs={chainConfigs} faucetAddress={faucetAddress}/>
         </div>
+
+
     )
 }
 
