@@ -70,7 +70,7 @@ export default class EVM {
                 const nonce = this.hasNonce.get(receiver);
                 this.hasNonce.set(receiver, undefined);
                 const { txHash } = await this.getTransaction(receiver, amount, nonce);
-                cb({ status: 200, message: `Transaction successful on ${this.NAME} chain!`, txHash });
+                cb({ status: 200, message: `Transaction successful on ${this.NAME}!`, txHash });
             } else if(this.hasError.get(receiver) != undefined) {
                 clearInterval(waitingForNonce);
                 const errorMessage = this.hasError.get(receiver)!;
