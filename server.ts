@@ -9,7 +9,7 @@ import EVM from './vms/evm'
 
 import { SendTokenResponse } from './types'
 
-import { evmchains, GLOBAL_RL, SEND_TOKEN_RL } from './config.json'
+import { evmchains, GLOBAL_RL } from './config.json'
 import { BN } from 'avalanche'
 
 dotenv.config()
@@ -21,8 +21,8 @@ app.use(express.static(path.join(__dirname, "client")));
 app.use(cors())
 app.use(bodyParser.json())
 
-new RateLimiter(app, GLOBAL_RL);
-new RateLimiter(app, SEND_TOKEN_RL);
+new RateLimiter(app, [GLOBAL_RL]);
+new RateLimiter(app, evmchains);
 
 const captcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!);
 const totp = new VerifyTOTP(process.env.TOTPKEY!);

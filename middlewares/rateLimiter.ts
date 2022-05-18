@@ -2,32 +2,47 @@ import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
 import { RateLimiterConfig } from '../types';
 
 export class RateLimiter {
-    REVERSE_PROXIES: number;
-    MAX_LIMIT: number;
-    WINDOW_SIZE: number;
     PATH: string;
-    SKIP_FAILED_REQUESTS: boolean;
 
-    constructor(app: any, config: RateLimiterConfig) {
-        this.REVERSE_PROXIES = config.REVERSE_PROXIES;
-        this.MAX_LIMIT = config.MAX_LIMIT;
-        this.WINDOW_SIZE = config.WINDOW_SIZE;
-        this.PATH = config.PATH;
-        this.SKIP_FAILED_REQUESTS = config.SKIP_FAILED_REQUESTS || false
+    constructor(app: any, configs: RateLimiterConfig[]) {
+        this.PATH = configs[0].RATELIMIT.PATH || '/api/sendToken';
 
-        app.set('trust proxy', this.REVERSE_PROXIES);
-        app.use(this.PATH, this.getLimiter());
+        let rateLimiters: any = new Map()
+        configs.forEach((config: any) => {
+            const { RATELIMIT } = config;
+
+            let RL_CONFIG = {
+                REVERSE_PROXIES: RATELIMIT.REVERSE_PROXIES,
+                MAX_LIMIT: RATELIMIT.MAX_LIMIT,
+                WINDOW_SIZE: RATELIMIT.WINDOW_SIZE,
+                SKIP_FAILED_REQUESTS: RATELIMIT.SKIP_FAILED_REQUESTS || true,
+            }
+            
+            rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG));
+
+            if(RATELIMIT.REVERSE_PROXIES) {
+                app.set('trust proxy', RATELIMIT.REVERSE_PROXIES);
+            }
+        });
+
+        app.use(this.PATH, (req: any, res: any, next: any) => {
+            if(this.PATH == '/api/sendToken' && req.body.chain) {
+                return rateLimiters.get(req.body.chain)(req, res, next)
+            } else {
+                return rateLimiters.get(configs[0].ID)(req, res, next)
+            }
+        });
     }
 
-    getLimiter(): RateLimitRequestHandler {
+    getLimiter(config: any): RateLimitRequestHandler {
         const limiter = rateLimit({
-            windowMs: this.WINDOW_SIZE * 60 * 1000,
-            max: this.MAX_LIMIT,
+            windowMs: config.WINDOW_SIZE * 60 * 1000,
+            max: config.MAX_LIMIT,
             standardHeaders: true,
             legacyHeaders: false,
-            skipFailedRequests: this.SKIP_FAILED_REQUESTS,
+            skipFailedRequests: config.SKIP_FAILED_REQUESTS,
             message: {
-                message: `Too many requests. Please try again after ${this.WINDOW_SIZE} minutes`
+                message: `Too many requests. Please try again after ${config.WINDOW_SIZE} minutes`
             },
             keyGenerator: (req, res) => {
                 return req.ip + req.body?.chain
