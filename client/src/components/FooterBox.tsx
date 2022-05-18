@@ -20,7 +20,7 @@ function outFunc() {
 
 export default function FooterBox(props: any) {
     return (
-        <div>
+        <div className="container">
             <div className="footer-box">
                 <div style={{fontSize: "13px", padding: "20px"}}>
                     Click the button below to add <b>{props.chainConfigs[props.chain!]?.NAME}</b> to your browser wallet extension.
@@ -33,7 +33,7 @@ export default function FooterBox(props: any) {
                     Once you are done with the testing, feel free to send the remaining coins
                     to the following faucet address.
 
-                    <div className='return-address' onMouseOut={outFunc} onClick={copyToClipboard} style={{marginTop: "10px", marginBottom: "10px"}}>
+                    <div className='return-address' onMouseOut={outFunc} onClick={copyToClipboard}>
                         <div className="tooltip">
                             <span className="tooltiptext" id="tooltip-text">Copy to clipboard</span>
                         </div>
@@ -41,7 +41,7 @@ export default function FooterBox(props: any) {
                         <input id="return-address-input" value={props.faucetAddress} disabled/>
 
                         <span style={{marginRight: "10px", marginTop: "2px"}}>
-                            <img style={{width: "20px", height: "20px"}} src="https://img.icons8.com/fluent-systems-regular/48/000000/copy.png"/>
+                            <img style={{width: "20px", height: "20px"}} src="https://img.icons8.com/fluency-systems-regular/48/ffffff/copy.png"/>
                         </span>
                     </div>
                 </div>

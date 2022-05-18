@@ -2,12 +2,24 @@
     letter-spacing: .0125em;
 }
 
+a {
+    color: darkgrey;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
 .box {
     box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
-    max-width: 420px;
+    max-width: 492px;
     width: 95%;
-    background-color: #fff !important;
-    border-radius: 4px;
+    background-color: rgb(26, 26, 28) !important;
+    border-radius: 8px;
     height: fit-content;
 }
 
@@ -27,8 +39,9 @@
 .banner {
     background-position: center;
     background-repeat: no-repeat;
-    background-size: 380px;
-    border-radius: 4px 4px 0px 0px;
+    background-size: 340px;
+    background-color: rgb(26, 26, 28);
+    border-radius: 8px;
     height: 140px;
 }
 
@@ -59,8 +72,8 @@
 }
 
 .rate-limit-text {
-    color: rgba(0,0,0,.6);
-    font-size: .875rem;
+    color: grey;
+    font-size: 13px;
     font-weight: 300;
     word-break: break-word;
     letter-spacing: 1px;
@@ -77,14 +90,15 @@
     align-items: center;
     color: #333;
     height: 45px;
-    background-color: #f8f8f8;
+    background-color: rgb(43, 43, 43);
     margin-bottom: 8px;
+    border-radius: 5px;
 }
 
 .address-input > input {
     background-color: transparent;
     border-style: none;
-    color: inherit;
+    color: white;
     outline: none;
     text-align: center;
     width: 100%;
@@ -107,24 +121,31 @@
 }
 
 .send-button {
+    color:white;
     margin-top: 20px;
     height: 36px;
     width: 100%;
     padding: 0 16px;
     border: 0px;
     border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.15);
     cursor: pointer;
     text-transform: uppercase;
 }
 
+.send-button:hover {
+    background-color: #333;
+}
+
 .send-button-disabled {
-    color:rgba(0, 0, 0, 0.4);
+    color:rgba(255, 255, 255, 0.406);
     margin-top: 20px;
     height: 36px;
     width: 100%;
     padding: 0 16px;
     border: 0px;
     border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.15);
     cursor: not-allowed;
     text-transform: uppercase;
 }
@@ -132,5 +153,22 @@
 .bold-text {
     font-size: small;
     font-weight: 600;
-    color: rgba(0, 0, 0, 0.6);
+    color: rgba(255, 255, 255, 0.536);
+}
+
+.back-button {
+    color:white;
+    margin-top: 10px;
+    height: 36px;
+    width: 100px;
+    padding: 0 16px;
+    border: 0px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.back-button:hover {
+    background-color: #333;
 }

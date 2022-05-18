@@ -140,9 +140,55 @@ const FaucetForm = (props: any) => {
         setIsLoading(false);
     }
 
+    const customStyles = {
+        control: (base: any, state: { isFocused: any; }) => ({
+          ...base,
+          background: "#333",
+          borderRadius: state.isFocused ? "5px 5px 0 0" : 5,
+          borderColor: state.isFocused ? "white" : "#333",
+          boxShadow: null,
+          "&:hover": {
+            borderColor: "white"
+          }
+        }),
+        menu: (base: any) => ({
+          ...base,
+          borderRadius: 0,
+					marginTop: 0,
+					background: "rgb(45, 45, 45)",
+					color: "white"
+        }),
+        menuList: (base: any) => ({
+            ...base,
+          padding: 0
+				}),
+				option: (styles: any, {isFocused, isSelected}: any) => ({
+					...styles,
+					background: isFocused
+							?
+							'black'
+							:
+							isSelected
+							?
+							'#333'
+							:
+							undefined,
+					zIndex: 1
+				}),
+				singleValue: (base: any) => ({
+					...base,
+					color: "white"
+				})
+      };
+
     const ChainDropdown = () => (
         <div style={{width: "100%", marginTop: "5px"}}>
-            <Select options={options} value={options[chain || 0]} onChange={updateChain}/>
+            <Select
+                options={options}
+                value={options[chain || 0]}
+                onChange={updateChain}
+                styles={customStyles}
+            />
         </div>
     )
 
@@ -155,14 +201,14 @@ const FaucetForm = (props: any) => {
     }
 
     return (
-        <div>
+        <div className='container'>
             <div className = "box">
                 <div className='banner' style={{backgroundImage: `url(${props.config.banner})`}}/>
 
                 <div className='box-content'>
                     <div className='box-header'>
                         <span>
-                            <span>Select chain</span>
+                            <span style={{color: "grey"}}>Select chain</span>
                             <span style={{color: "grey"}}>Faucet balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[chain!]?.TOKEN}</span>
                         </span>
 
@@ -176,9 +222,11 @@ const FaucetForm = (props: any) => {
                             <p className='rate-limit-text'>
                                 Drops are limited to 
                                 <span>
-                                    1 request per hour.
+                                    {chainConfigs[chain!]?.RATELIMIT?.MAX_LIMIT} request in {chainConfigs[chain!]?.RATELIMIT?.WINDOW_SIZE} minutes.
                                 </span>
                             </p>
+
+														<br/>
 
                             <div className='address-input'>
                                 <input placeholder='Hexadecimal Address (0x...)' value={inputAddress || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
@@ -212,7 +260,7 @@ const FaucetForm = (props: any) => {
                                 </p>
                             </div>
 
-                            <button onClick={back}>Back</button>
+                            <button className='back-button' onClick={back}>Back</button>
                         </div>
                     }
                 </div>

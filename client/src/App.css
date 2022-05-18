@@ -1,9 +1,6 @@
 .app {
     font-family: Avenir,Helvetica,Arial,sans-serif;
-    background-color: rgb(250, 250, 250);
-    background-image: url('/public/background.svg');
-    background-size: 15px;
-    min-height: 100vh;
+    padding-top: 5%;
     display: flex;
     justify-content: space-around;
     align-items: center;
