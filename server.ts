@@ -4,7 +4,7 @@ import cors from 'cors'
 import path from 'path'
 import dotenv from 'dotenv'
 
-import { RateLimiter, VerifyCaptcha, VerifyTOTP } from './middlewares'
+import { RateLimiter, VerifyCaptcha } from './middlewares'
 import EVM from './vms/evm'
 
 import { SendTokenResponse } from './types'
@@ -25,7 +25,6 @@ new RateLimiter(app, [GLOBAL_RL]);
 new RateLimiter(app, evmchains);
 
 const captcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!);
-const totp = new VerifyTOTP(process.env.TOTPKEY!);
 
 let evms: any = {};
 
@@ -46,13 +45,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
         const { status, message, txHash } = data;
         res.status(status).send({message, txHash})
     });
-})
-
-router.get('/recalibrate', totp.middleware, (req: any, res: any) => {
-    let chain = req.query?.chain;
-    evms[chain]?.instance?.recalibrateNonceAndBalance();
-    res.send("Recalibrating now.")
-})
+});
 
 router.get('/getChainConfigs', (req: any, res: any) => {
     res.send(evmchains)
@@ -68,11 +61,11 @@ router.get('/getBalance', (req: any, res: any) => {
     res.send(balance)
 })
 
-router.get('/ip', (req: any, res: any) => {
-    res.send(req.ip)
-})
-
 app.use('/api', router);
+
+app.get('/health', (req: any, res: any) => {
+    res.status(200).send('Server healthy')
+});
 
 app.get('*', async (req: any, res: any) => {
     res.sendFile(path.join(__dirname, "client", "index.html"))

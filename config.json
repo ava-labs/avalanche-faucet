@@ -23,7 +23,6 @@
             "DRIP_AMOUNT": 10000000000,
             "RECALIBRATE": 30,
             "RATELIMIT": {
-                "REVERSE_PROXIES": 2,
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 60
             }
@@ -40,7 +39,6 @@
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 10000000,
             "RATELIMIT": {
-                "REVERSE_PROXIES": 2,
                 "MAX_LIMIT": 2,
                 "WINDOW_SIZE": 60
             }
