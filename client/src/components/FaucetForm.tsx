@@ -163,7 +163,7 @@ const FaucetForm = (props: any) => {
                     <div className='box-header'>
                         <span>
                             <span>Select chain</span>
-                            <span style={{color: "grey"}}>Balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[chain!]?.TOKEN}</span>
+                            <span style={{color: "grey"}}>Faucet balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[chain!]?.TOKEN}</span>
                         </span>
 
                         <ChainDropdown />
@@ -208,7 +208,7 @@ const FaucetForm = (props: any) => {
                             <div>
                                 <span className='bold-text'>Transaction ID</span>
                                 <p className='rate-limit-text'>
-                                    {sendTokenResponse.txHash}
+                                    <a target={'_blank'} href={chainConfigs[chain!].EXPLORER + '/tx/' + sendTokenResponse.txHash}>{sendTokenResponse.txHash}</a>
                                 </p>
                             </div>
 
@@ -217,8 +217,6 @@ const FaucetForm = (props: any) => {
                     }
                 </div>
             </div>
-
-            <br/><br/>
 
             <FooterBox chain={chain} chainConfigs={chainConfigs} faucetAddress={faucetAddress}/>
         </div>

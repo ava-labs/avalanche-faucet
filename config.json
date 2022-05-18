@@ -34,7 +34,7 @@
             "TOKEN": "WGM",
             "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
             "CHAINID": 11111,
-            "EXPLORER": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/explorer",
+            "EXPLORER": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/explorer/",
             "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-evm/master/imgs/wagmi.png",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",

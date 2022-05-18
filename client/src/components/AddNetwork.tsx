@@ -34,7 +34,7 @@ const addNetwork = async (config: any) => {
 
 export default function AddNetwork(props: any) {
     return (
-        <div style={{padding: "20px", display: "flex", justifyContent: "center"}}>
+        <div style={{padding: "20px", paddingBottom: "0px", display: "flex", justifyContent: "center"}}>
             <button className="add-network" onClick={() => {addNetwork(props.config)}}>
                 <img style={{width: "25px", height: "25px", marginRight: "5px"}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png"/>
                 Add Chain to Metamask

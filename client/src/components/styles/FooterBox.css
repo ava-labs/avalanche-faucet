@@ -5,6 +5,8 @@
     background-color: #fff !important;
     border-radius: 4px;
     height: fit-content;
+    margin-top: 20px;
+    color: grey;
 }
 
 .return-address {
