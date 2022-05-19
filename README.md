@@ -18,7 +18,7 @@ git clone https://github.com/ava-labs/faucet
 
 ## Client Side Configurations
 
-We need to configure our application with the server API endpoints and Captcha site keys. All the client-side configurations are there in the `src/config.json` file. Since there are no secrets on the client-side, we do not need any environment variables. Update the config files according to your need.
+We need to configure our application with the server API endpoints and Captcha site keys. All the client-side configurations are there in the `client/src/config.json` file. Since there are no secrets on the client-side, we do not need any environment variables. Update the config files according to your need.
 
 ```json
 {
@@ -39,7 +39,7 @@ In the above file, there are 2 base endpoints for the faucet server `apiBaseEndp
 
 ## Server-Side Configuration
 
-On the server-side, we need to configure 2 files - `server/.env` for secret keys and `server/config.json` for chain and API's rate limiting configurations.
+On the server-side, we need to configure 2 files - `.env` for secret keys and `config.json` for chain and API's rate limiting configurations.
 
 ### Setup Environment Variables
 
@@ -249,7 +249,7 @@ npm run dev
 
 ### Building for Production
 
-The following command will build server and client at `server/build` and `build` directories.
+The following command will build server and client at `build/` and `build/client` directories.
 
 ```bash
 npm run build
