@@ -13,7 +13,7 @@ This repository has both server and client that are required to host a faucet fo
 Clone this repository at your preferred location.
 
 ```bash
-git clone https://github.com/ava-labs/faucet
+git clone https://github.com/ava-labs/avalanche-faucet
 ```
 
 ## Client Side Configurations
