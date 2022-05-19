@@ -9,3 +9,6 @@ build
 
 # misc
 .env
+
+# IDE
+.idea

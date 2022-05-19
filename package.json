@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "engines": {
+    "node": ">=17"
+  },
   "scripts": {
     "postinstall": "npm install --prefix client",
     "build": "npx tsc && npm run build --prefix client",
