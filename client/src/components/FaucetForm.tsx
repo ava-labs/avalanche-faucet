@@ -14,7 +14,6 @@ const FaucetForm = (props: any) => {
     const [inputAddress, setInputAddress] = useState("")
     const [address, setAddress] = useState<string | null>(null);
     const [faucetAddress, setFaucetAddress] = useState(null);
-    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [options, setOptions] = useState([])
     const [balance, setBalance] = useState(0);
     const [shouldAllowSend, setShouldAllowSend] = useState(false);
@@ -68,7 +67,6 @@ const FaucetForm = (props: any) => {
         const query = queryString.parse(window.location.search);
         if(typeof query.address == "string") {
             updateAddress(query?.address);
-            console.log("address updated")
         }
     }, [window.location.search])
 
@@ -86,7 +84,6 @@ const FaucetForm = (props: any) => {
         if (addr) {
             if (ethers.utils.isAddress(addr)) {
                 setAddress(addr);
-                updateCaptchaToken();
             } else {
                 setAddress(null);
             }
@@ -103,9 +100,9 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    async function updateCaptchaToken() {
-        const token = await recaptcha.getToken()
-        setCaptchaToken(token)
+    async function getCaptchaToken() {
+        const token = await recaptcha.getToken();
+        return token;
     }
 
     async function updateChainConfigs() {
@@ -131,9 +128,11 @@ const FaucetForm = (props: any) => {
         try {
             setIsLoading(true);
 
+            const token = await getCaptchaToken();
+
             const response = await props.axios.post(props.config.api.sendToken, {
                 address: address,
-                token: captchaToken,
+                token: token,
                 chain: chainConfigs[chain || 0].ID
             });
             data = response?.data;
@@ -151,44 +150,44 @@ const FaucetForm = (props: any) => {
 
     const customStyles = {
         control: (base: any, state: { isFocused: any; }) => ({
-          ...base,
-          background: "#333",
-          borderRadius: state.isFocused ? "5px 5px 0 0" : 5,
-          borderColor: state.isFocused ? "white" : "#333",
-          boxShadow: null,
-          "&:hover": {
-            borderColor: "white"
-          }
+            ...base,
+            background: "#333",
+            borderRadius: state.isFocused ? "5px 5px 0 0" : 5,
+            borderColor: state.isFocused ? "white" : "#333",
+            boxShadow: null,
+            "&:hover": {
+                borderColor: "white"
+            }
         }),
         menu: (base: any) => ({
-          ...base,
-          borderRadius: 0,
-					marginTop: 0,
-					background: "rgb(45, 45, 45)",
-					color: "white"
+        ...base,
+        borderRadius: 0,
+                    marginTop: 0,
+                    background: "rgb(45, 45, 45)",
+                    color: "white"
         }),
         menuList: (base: any) => ({
             ...base,
-          padding: 0
-				}),
-				option: (styles: any, {isFocused, isSelected}: any) => ({
-					...styles,
-					background: isFocused
-							?
-							'black'
-							:
-							isSelected
-							?
-							'#333'
-							:
-							undefined,
-					zIndex: 1
-				}),
-				singleValue: (base: any) => ({
-					...base,
-					color: "white"
-				})
-      };
+            padding: 0
+        }),
+        option: (styles: any, {isFocused, isSelected}: any) => ({
+            ...styles,
+            background: isFocused
+                    ?
+                    'black'
+                    :
+                    isSelected
+                    ?
+                    '#333'
+                    :
+                    undefined,
+            zIndex: 1
+        }),
+        singleValue: (base: any) => ({
+            ...base,
+            color: "white"
+        })
+    };
 
     const ChainDropdown = () => (
         <div style={{width: "100%", marginTop: "5px"}}>
@@ -206,7 +205,6 @@ const FaucetForm = (props: any) => {
             txHash: null,
             message: null
         });
-        updateCaptchaToken();
     }
 
     return (
