@@ -6,6 +6,7 @@ import Select from 'react-select';
 import './styles/FaucetForm.css'
 import ReCaptcha from './ReCaptcha';
 import FooterBox from './FooterBox';
+import queryString from 'query-string';
 
 const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null)
@@ -63,6 +64,14 @@ const FaucetForm = (props: any) => {
         updateFaucetAddress()
     }, [chain]);
 
+    useEffect(() => {
+        const query = queryString.parse(window.location.search);
+        if(typeof query.address == "string") {
+            updateAddress(query?.address);
+            console.log("address updated")
+        }
+    }, [window.location.search])
+
     async function updateFaucetAddress() {
         const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
         
@@ -71,7 +80,7 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    function updateAddress(addr: string | null): void {
+    function updateAddress(addr: any): void {
         setInputAddress(addr!)
         
         if (addr) {
