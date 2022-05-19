@@ -2,14 +2,11 @@ FROM node:latest
 
 WORKDIR /avalanche-faucet
 
-COPY ./package.json .
-COPY ./client .
+COPY . .
 
 RUN npm install
 
 RUN npm run build
-
-COPY ./ .
 
 EXPOSE 8000
 
