@@ -1,0 +1,19 @@
+name: ci
+
+on:  
+  push:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - name: Build docker image
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          tags: avaplatform/avalanche-faucets:ci
