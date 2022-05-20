@@ -95,7 +95,7 @@ const FaucetForm = (props: any) => {
     async function updateBalance() {
         const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
         
-        if(response?.data) {
+        if(response?.data || response?.data == 0) {
             setBalance(response?.data);
         }
     }
