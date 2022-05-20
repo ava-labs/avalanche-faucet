@@ -12,7 +12,6 @@ export class RateLimiter {
             const { RATELIMIT } = config;
 
             let RL_CONFIG = {
-                REVERSE_PROXIES: RATELIMIT.REVERSE_PROXIES,
                 MAX_LIMIT: RATELIMIT.MAX_LIMIT,
                 WINDOW_SIZE: RATELIMIT.WINDOW_SIZE,
                 SKIP_FAILED_REQUESTS: RATELIMIT.SKIP_FAILED_REQUESTS || true,

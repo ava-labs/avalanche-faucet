@@ -67,6 +67,10 @@ app.get('/health', (req: any, res: any) => {
     res.status(200).send('Server healthy')
 });
 
+app.get('/ip', (req: any, res: any) => {
+    res.status(200).send(req.ip)
+})
+
 app.get('*', async (req: any, res: any) => {
     res.sendFile(path.join(__dirname, "client", "index.html"))
 });
