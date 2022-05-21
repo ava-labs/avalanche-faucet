@@ -2,7 +2,7 @@
     "GLOBAL_RL": {
         "ID": "GLOBAL",
         "RATELIMIT": {
-            "REVERSE_PROXIES": 3,
+            "REVERSE_PROXIES": 4,
             "MAX_LIMIT": 40,
             "WINDOW_SIZE": 1,
             "PATH": "/",
@@ -17,7 +17,7 @@
             "RPC": "https://api.avax-test.network/ext/C/rpc",
             "CHAINID": 43113,
             "EXPLORER": "https://testnet.snowtrace.io",
-            "IMAGE": "https://notify.avax.network/favicon.svg",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/avalanche-faucet/main/client/public/avax.webp",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 10000000000,
@@ -34,7 +34,7 @@
             "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
             "CHAINID": 11111,
             "EXPLORER": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/explorer",
-            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-evm/master/imgs/wagmi.png",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/avalanche-faucet/main/client/public/wagmi.png",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 10000000,
