@@ -12,7 +12,7 @@
     "evmchains": [
         {
             "ID": "C",
-            "NAME": "Avalanche C Chain",
+            "NAME": "Fuji (C-Chain)",
             "TOKEN": "AVAX",
             "RPC": "https://api.avax-test.network/ext/C/rpc",
             "CHAINID": 43113,
@@ -29,7 +29,7 @@
         },
         {
             "ID": "WAGMI",
-            "NAME": "WAGMI Chain",
+            "NAME": "WAGMI",
             "TOKEN": "WGM",
             "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
             "CHAINID": 11111,
@@ -45,7 +45,7 @@
         },
         {
             "ID": "DFK",
-            "NAME": "DFK Chain",
+            "NAME": "Defi Kingdoms",
             "TOKEN": "JEWEL",
             "RPC": "https://subnets.avax.network/defi-kingdoms/dfk-chain-testnet/rpc",
             "CHAINID": 335,
@@ -61,7 +61,7 @@
         },
         {
             "ID": "DEXALOT",
-            "NAME": "Dexalot Chain",
+            "NAME": "Dexalot",
             "TOKEN": "ALOT",
             "RPC": "https://subnets.avax.network/dexalot/testnet/rpc",
             "CHAINID": 432201,
@@ -77,7 +77,7 @@
         },
         {
             "ID": "SWIMMER",
-            "NAME": "Swimmer Chain",
+            "NAME": "Swimmer",
             "TOKEN": "TUS",
             "RPC": "https://subnets.avax.network/swimmer/testnet/rpc",
             "CHAINID": 73771,
