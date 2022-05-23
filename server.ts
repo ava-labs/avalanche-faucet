@@ -68,7 +68,11 @@ app.get('/health', (req: any, res: any) => {
 });
 
 app.get('/ip', (req: any, res: any) => {
-    res.status(200).send(req.ip)
+    res.status(200).send({
+        reqip: req.ip,
+        xfor: req.headers["x-forwarded-for"],
+        cloudflare: req.headers["CF-Connecting-IP"]
+    })
 })
 
 app.get('*', async (req: any, res: any) => {
