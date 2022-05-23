@@ -31,7 +31,7 @@ const FaucetForm = (props: any) => {
 
     useEffect(() => {
         updateBalance()
-    }, [chain, sendTokenResponse]);
+    }, [chain, sendTokenResponse, chainConfigs]);
 
     useEffect(() => {
         if(address) {
@@ -61,14 +61,33 @@ const FaucetForm = (props: any) => {
 
     useEffect(() => {
         updateFaucetAddress()
-    }, [chain]);
+    }, [chain, chainConfigs]);
 
     useEffect(() => {
         const query = queryString.parse(window.location.search);
-        if(typeof query.address == "string") {
+        if(typeof query?.address == "string") {
             updateAddress(query?.address);
         }
-    }, [window.location.search])
+
+        if(typeof query?.chain == "string") {
+            setChain(chainToIndex(query.chain))
+        } else {
+            setChain(0)
+        }
+    }, [window.location.search, chainConfigs]);
+
+    function chainToIndex(id: any) {
+        if(typeof id == "string") {
+            id = id.toUpperCase();
+        }
+        let index = 0;
+        chainConfigs.forEach((chain: any, i: number) => {
+            if(id == chain.ID) {
+                index = i;
+            }
+        });
+        return index;
+    }
 
     async function updateFaucetAddress() {
         const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
@@ -108,7 +127,6 @@ const FaucetForm = (props: any) => {
     async function updateChainConfigs() {
         const response = await props.axios.get(props.config.api.getChainConfigs);
         setChainConfigs(response?.data);
-        setChain(0);
     }
 
     async function updateChain(option: any) {
@@ -207,6 +225,21 @@ const FaucetForm = (props: any) => {
         });
     }
 
+    const toString = (mins: number): string => {
+        if(mins < 60) {
+            return `${mins} minute${mins > 1 ? 's' : ''}`
+        } else {
+            const hour = ~~(mins / 60);
+            const minute = mins % 60;
+
+            if(minute == 0) {
+                return `${hour} hour${hour > 1 ? 's' : ''}`
+            } else {
+                return `${hour} hour${hour > 1 ? 's' : ''} and ${minute} minute${minute > 1 ? 's' : ''}`
+            }
+        }
+    }
+
     return (
         <div className='container'>
             <div className = "box">
@@ -229,7 +262,7 @@ const FaucetForm = (props: any) => {
                             <p className='rate-limit-text'>
                                 Drops are limited to 
                                 <span>
-                                    {chainConfigs[chain!]?.RATELIMIT?.MAX_LIMIT} request in {chainConfigs[chain!]?.RATELIMIT?.WINDOW_SIZE} minutes.
+                                    {chainConfigs[chain!]?.RATELIMIT?.MAX_LIMIT} request in {toString(chainConfigs[chain!]?.RATELIMIT?.WINDOW_SIZE)}.
                                 </span>
                             </p>
 

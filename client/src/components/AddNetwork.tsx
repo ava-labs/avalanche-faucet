@@ -34,10 +34,15 @@ const addNetwork = async (config: any) => {
 
 export default function AddNetwork(props: any) {
     return (
-        <div style={{padding: "20px", paddingBottom: "0px", display: "flex", justifyContent: "center"}}>
+        <div className='footer-buttons'>
             <button className="add-network" onClick={() => {addNetwork(props.config)}}>
-                <img style={{width: "25px", height: "25px", marginRight: "5px"}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png"/>
+                <img style={{width: "25px", height: "25px", marginRight: "5px"}} src="/memtamask.png"/>
                 Add Chain to Metamask
+            </button>
+
+            <button className="add-network" onClick={() => {window.open(`${props.config.EXPLORER}`, '_blank')}}>
+                <img style={{width: "25px", height: "25px"}} src="/avaxblack.png"/>
+                Go to Block Explorer
             </button>
         </div>
     )
