@@ -23,7 +23,8 @@ export default function FooterBox(props: any) {
         <div className="container">
             <div className="footer-box">
                 <div style={{fontSize: "13px", padding: "20px"}}>
-                    Click the button below to add <b>{props.chainConfigs[props.chain!]?.NAME}</b> to your browser wallet extension.
+                    Use the buttons below to add <b>{props.chainConfigs[props.chain!]?.NAME}</b> to your browser wallet extension
+                    or visit the chain's block explorer.
                     <AddNetwork config={props.chainConfigs[props.chain!]}/>
                 </div>
             </div>

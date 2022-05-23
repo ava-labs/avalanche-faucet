@@ -6,8 +6,8 @@
 }
 
 .footer-box {
-    max-width: 500px;
-    width: 100%;
+    max-width: 492px;
+    width: 95%;
     background-color: rgb(26, 26, 28) !important;
     border-radius: 4px;
     height: fit-content;
@@ -36,15 +36,23 @@
     padding-left: 20px;
 }
 
+.footer-buttons {
+    padding: 20px;
+    padding-bottom: 0px;
+    display: flex;
+    justify-content: space-between;
+}
+
 .add-network {
     background-color: rgba(255, 255, 255, 0.15);
     color: darkgrey;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     cursor: pointer;
     border-radius: 25px;
     padding: 10px;
+    min-width: 45%;
     height: 36px;
     border: 0px;
 }
@@ -52,4 +60,18 @@
 .add-network:hover {
     background-color: black;
     color: white;
+}
+
+@media screen and (max-width: 500px) {
+    .footer-buttons {
+        padding: 20px 20px 0px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-content: center;
+    }
+
+    .footer-buttons > button {
+        margin-top: 10px;
+    }
 }
