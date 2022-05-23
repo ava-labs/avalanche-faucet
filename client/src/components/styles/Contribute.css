@@ -1,0 +1,19 @@
+.contribute-button {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    padding: 10px;
+    cursor: pointer;
+    width: max-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background-color: #333;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.contribute-button:hover {
+    background-color: black;
+    color: white;
+}

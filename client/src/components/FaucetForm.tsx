@@ -48,7 +48,7 @@ const FaucetForm = (props: any) => {
     useEffect(() => {
         let newOptions: any = []
         
-        chainConfigs.forEach((chain: any, i: number) => {
+        chainConfigs?.forEach((chain: any, i: number) => {
             let item =  <div className='select-dropdown'>
                 <img src = { chain.IMAGE } />
                 { chain.NAME }
@@ -84,7 +84,7 @@ const FaucetForm = (props: any) => {
     }
 
     async function updateBalance() {
-        if(chain || chain == 0) {
+        if((chain || chain == 0) && chainConfigs.length > 0) {
             const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
         
             if(response?.data || response?.data == 0) {
@@ -94,7 +94,7 @@ const FaucetForm = (props: any) => {
     }
 
     async function updateFaucetAddress() {
-        if(chain || chain == 0) {
+        if((chain || chain == 0) && chainConfigs.length > 0) {
             const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
             
             if(response?.data) {
@@ -258,7 +258,7 @@ const FaucetForm = (props: any) => {
                 <div className='box-content'>
                     <div className='box-header'>
                         <span>
-                            <span style={{color: "grey"}}>Select chain</span>
+                            <span style={{color: "grey"}}>Select Network</span>
                             <span style={{color: "grey"}}>Faucet balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[chain!]?.TOKEN}</span>
                         </span>
 
