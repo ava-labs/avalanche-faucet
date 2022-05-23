@@ -84,32 +84,40 @@ const FaucetForm = (props: any) => {
     }
 
     async function updateBalance() {
-        const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
+        if(chain || chain == 0) {
+            const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
         
-        if(response?.data || response?.data == 0) {
-            setBalance(response?.data);
+            if(response?.data || response?.data == 0) {
+                setBalance(response?.data);
+            }
         }
     }
 
     async function updateFaucetAddress() {
-        const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
-        
-        if(response?.data) {
-            setFaucetAddress(response?.data);
+        if(chain || chain == 0) {
+            const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
+            
+            if(response?.data) {
+                setFaucetAddress(response?.data);
+            }
         }
     }
 
     function chainToIndex(id: any) {
-        if(typeof id == "string") {
-            id = id.toUpperCase();
-        }
-        let index = 0;
-        chainConfigs.forEach((chain: any, i: number) => {
-            if(id == chain.ID) {
-                index = i;
+        if(chainConfigs?.length > 0) {
+            if(typeof id == "string") {
+                id = id.toUpperCase();
             }
-        });
-        return index;
+            let index = 0;
+            chainConfigs.forEach((chain: any, i: number) => {
+                if(id == chain.ID) {
+                    index = i;
+                }
+            });
+            return index;
+        } else {
+            return null;
+        }
     }
 
     function updateAddress(addr: any): void {
