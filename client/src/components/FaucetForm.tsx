@@ -9,25 +9,26 @@ import FooterBox from './FooterBox';
 import queryString from 'query-string';
 
 const FaucetForm = (props: any) => {
-    const [chain, setChain] = useState<number | null>(null)
-    const [chainConfigs, setChainConfigs] = useState<any>([])
-    const [inputAddress, setInputAddress] = useState("")
+    const [chain, setChain] = useState<number | null>(null);
+    const [chainConfigs, setChainConfigs] = useState<any>([]);
+    const [inputAddress, setInputAddress] = useState("");
     const [address, setAddress] = useState<string | null>(null);
     const [faucetAddress, setFaucetAddress] = useState(null);
-    const [options, setOptions] = useState([])
+    const [options, setOptions] = useState([]);
     const [balance, setBalance] = useState(0);
     const [shouldAllowSend, setShouldAllowSend] = useState(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [sendTokenResponse, setSendTokenResponse] = useState<any>({
         txHash: null,
         message: null
-    })
+    });
 
     const recaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION);
 
+    // Update chain configs
     useEffect(() => {
         updateChainConfigs();
-    }, [])
+    }, []);
 
     useEffect(() => {
         updateBalance()
@@ -76,6 +77,28 @@ const FaucetForm = (props: any) => {
         }
     }, [window.location.search, chainConfigs]);
 
+    // API calls
+    async function updateChainConfigs() {
+        const response = await props.axios.get(props.config.api.getChainConfigs);
+        setChainConfigs(response?.data);
+    }
+
+    async function updateBalance() {
+        const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
+        
+        if(response?.data || response?.data == 0) {
+            setBalance(response?.data);
+        }
+    }
+
+    async function updateFaucetAddress() {
+        const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
+        
+        if(response?.data) {
+            setFaucetAddress(response?.data);
+        }
+    }
+
     function chainToIndex(id: any) {
         if(typeof id == "string") {
             id = id.toUpperCase();
@@ -87,14 +110,6 @@ const FaucetForm = (props: any) => {
             }
         });
         return index;
-    }
-
-    async function updateFaucetAddress() {
-        const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
-        
-        if(response?.data) {
-            setFaucetAddress(response?.data);
-        }
     }
 
     function updateAddress(addr: any): void {
@@ -111,22 +126,9 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    async function updateBalance() {
-        const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
-        
-        if(response?.data || response?.data == 0) {
-            setBalance(response?.data);
-        }
-    }
-
     async function getCaptchaToken() {
         const token = await recaptcha.getToken();
         return token;
-    }
-
-    async function updateChainConfigs() {
-        const response = await props.axios.get(props.config.api.getChainConfigs);
-        setChainConfigs(response?.data);
     }
 
     async function updateChain(option: any) {
@@ -205,13 +207,13 @@ const FaucetForm = (props: any) => {
             ...base,
             color: "white"
         })
-    };
+    }
 
     const ChainDropdown = () => (
         <div style={{width: "100%", marginTop: "5px"}}>
             <Select
                 options={options}
-                value={options[chain || 0]}
+                value={options[chain!]}
                 onChange={updateChain}
                 styles={customStyles}
             />

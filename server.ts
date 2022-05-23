@@ -72,7 +72,7 @@ app.get('/ip', (req: any, res: any) => {
         reqip: req.ip,
         xfor: req.headers["x-forwarded-for"],
         cloudflare: req.headers["cf-connecting-ip"]
-    })
+    });
 })
 
 app.get('*', async (req: any, res: any) => {
