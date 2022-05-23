@@ -42,7 +42,7 @@ export default function AddNetwork(props: any) {
 
             <button className="add-network" onClick={() => {window.open(`${props.config.EXPLORER}`, '_blank')}}>
                 <img style={{width: "25px", height: "25px"}} src="/avaxblack.png"/>
-                Go to Block Explorer
+                View Block Explorer
             </button>
         </div>
     )
