@@ -71,7 +71,7 @@ app.get('/ip', (req: any, res: any) => {
     res.status(200).send({
         reqip: req.ip,
         xfor: req.headers["x-forwarded-for"],
-        cloudflare: req.headers["cf-Connecting-ip"],
+        cloudflare: req.headers["cf-connecting-ip"],
         headers: req.headers
     });
     console.log(req.headers);
