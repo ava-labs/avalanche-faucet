@@ -70,8 +70,8 @@ const FaucetForm = (props: any) => {
             updateAddress(query?.address);
         }
 
-        if(typeof query?.chain == "string") {
-            setChain(chainToIndex(query.chain))
+        if(typeof query?.subnet == "string") {
+            setChain(chainToIndex(query.subnet))
         } else {
             setChain(0)
         }

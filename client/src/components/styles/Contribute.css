@@ -1,5 +1,5 @@
 .contribute-button {
-    position: absolute;
+    position: fixed;
     top: 30px;
     right: 20px;
     padding: 10px;
@@ -9,11 +9,43 @@
     align-items: center;
     justify-content: center;
     border-radius: 15px;
-    background-color: #333;
+    background-color: rgb(39, 39, 39);
     color: rgba(255, 255, 255, 0.7);
+    opacity: 0.8;
+}
+
+.contribute-button > img {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
 }
 
 .contribute-button:hover {
     background-color: black;
     color: white;
+}
+
+@media screen and (max-width: 1010px) {
+    .contribute-button {
+        position: fixed;
+        display: flex;
+        flex-direction: row-reverse;
+        top: auto;
+        bottom: 10px;
+        left: 20px;
+    }
+    
+    .contribute-button > img {
+        margin-right: 0px;
+        margin-left: 10px;
+    }
+
+    .hide-button {
+        transition: 4s;
+        transform: translateX(-190px);
+    }
+    
+    .hide-button:hover {
+        transform: translateX(0px);
+    }
 }

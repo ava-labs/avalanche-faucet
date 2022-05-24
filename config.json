@@ -29,7 +29,7 @@
         },
         {
             "ID": "WAGMI",
-            "NAME": "WAGMI",
+            "NAME": "WAGMI Testnet",
             "TOKEN": "WGM",
             "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
             "CHAINID": 11111,
@@ -45,7 +45,7 @@
         },
         {
             "ID": "DFK",
-            "NAME": "Defi Kingdoms",
+            "NAME": "DeFi Kingdoms Testnet",
             "TOKEN": "JEWEL",
             "RPC": "https://subnets.avax.network/defi-kingdoms/dfk-chain-testnet/rpc",
             "CHAINID": 335,
@@ -61,7 +61,7 @@
         },
         {
             "ID": "DEXALOT",
-            "NAME": "Dexalot",
+            "NAME": "Dexalot Testnet",
             "TOKEN": "ALOT",
             "RPC": "https://subnets.avax.network/dexalot/testnet/rpc",
             "CHAINID": 432201,
@@ -77,7 +77,7 @@
         },
         {
             "ID": "SWIMMER",
-            "NAME": "Swimmer",
+            "NAME": "Swimmer Testnet",
             "TOKEN": "TUS",
             "RPC": "https://subnets.avax.network/swimmer/testnet/rpc",
             "CHAINID": 73771,
@@ -93,7 +93,7 @@
         },
         {
             "ID": "CASTLECRUSH",
-            "NAME": "Castle Crush",
+            "NAME": "Castle Crush Testnet",
             "TOKEN": "ACS",
             "RPC": "https://subnets.avax.network/castle-crush/testnet/rpc",
             "CHAINID": 31416,
