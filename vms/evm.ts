@@ -190,12 +190,12 @@ export default class EVM {
     }
 
     async getGasPrice(): Promise<number> {
-        return await this.web3.eth.getGasPrice()
+        return this.web3.eth.getGasPrice()
     }
 
     async getAdjustedGasPrice(): Promise<number> {
-        let gasPrice = await this.getGasPrice()
-        let adjustedGas = Math.floor(gasPrice * 1.25)
+        const gasPrice = await this.getGasPrice()
+        const adjustedGas = Math.floor(gasPrice * 1.25)
         return Math.min(adjustedGas, parseInt(this.MAX_FEE))
     }
 
