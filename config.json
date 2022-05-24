@@ -12,7 +12,7 @@
     "evmchains": [
         {
             "ID": "C",
-            "NAME": "Fuji (C-Chain Testnet)",
+            "NAME": "Fuji (C-Chain)",
             "TOKEN": "AVAX",
             "RPC": "https://api.avax-test.network/ext/C/rpc",
             "CHAINID": 43113,
@@ -45,7 +45,7 @@
         },
         {
             "ID": "DFK",
-            "NAME": "DFK Chain Testnet",
+            "NAME": "DeFi Kingdoms Testnet",
             "TOKEN": "JEWEL",
             "RPC": "https://subnets.avax.network/defi-kingdoms/dfk-chain-testnet/rpc",
             "CHAINID": 335,

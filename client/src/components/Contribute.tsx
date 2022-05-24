@@ -1,9 +1,16 @@
+import { useState, useEffect } from 'react'; 
 import './styles/Contribute.css'
 
 const Contribute = () => {
+    const [hiddenClass, setHiddenClass] = useState('')
+
+    setTimeout(() => {
+        setHiddenClass("hide-button")
+    }, 2000);
+
     return (
-        <div className="contribute-button" onClick={() => {window.open('https://github.com/ava-labs/avalanche-faucet', '_blank')}}>
-            <img style={{width: "25px", height: "25px", marginRight: "10px"}} src="/github.png"/>
+        <div className={`contribute-button ${hiddenClass}`} onClick={() => {window.open('https://github.com/ava-labs/avalanche-faucet', '_blank')}}>
+            <img src="/github.png"/>
             Contribute on Github
         </div>
     )
