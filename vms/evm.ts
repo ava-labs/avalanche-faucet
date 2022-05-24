@@ -7,6 +7,7 @@ export default class EVM {
     account: any;
     NAME: string;
     DRIP_AMOUNT: number | BN;
+    LEGACY: boolean;
     MAX_PRIORITY_FEE: string;
     MAX_FEE: string;
     RECALIBRATE: number;
@@ -21,7 +22,6 @@ export default class EVM {
     waitingForRecalibration: boolean;
     waitArr: any[];
     queue: any[];
-    LEGACY?: boolean;
 
     constructor(config: ConfigType, PK: string | undefined) {
         this.web3 = new Web3(config.RPC);
@@ -32,7 +32,7 @@ export default class EVM {
         this.MAX_PRIORITY_FEE = config.MAX_PRIORITY_FEE;
         this.MAX_FEE = config.MAX_FEE;
         this.RECALIBRATE = config.RECALIBRATE || 30;
-        this.LEGACY = config.LEGACY
+        this.LEGACY = false;
 
         this.hasNonce = new Map();
         this.hasError = new Map();
@@ -49,11 +49,24 @@ export default class EVM {
         this.waitArr = [];
         this.queue = [];
 
+        this.setupTransactionType();
+
         this.recalibrateNonceAndBalance();
 
         setInterval(() => {
             this.recalibrateNonceAndBalance();
         }, this.RECALIBRATE * 1000);
+    }
+
+    async setupTransactionType() {
+        try {
+            const baseFee = (await this.web3.eth.getBlock('latest')).baseFeePerGas
+            if(baseFee == undefined) {
+                this.LEGACY = true;
+            }
+        } catch(err: any) {
+            console.log("Error setting up transaction type")
+        }
     }
 
     async sendToken(receiver: string, cb: (param: SendTokenResponse) => void): Promise<void> {

@@ -4,7 +4,6 @@ export type ConfigType = {
     ID: string,
     NAME: string,
     RPC: string,
-    LEGACY?: boolean,
     MAX_PRIORITY_FEE: string,
     MAX_FEE: string,
     DRIP_AMOUNT: number,
