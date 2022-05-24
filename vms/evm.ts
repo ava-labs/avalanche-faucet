@@ -162,7 +162,7 @@ export default class EVM {
 
     async getTransaction(to: string, value: BN | number, nonce: number | undefined): Promise<any> {
         const tx: any = {
-            type: this.LEGACY ? 1 : 2,
+            type: this.LEGACY ? 0 : 2,
             gas: "21000",
             nonce,
             to,
