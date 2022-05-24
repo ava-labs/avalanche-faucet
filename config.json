@@ -83,6 +83,7 @@
             "CHAINID": 73771,
             "EXPLORER": "https://subnets.avax.network/swimmer/testnet/explorer",
             "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/73771/chain-logo.png",
+            "LEGACY": true,
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 2000000000,

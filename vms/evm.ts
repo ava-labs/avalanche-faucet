@@ -21,6 +21,7 @@ export default class EVM {
     waitingForRecalibration: boolean;
     waitArr: any[];
     queue: any[];
+    LEGACY?: boolean;
 
     constructor(config: ConfigType, PK: string | undefined) {
         this.web3 = new Web3(config.RPC);
@@ -31,6 +32,7 @@ export default class EVM {
         this.MAX_PRIORITY_FEE = config.MAX_PRIORITY_FEE;
         this.MAX_FEE = config.MAX_FEE;
         this.RECALIBRATE = config.RECALIBRATE || 30;
+        this.LEGACY = config.LEGACY
 
         this.hasNonce = new Map();
         this.hasError = new Map();
@@ -147,7 +149,7 @@ export default class EVM {
 
     async getTransaction(to: string, value: BN | number, nonce: number | undefined): Promise<any> {
         const tx: any = {
-            type: 2,
+            type: this.LEGACY ? 1 : 2,
             gas: "21000",
             nonce,
             to,
@@ -155,6 +157,12 @@ export default class EVM {
             maxFeePerGas: this.MAX_FEE,
             value
         };
+
+        if(this.LEGACY) {
+            delete tx["maxPriorityFeePerGas"];
+            delete tx["maxFeePerGas"];
+            tx.gasPrice = await this.getAdjustedGasPrice();
+        }
 
         let signedTx;
         try{
@@ -166,6 +174,16 @@ export default class EVM {
         const rawTransaction = signedTx.rawTransaction;
 
         return { txHash, rawTransaction };
+    }
+
+    async getGasPrice(): Promise<number> {
+        return await this.web3.eth.getGasPrice()
+    }
+
+    async getAdjustedGasPrice(): Promise<number> {
+        let gasPrice = await this.getGasPrice()
+        let adjustedGas = Math.floor(gasPrice * 1.25)
+        return Math.min(adjustedGas, parseInt(this.MAX_FEE))
     }
 
     async recalibrateNonceAndBalance(): Promise<void> {
