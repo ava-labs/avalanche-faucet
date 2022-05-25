@@ -156,7 +156,14 @@ export default class EVM {
             this.pendingTxNonces.delete(nonce);
         } catch (err: any) {
             console.log(err.message);
-            console.log(`Error with nonce ${nonce} while sending signed transaction.`);
+            console.log(`Error with nonce ${nonce} while sending signed transaction on ${this.NAME}.`);
+            if(err.message.includes("nonce too low")) {
+                console.log(`Nonce too low: Dropping transaction with nonce ${nonce} on ${this.NAME}`)
+                this.pendingTxNonces.delete(nonce);
+            } else {
+                console.log("Re-sending tx to faucet address");
+                this.sendTokenUtil(0, this.account.address, nonce)
+            }
         }
     }
 
