@@ -17,7 +17,6 @@ export class VerifyCaptcha {
         const data = response?.data;
 
         if(data?.success) {
-            console.log("score:", data?.score)
             if(data?.score >= 0.3) {
                 return true;
             }
