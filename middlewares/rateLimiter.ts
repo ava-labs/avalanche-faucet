@@ -21,6 +21,10 @@ export class RateLimiter {
             rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG));
         });
 
+        if(configs[0]?.RATELIMIT?.REVERSE_PROXIES) {
+            app.set('trust proxy', configs[0]?.RATELIMIT?.REVERSE_PROXIES)
+        }
+
         app.use(this.PATH, (req: any, res: any, next: any) => {
             if(this.PATH == '/api/sendToken' && req.body.chain) {
                 return rateLimiters.get(req.body.chain)(req, res, next)
