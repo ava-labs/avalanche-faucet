@@ -19,6 +19,7 @@
     "avalanche": "^3.13.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
+    "ethers": "^5.6.8",
     "express": "^4.18.1",
     "express-rate-limit": "^6.4.0",
     "range_check": "^2.0.4",

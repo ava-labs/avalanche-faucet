@@ -3,7 +3,7 @@ import Web3 from "web3";
 import Log from "./Log";
 import { ConfigType, SendTokenResponse, RequestType } from "./evmTypes";
 import fs from "fs";
-import { ethers } from "avalanche/node_modules/ethers";
+import { ethers } from "ethers";
 
 export default class EVM {
   web3: any;
