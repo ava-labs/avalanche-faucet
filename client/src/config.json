@@ -1,10 +1,10 @@
 {
     "banner": "/banner.png",
     "apiBaseEndpointProduction": "/api/",
-    "apiBaseEndpointDevelopment": "http://localhost:8000/api/",
+    "apiBaseEndpointDevelopment": "http://localhost:3000/api/",
     "apiTimeout": 10000,
     "CAPTCHA": {
-        "siteKey": "6LerTgYgAAAAALa7WiJs3q0pM30PH6JH4oDi_DaK",
+        "siteKey": "6Ld2IEYgAAAAALnFrGJY1ONGuy9qlaYjAQxtfisL",
         "action": "faucetdrip"
     }
 }
