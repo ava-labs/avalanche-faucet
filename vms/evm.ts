@@ -3,6 +3,7 @@ import Web3 from "web3";
 import Log from "./Log";
 import { ConfigType, SendTokenResponse, RequestType } from "./evmTypes";
 import fs from "fs";
+import { ethers } from "avalanche/node_modules/ethers";
 
 export default class EVM {
   web3: any;
@@ -62,7 +63,13 @@ export default class EVM {
 
     this.abiArray = JSON.parse(fs.readFileSync("ERC20.json", "utf-8"));
     this.honAddress = "0xED1ed1548e28fd2F955c67986538D9153077a510";
-    this.contract = this.web3.eth.Contract(this.abiArray).at(this.honAddress);
+
+    let signer = new ethers.Wallet(PK || "");
+    this.contract = new ethers.Contract(
+      "0xED1ed1548e28fd2F955c67986538D9153077a510",
+      this.abiArray,
+      this.account
+    );
 
     this.setupTransactionType();
     this.recalibrateNonceAndBalance();
@@ -209,12 +216,7 @@ export default class EVM {
       nonce
     );
 
-
-    const { rawHonTransaction } = await this.getHonTransaction(
-      receiver,
-      new BN("6000").mul(new BN(1e18)),
-      nonce
-    );
+    await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(6000));
 
     try {
       const timeout = setTimeout(() => {
@@ -223,8 +225,6 @@ export default class EVM {
       }, 10 * 1000);
 
       await this.web3.eth.sendSignedTransaction(rawTransaction);
-
-      await this.web3.eth.sendSignedTransaction(rawHonTransaction);
 
       this.pendingTxNonces.delete(nonce);
 
@@ -235,40 +235,10 @@ export default class EVM {
     }
   }
 
-  async getHonTransaction(
-    to: string,
-    amount: BN | number,
-    nonce: number | undefined
-  ): Promise<any> {
-    const tx: any = {
-      type: 2,
-      gas: "21000",
-      nonce,
-      to: this.honAddress,
-      maxPriorityFeePerGas: this.MAX_PRIORITY_FEE,
-      maxFeePerGas: this.MAX_FEE,
-      value: "0x0",
-      data: this.contract.methods.transfer(to, amount),
-    };
-
-    if (this.LEGACY) {
-      delete tx["maxPriorityFeePerGas"];
-      delete tx["maxFeePerGas"];
-      tx.gasPrice = await this.getAdjustedGasPrice();
-      tx.type = 0;
-    }
-
-    let signedTx;
-    try {
-      signedTx = await this.account.signTransaction(tx);
-    } catch (err: any) {
-      this.error = true;
-      this.log.error(err.message);
-    }
-    const txHash = signedTx?.transactionHash;
-    const rawTransaction = signedTx?.rawTransaction;
-
-    return { txHash, rawTransaction };
+  async transferHon(to: string, amount: ethers.BigNumber): Promise<any> {
+    this.contract.transfer(to, amount, {
+      gasLimit: "100000",
+    });
   }
 
   async getTransaction(
