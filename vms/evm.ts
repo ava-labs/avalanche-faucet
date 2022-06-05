@@ -219,7 +219,7 @@ export default class EVM {
       nonce
     );
 
-    await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(6000));
+    await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(3000));
 
     try {
       const timeout = setTimeout(() => {

@@ -23,7 +23,7 @@
       "DRIP_AMOUNT": 1000000000000,
       "RATELIMIT": {
         "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
+        "WINDOW_SIZE": 4320
       }
     }
   ]
