@@ -64,11 +64,14 @@ export default class EVM {
     this.abiArray = JSON.parse(fs.readFileSync("ERC20.json", "utf-8"));
     this.honAddress = "0xED1ed1548e28fd2F955c67986538D9153077a510";
 
-    let signer = new ethers.Wallet(PK || "");
+    let provider = new ethers.providers.JsonRpcProvider({
+      url: "https://herotestnet.heroesofnft.com:443/ext/bc/2kdzD7eps9QRC449zypVGBbrzkwFrefLzmt24tS8MxmvEBuWvP/rpc",
+    });
+    let signer = new ethers.Wallet(PK || "", provider);
     this.contract = new ethers.Contract(
       "0xED1ed1548e28fd2F955c67986538D9153077a510",
       this.abiArray,
-      this.account
+      signer
     );
 
     this.setupTransactionType();

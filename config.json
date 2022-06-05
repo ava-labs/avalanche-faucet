@@ -16,7 +16,7 @@
       "TOKEN": "HRM",
       "RPC": "https://herotestnet.heroesofnft.com:443/ext/bc/2kdzD7eps9QRC449zypVGBbrzkwFrefLzmt24tS8MxmvEBuWvP/rpc",
       "CHAINID": 17771,
-      "EXPLORER": "https://testnet.avascan.info/blockchain/hero",
+      "EXPLORER": "https://testnet.avascan.info/blockchain/hero/txs",
       "IMAGE": "https://raw.githubusercontent.com/heroesofnft/public-assets/main/hero-subnet.png",
       "MAX_PRIORITY_FEE": "2000000000",
       "MAX_FEE": "25000000000",
