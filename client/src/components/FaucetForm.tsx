@@ -293,7 +293,7 @@ const FaucetForm = (props: any) => {
                                     ?
                                     <ClipLoader size="20px" speedMultiplier={0.3} color="403F40"/>
                                     :
-                                    <span>Request {chainConfigs[chain || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[chain || 0]?.TOKEN}</span>
+                                    <span>Request {chainConfigs[chain || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[chain || 0]?.TOKEN} and 6000 HON</span>
                                 }
                             </button>
                         </div>
