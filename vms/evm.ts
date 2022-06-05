@@ -62,7 +62,7 @@ export default class EVM {
 
     this.abiArray = JSON.parse(fs.readFileSync("ERC20.json", "utf-8"));
     this.honAddress = "0xED1ed1548e28fd2F955c67986538D9153077a510";
-    this.contract = this.web3.eth.contract(this.abiArray).at(this.honAddress);
+    this.contract = this.web3.eth.Contract(this.abiArray).at(this.honAddress);
 
     this.setupTransactionType();
     this.recalibrateNonceAndBalance();
