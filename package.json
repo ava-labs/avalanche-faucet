@@ -21,9 +21,10 @@
     "dotenv": "^16.0.0",
     "express": "^4.18.1",
     "express-rate-limit": "^6.4.0",
+    "range_check": "^2.0.4",
     "totp-generator": "^0.0.13",
-    "typescript": "^4.6.4",
     "ts-node": "^10.7.0",
+    "typescript": "^4.6.4",
     "web3": "^1.7.3"
   },
   "devDependencies": {

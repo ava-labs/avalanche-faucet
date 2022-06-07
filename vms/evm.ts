@@ -1,5 +1,6 @@
 import { BN } from 'avalanche';
 import Web3 from 'web3';
+import Log from './Log';
 import { ConfigType, SendTokenResponse, RequestType } from './evmTypes';
 
 export default class EVM {
@@ -7,6 +8,7 @@ export default class EVM {
     account: any;
     NAME: string;
     DRIP_AMOUNT: number | BN;
+    LEGACY: boolean;
     MAX_PRIORITY_FEE: string;
     MAX_FEE: string;
     RECALIBRATE: number;
@@ -21,6 +23,8 @@ export default class EVM {
     waitingForRecalibration: boolean;
     waitArr: any[];
     queue: any[];
+    error: boolean;
+    log: Log;
 
     constructor(config: ConfigType, PK: string | undefined) {
         this.web3 = new Web3(config.RPC);
@@ -31,6 +35,9 @@ export default class EVM {
         this.MAX_PRIORITY_FEE = config.MAX_PRIORITY_FEE;
         this.MAX_FEE = config.MAX_FEE;
         this.RECALIBRATE = config.RECALIBRATE || 30;
+        this.LEGACY = false;
+
+        this.log = new Log(this.NAME)
 
         this.hasNonce = new Map();
         this.hasError = new Map();
@@ -47,6 +54,9 @@ export default class EVM {
         this.waitArr = [];
         this.queue = [];
 
+        this.error = false;
+
+        this.setupTransactionType();
         this.recalibrateNonceAndBalance();
 
         setInterval(() => {
@@ -54,7 +64,25 @@ export default class EVM {
         }, this.RECALIBRATE * 1000);
     }
 
+    async setupTransactionType() {
+        try {
+            const baseFee = (await this.web3.eth.getBlock('latest')).baseFeePerGas
+            if(baseFee == undefined) {
+                this.LEGACY = true;
+            }
+            this.error = false;
+        } catch(err: any) {
+            this.error = true;
+            this.log.error(err.message);
+        }
+    }
+
     async sendToken(receiver: string, cb: (param: SendTokenResponse) => void): Promise<void> {
+        if(this.error) {
+            cb({ status: 400, message: "Internal RPC error! Please try after sometime"});
+            return;
+        }
+
         if (!this.web3.utils.isAddress(receiver)) {
             cb({ status: 400, message: "Invalid address! Please try again." });
             return;
@@ -67,14 +95,23 @@ export default class EVM {
         const waitingForNonce = setInterval(async () => {
             if (this.hasNonce.get(receiver) != undefined) {
                 clearInterval(waitingForNonce);
+                
                 const nonce = this.hasNonce.get(receiver);
                 this.hasNonce.set(receiver, undefined);
+                
                 const { txHash } = await this.getTransaction(receiver, amount, nonce);
-                cb({ status: 200, message: `Transaction successful on ${this.NAME}!`, txHash });
+                
+                if(txHash) {
+                    cb({ status: 200, message: `Transaction successful on ${this.NAME}!`, txHash });
+                } else {
+                    cb({ status: 400, message: `Transaction failed on ${this.NAME}! Please try again.`});
+                }
             } else if(this.hasError.get(receiver) != undefined) {
                 clearInterval(waitingForNonce);
+                
                 const errorMessage = this.hasError.get(receiver)!;
                 this.hasError.set(receiver, undefined);
+                
                 cb({ status: 400, message: errorMessage })
             }
         }, 300);
@@ -93,14 +130,16 @@ export default class EVM {
 
     async updateNonceAndBalance() {
         this.isUpdating = true;
-
-        try{
+        try {
             [this.nonce, this.balance] = await Promise.all([
                 this.web3.eth.getTransactionCount(this.account.address, 'latest'),
                 this.web3.eth.getBalance(this.account.address)
             ])
 
             this.balance = new BN(this.balance);
+            
+            this.error && this.log.info("RPC server recovered!")
+            this.error = false; 
 
             this.isFetched = true;
             this.isUpdating = false;
@@ -110,7 +149,9 @@ export default class EVM {
                 this.putInQueue(this.waitArr.shift())
             }
         } catch(err: any) {
-            console.log("Error in function updateNonceAndBalance():", err.message)
+            this.isUpdating = false;
+            this.error = true;
+            this.log.error(err.message);
         }
     }
 
@@ -122,7 +163,7 @@ export default class EVM {
             this.balance = this.balance.sub(req.amount);
             this.executeQueue();
         } else {
-            console.log("Error: Faucet balance too low!");
+            this.log.warn("Faucet balance too low!")
             this.hasError.set(req.receiver, "Faucet balance too low! Please try after sometime.")
         }
     }
@@ -137,11 +178,18 @@ export default class EVM {
         const { rawTransaction } = await this.getTransaction(receiver, amount, nonce);
 
         try {
+            const timeout = setTimeout(() => {
+                this.log.error(`Timeout reached for transaction with nonce ${nonce}`)
+                this.pendingTxNonces.delete(nonce);
+            }, 10*1000);
+            
             await this.web3.eth.sendSignedTransaction(rawTransaction);
             this.pendingTxNonces.delete(nonce);
+            
+            clearTimeout(timeout)
         } catch (err: any) {
-            console.log(err.message);
-            console.log(`Error with nonce ${nonce} while sending signed transaction.`);
+            this.pendingTxNonces.delete(nonce);
+            this.log.error(err.message);
         }
     }
 
@@ -156,16 +204,40 @@ export default class EVM {
             value
         };
 
+        if(this.LEGACY) {
+            delete tx["maxPriorityFeePerGas"];
+            delete tx["maxFeePerGas"];
+            tx.gasPrice = await this.getAdjustedGasPrice();
+            tx.type = 0;
+        }
+
         let signedTx;
-        try{
+        try {
             signedTx = await this.account.signTransaction(tx);
         } catch(err: any) {
-            console.log(err.message)
+            this.error = true;
+            this.log.error(err.message);
         }
-        const txHash = signedTx.transactionHash;
-        const rawTransaction = signedTx.rawTransaction;
+        const txHash = signedTx?.transactionHash;
+        const rawTransaction = signedTx?.rawTransaction;
 
         return { txHash, rawTransaction };
+    }
+
+    async getGasPrice(): Promise<number> {
+        return this.web3.eth.getGasPrice();
+    }
+
+    async getAdjustedGasPrice(): Promise<number> {
+        try {
+            const gasPrice = await this.getGasPrice()
+            const adjustedGas = Math.floor(gasPrice * 1.25)
+            return Math.min(adjustedGas, parseInt(this.MAX_FEE))
+        } catch(err: any) {
+            this.error = true;
+            this.log.error(err.message);
+            return 0;
+        }
     }
 
     async recalibrateNonceAndBalance(): Promise<void> {
@@ -176,6 +248,7 @@ export default class EVM {
             this.recalibrate = true;
             this.waitingForRecalibration = false;
             this.pendingTxNonces.clear();
+
             this.updateNonceAndBalance();
         } else {
             const recalibrateNow = setInterval(() => {

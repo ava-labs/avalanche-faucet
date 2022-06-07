@@ -1,4 +1,5 @@
 import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
+import { searchIP } from 'range_check';
 import { RateLimiterConfig } from '../types';
 
 export class RateLimiter {
@@ -18,11 +19,11 @@ export class RateLimiter {
             }
             
             rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG));
-
-            if(RATELIMIT.REVERSE_PROXIES) {
-                app.set('trust proxy', RATELIMIT.REVERSE_PROXIES);
-            }
         });
+
+        if(configs[0]?.RATELIMIT?.REVERSE_PROXIES) {
+            app.set('trust proxy', configs[0]?.RATELIMIT?.REVERSE_PROXIES)
+        }
 
         app.use(this.PATH, (req: any, res: any, next: any) => {
             if(this.PATH == '/api/sendToken' && req.body.chain) {
@@ -44,10 +45,18 @@ export class RateLimiter {
                 message: `Too many requests. Please try again after ${config.WINDOW_SIZE} minutes`
             },
             keyGenerator: (req, res) => {
-                return req.ip + req.body?.chain
+                const ip = this.getIP(req);
+                if(ip != null) {
+                    return ip + req.body?.chain;
+                }
             }
         });
 
         return limiter;
+    }
+
+    getIP(req: any) {
+        const ip = req.headers['cf-connecting-ip'] || req.ip;
+        return searchIP(ip);
     }
 }

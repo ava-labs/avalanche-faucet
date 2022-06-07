@@ -37,12 +37,12 @@ export default function AddNetwork(props: any) {
         <div className='footer-buttons'>
             <button className="add-network" onClick={() => {addNetwork(props.config)}}>
                 <img style={{width: "25px", height: "25px", marginRight: "5px"}} src="/memtamask.png"/>
-                Add Chain to Metamask
+                Add Subnet to Metamask
             </button>
 
             <button className="add-network" onClick={() => {window.open(`${props.config.EXPLORER}`, '_blank')}}>
                 <img style={{width: "25px", height: "25px"}} src="/avaxblack.png"/>
-                Go to Block Explorer
+                View Block Explorer
             </button>
         </div>
     )
