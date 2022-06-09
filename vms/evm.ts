@@ -92,7 +92,14 @@ export default class EVM {
             return;
         }
 
-        const amount: BN | number = this.DRIP_AMOUNT;
+        let amount: BN | number = this.DRIP_AMOUNT;
+
+        if(this.contracts.get(id)) {
+            const dripAmount = this.contracts.get(id).config.DRIP_AMOUNT;
+            if(dripAmount) {
+                amount = (new BN(dripAmount)).mul(new BN(1e9))
+            }
+        }
 
         this.processRequest({ receiver, amount, id });
 

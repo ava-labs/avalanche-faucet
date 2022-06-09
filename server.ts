@@ -82,18 +82,23 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 
 router.get('/getChainConfigs', (req: any, res: any) => {
     const configs = [...evmchains, ...erc20tokens]
-    res.send(configs)
+    res.send({configs})
 });
 
 router.get('/faucetAddress', (req: any, res: any) => {
-    res.send(evms[req.query?.chain!]?.instance?.account?.address)
+    res.send({ address: evms[req.query?.chain!]?.instance?.account?.address })
 })
 
 router.get('/getBalance', (req: any, res: any) => {
     let chain = req.query?.chain;
     let erc20 = req.query?.erc20;
-    let balance = evms[chain]?.instance?.getBalance(erc20)?.div(new BN(1e9))?.toString();
-    res.send(balance)
+    let balance = evms[chain]?.instance?.getBalance(erc20)
+    if(balance) {
+        balance = balance.div(new BN(1e9))?.toString();
+    } else {
+        balance = 0;
+    }
+    res.status(200).send({ balance })
 })
 
 app.use('/api', router);

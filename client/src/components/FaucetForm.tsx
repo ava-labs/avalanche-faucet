@@ -83,7 +83,7 @@ const FaucetForm = (props: any) => {
     // API calls
     async function updateChainConfigs() {
         const response = await props.axios.get(props.config.api.getChainConfigs);
-        setChainConfigs(response?.data);
+        setChainConfigs(response?.data?.configs);
     }
 
     function getChainParams() {
@@ -105,8 +105,8 @@ const FaucetForm = (props: any) => {
             let { chain, erc20 } = getChainParams()
             const response = await props.axios.get(props.config.api.getBalance, { params: {chain, erc20} });
         
-            if(response?.data || response?.data == 0) {
-                setBalance(response?.data);
+            if(response?.data?.balance || response?.data?.balance == 0) {
+                setBalance(response?.data?.balance);
             }
         }
     }
@@ -117,7 +117,7 @@ const FaucetForm = (props: any) => {
             const response = await props.axios.get(props.config.api.faucetAddress, {params: { chain }});
             
             if(response?.data) {
-                setFaucetAddress(response?.data);
+                setFaucetAddress(response?.data?.address);
             }
         }
     }

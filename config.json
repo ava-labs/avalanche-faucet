@@ -115,6 +115,7 @@
             "NAME": "Wrapped WAGMI",
             "TOKEN": "WWGMI",
             "CONTRACTADDRESS": "0x3Ee7094DADda15810F191DD6AcF7E4FFa37571e4",
+            "DRIP_AMOUNT": 1000000000,
             "GASLIMIT": "150000",
             "DECIMALS": 18,
             "RATELIMIT": {
