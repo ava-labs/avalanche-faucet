@@ -9,7 +9,7 @@ import EVM from './vms/evm'
 
 import { SendTokenResponse } from './types'
 
-import { evmchains, GLOBAL_RL } from './config.json'
+import { evmchains, erc20tokens, GLOBAL_RL } from './config.json'
 import { BN } from 'avalanche'
 
 dotenv.config()
@@ -22,11 +22,34 @@ app.use(cors())
 app.use(bodyParser.json())
 
 new RateLimiter(app, [GLOBAL_RL]);
-new RateLimiter(app, evmchains);
+
+new RateLimiter(app, [
+    ...evmchains,
+    ...erc20tokens
+]);
 
 const captcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!);
 
 let evms: any = {};
+
+const getChainByID = (chains: any, id: string): any => {
+    let reply;
+    chains.forEach((chain: any) => {
+        if(chain.ID == id) {
+            reply = chain;
+        }
+    });
+    return reply;
+}
+
+const populateConfig = (child: any, parent: any) => {
+    Object.keys(parent || {}).forEach((key) => {
+        if(!child[key]) {
+            child[key] = parent[key];
+        }
+    })
+    return child;
+}
 
 evmchains.forEach((chain) => {
     const chainInstance = new EVM(chain, process.env[chain.ID] || process.env.PK);
@@ -37,18 +60,29 @@ evmchains.forEach((chain) => {
     }
 });
 
+erc20tokens.forEach((token, i) => {
+    if(token.HOSTID) {
+        token = populateConfig(token, getChainByID(evmchains, token.HOSTID))
+    }
+
+    erc20tokens[i] = token;
+    evms[getChainByID(evmchains, token.HOSTID).ID].instance.addERC20Contract(token);
+});
+
 router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     const address = req.body?.address;
     const chain = req.body?.chain;
+    const erc20 = req.body?.erc20
 
-    evms[chain]?.instance?.sendToken(address, (data: SendTokenResponse) => {
+    evms[chain]?.instance?.sendToken(address, erc20, (data: SendTokenResponse) => {
         const { status, message, txHash } = data;
         res.status(status).send({message, txHash})
     });
 });
 
 router.get('/getChainConfigs', (req: any, res: any) => {
-    res.send(evmchains)
+    const configs = [...evmchains, ...erc20tokens]
+    res.send(configs)
 });
 
 router.get('/faucetAddress', (req: any, res: any) => {
@@ -57,7 +91,8 @@ router.get('/faucetAddress', (req: any, res: any) => {
 
 router.get('/getBalance', (req: any, res: any) => {
     let chain = req.query?.chain;
-    let balance = evms[chain]?.instance?.balance?.div(new BN(1e9))?.toString();
+    let erc20 = req.query?.erc20;
+    let balance = evms[chain]?.instance?.getBalance(erc20)?.div(new BN(1e9))?.toString();
     res.send(balance)
 })
 

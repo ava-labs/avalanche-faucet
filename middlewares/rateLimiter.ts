@@ -27,7 +27,7 @@ export class RateLimiter {
 
         app.use(this.PATH, (req: any, res: any, next: any) => {
             if(this.PATH == '/api/sendToken' && req.body.chain) {
-                return rateLimiters.get(req.body.chain)(req, res, next)
+                return rateLimiters.get(req.body.erc20 ? req.body.erc20 : req.body.chain)(req, res, next)
             } else {
                 return rateLimiters.get(configs[0].ID)(req, res, next)
             }

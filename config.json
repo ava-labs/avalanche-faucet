@@ -107,5 +107,20 @@
                 "WINDOW_SIZE": 1440
             }
         }
+    ],
+    "erc20tokens": [
+        {
+            "ID": "WWGMI",
+            "HOSTID": "WAGMI",
+            "NAME": "Wrapped WAGMI",
+            "TOKEN": "WWGMI",
+            "CONTRACTADDRESS": "0x3Ee7094DADda15810F191DD6AcF7E4FFa37571e4",
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 2,
+                "WINDOW_SIZE": 1440
+            }
+        }
     ]
 }

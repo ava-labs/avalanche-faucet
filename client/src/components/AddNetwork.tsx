@@ -32,6 +32,30 @@ const addNetwork = async (config: any) => {
     });      
 }
 
+const addAsset = async (config: any) => {
+    if(!config) {
+        return;
+    }
+    if(window.ethereum == undefined) {
+        window.open('https://metamask.io/download', '_blank');
+    }
+
+    console.log(config)
+    await window?.ethereum?.request({
+        method: 'wallet_watchAsset',
+        params: {
+            type: 'ERC20',
+            options: {
+                address: config.CONTRACTADDRESS,
+                symbol: config.TOKEN,
+                decimals: config.DECIMALS || 18
+            }
+        }
+    }).catch((error: any) => {
+        console.log(error)
+    });  
+}
+
 export default function AddNetwork(props: any) {
     return (
         <div className='footer-buttons'>
@@ -44,6 +68,15 @@ export default function AddNetwork(props: any) {
                 <img style={{width: "25px", height: "25px"}} src="/avaxblack.png"/>
                 View Block Explorer
             </button>
+
+            {
+                props?.config?.CONTRACTADDRESS
+                &&
+                <button className="add-network" onClick={() => {addAsset(props.config)}}>
+                    <img style={{width: "25px", height: "25px", marginRight: "5px"}} src={props?.config?.IMAGE}/>
+                    Add Asset to Metamask
+                </button>
+            }
         </div>
     )
 }

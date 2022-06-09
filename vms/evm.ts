@@ -1,6 +1,8 @@
 import { BN } from 'avalanche';
 import Web3 from 'web3';
 import Log from './Log';
+import ERC20Interface from './ERC20Interface.json';
+
 import { ConfigType, SendTokenResponse, RequestType } from './evmTypes';
 
 export default class EVM {
@@ -25,10 +27,12 @@ export default class EVM {
     queue: any[];
     error: boolean;
     log: Log;
+    contracts: any;
 
     constructor(config: ConfigType, PK: string | undefined) {
         this.web3 = new Web3(config.RPC);
         this.account = this.web3.eth.accounts.privateKeyToAccount(PK);
+        this.contracts = new Map();
 
         this.NAME = config.NAME;
         this.DRIP_AMOUNT = (new BN(config.DRIP_AMOUNT)).mul(new BN(1e9));
@@ -77,7 +81,7 @@ export default class EVM {
         }
     }
 
-    async sendToken(receiver: string, cb: (param: SendTokenResponse) => void): Promise<void> {
+    async sendToken(receiver: string, id: string | undefined, cb: (param: SendTokenResponse) => void): Promise<void> {
         if(this.error) {
             cb({ status: 400, message: "Internal RPC error! Please try after sometime"});
             return;
@@ -90,16 +94,16 @@ export default class EVM {
 
         const amount: BN | number = this.DRIP_AMOUNT;
 
-        this.processRequest({ receiver, amount });
+        this.processRequest({ receiver, amount, id });
 
         const waitingForNonce = setInterval(async () => {
-            if (this.hasNonce.get(receiver) != undefined) {
+            if (this.hasNonce.get(receiver+id) != undefined) {
                 clearInterval(waitingForNonce);
                 
-                const nonce = this.hasNonce.get(receiver);
-                this.hasNonce.set(receiver, undefined);
+                const nonce = this.hasNonce.get(receiver+id);
+                this.hasNonce.set(receiver+id, undefined);
                 
-                const { txHash } = await this.getTransaction(receiver, amount, nonce);
+                const { txHash } = await this.getTransaction(receiver, amount, nonce, id);
                 
                 if(txHash) {
                     cb({ status: 200, message: `Transaction successful on ${this.NAME}!`, txHash });
@@ -128,13 +132,33 @@ export default class EVM {
         }
     }
 
+    getBalance(id?: string) {
+        if(id && this.contracts.get(id)) {
+            return this.getERC20Balance(id);
+        } else {
+            return this.balance;
+        }
+    }
+
+    getERC20Balance(id: string) {
+        return this.contracts.get(id)?.balance;
+    }
+
+    async fetchERC20Balance() {
+        this.contracts.forEach(async (contract: any) => {
+            contract.balance = new BN(await contract.methods.balanceOf(this.account.address).call());
+        });
+    }
+
     async updateNonceAndBalance() {
         this.isUpdating = true;
         try {
             [this.nonce, this.balance] = await Promise.all([
                 this.web3.eth.getTransactionCount(this.account.address, 'latest'),
-                this.web3.eth.getBalance(this.account.address)
-            ])
+                this.web3.eth.getBalance(this.account.address),
+            ]);
+
+            await this.fetchERC20Balance()
 
             this.balance = new BN(this.balance);
             
@@ -155,12 +179,27 @@ export default class EVM {
         }
     }
 
+    balanceCheck(req: RequestType) {
+        const balance = this.getBalance(req.id);
+        if(req.id && this.contracts.get(req.id)) {
+            if(this.contracts.get(req.id).balance.gt(req.amount)) {
+                this.contracts.get(req.id).balance = this.contracts.get(req.id).balance.sub(req.amount)
+                return true;
+            }
+        } else {
+            if(this.balance.gt(req.amount)) {
+                this.balance = this.balance.sub(req.amount)
+                return true;
+            }
+        }
+        return false;
+    }
+
     async putInQueue(req: RequestType): Promise<void> {
-        if (this.balance.gt(req.amount)) {
+        if (this.balanceCheck(req)) {
             this.queue.push({ ...req, nonce: this.nonce });
-            this.hasNonce.set(req.receiver, this.nonce);
+            this.hasNonce.set(req.receiver+req.id, this.nonce);
             this.nonce++;
-            this.balance = this.balance.sub(req.amount);
             this.executeQueue();
         } else {
             this.log.warn("Faucet balance too low!")
@@ -169,13 +208,13 @@ export default class EVM {
     }
 
     async executeQueue(): Promise<void> {
-        const { amount, receiver, nonce } = this.queue.shift();
-        this.sendTokenUtil(amount, receiver, nonce);
+        const { amount, receiver, nonce, id } = this.queue.shift();
+        this.sendTokenUtil(amount, receiver, nonce, id);
     }
 
-    async sendTokenUtil(amount: number, receiver: string, nonce: number): Promise<void> {
+    async sendTokenUtil(amount: number, receiver: string, nonce: number, id?: string): Promise<void> {
         this.pendingTxNonces.add(nonce);
-        const { rawTransaction } = await this.getTransaction(receiver, amount, nonce);
+        const { rawTransaction } = await this.getTransaction(receiver, amount, nonce, id);
 
         try {
             const timeout = setTimeout(() => {
@@ -193,7 +232,7 @@ export default class EVM {
         }
     }
 
-    async getTransaction(to: string, value: BN | number, nonce: number | undefined): Promise<any> {
+    async getTransaction(to: string, value: BN | number, nonce: number | undefined, id?: string): Promise<any> {
         const tx: any = {
             type: 2,
             gas: "21000",
@@ -209,6 +248,14 @@ export default class EVM {
             delete tx["maxFeePerGas"];
             tx.gasPrice = await this.getAdjustedGasPrice();
             tx.type = 0;
+        }
+
+        if(id) {
+            const txObject = this.contracts.get(id)?.methods.transfer(to, value);
+            tx.data = txObject.encodeABI();
+            tx.value = 0;
+            tx.to = this.contracts.get(id)?.config.CONTRACTADDRESS;
+            tx.gas = this.contracts.get(id)?.config.GASLIMIT;
         }
 
         let signedTx;
@@ -259,5 +306,13 @@ export default class EVM {
                 }
             }, 300)
         }
+    }
+
+    async addERC20Contract(config: any) {
+        this.contracts.set(config.ID, {
+            methods: (new this.web3.eth.Contract(ERC20Interface, config.CONTRACTADDRESS)).methods,
+            balance: 0,
+            config
+        })
     }
 }

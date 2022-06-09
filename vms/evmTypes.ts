@@ -18,5 +18,6 @@ export type SendTokenResponse = {
 
 export type RequestType = {
     receiver: string,
-    amount: BN | number 
+    amount: BN | number,
+    id?: string
 }

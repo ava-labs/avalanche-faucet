@@ -52,6 +52,7 @@ const FaucetForm = (props: any) => {
             let item =  <div className='select-dropdown'>
                 <img src = { chain.IMAGE } />
                 { chain.NAME }
+                { chain.CONTRACTADDRESS && <span style={{color: 'rgb(180, 180, 183)', fontSize: "12px", marginLeft: "5px"}}>ERC20</span>}
             </div>
 
             newOptions.push({label: item, value: i});
@@ -70,7 +71,9 @@ const FaucetForm = (props: any) => {
             updateAddress(query?.address);
         }
 
-        if(typeof query?.subnet == "string") {
+        if(typeof query?.erc20 == "string") {
+            setChain(chainToIndex(query.erc20))
+        } else if(typeof query?.subnet == "string") {
             setChain(chainToIndex(query.subnet))
         } else {
             setChain(0)
@@ -83,9 +86,24 @@ const FaucetForm = (props: any) => {
         setChainConfigs(response?.data);
     }
 
+    function getChainParams() {
+        let params = {
+            chain: "",
+            erc20: "" 
+        };
+        if(chainConfigs[chain!]?.HOSTID) {
+            params.chain = chainConfigs[chain!]?.HOSTID;
+            params.erc20 = chainConfigs[chain!]?.ID;
+        } else {
+            params.chain = chainConfigs[chain!]?.ID;
+        }
+        return params;
+    }
+
     async function updateBalance() {
         if((chain || chain == 0) && chainConfigs.length > 0) {
-            const response = await props.axios.get(props.config.api.getBalance, {params: {chain: chainConfigs[chain!]?.ID}});
+            let { chain, erc20 } = getChainParams()
+            const response = await props.axios.get(props.config.api.getBalance, { params: {chain, erc20} });
         
             if(response?.data || response?.data == 0) {
                 setBalance(response?.data);
@@ -95,7 +113,8 @@ const FaucetForm = (props: any) => {
 
     async function updateFaucetAddress() {
         if((chain || chain == 0) && chainConfigs.length > 0) {
-            const response = await props.axios.get(props.config.api.faucetAddress, {params: {chain: chainConfigs[chain!]?.ID}});
+            let { chain } = getChainParams();
+            const response = await props.axios.get(props.config.api.faucetAddress, {params: { chain }});
             
             if(response?.data) {
                 setFaucetAddress(response?.data);
@@ -158,10 +177,13 @@ const FaucetForm = (props: any) => {
 
             const token = await getCaptchaToken();
 
+            let { chain, erc20 } = getChainParams()
+
             const response = await props.axios.post(props.config.api.sendToken, {
-                address: address,
-                token: token,
-                chain: chainConfigs[chain || 0].ID
+                address,
+                token,
+                chain,
+                erc20
             });
             data = response?.data;
         } catch(err: any) {
