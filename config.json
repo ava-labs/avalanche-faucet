@@ -106,6 +106,22 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "PirateVerse",
+            "NAME": "PirateVerseTestnet",
+            "TOKEN": "PVF",
+            "RPC": "https://rpc-testnet.pirateverse.finance/",
+            "CHAINID": 56766,
+            "EXPLORER": "https://testnet.piratescan.io",
+            "IMAGE": "/pirateverse.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ]
 }
