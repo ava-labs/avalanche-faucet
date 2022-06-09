@@ -55,7 +55,7 @@ const FaucetForm = (props: any) => {
                 { chain.CONTRACTADDRESS && <span style={{color: 'rgb(180, 180, 183)', fontSize: "12px", marginLeft: "5px"}}>ERC20</span>}
             </div>
 
-            newOptions.push({label: item, value: i});
+            newOptions.push({label: item, value: i, search: chain.NAME});
         });
 
         setOptions(newOptions)
@@ -210,15 +210,27 @@ const FaucetForm = (props: any) => {
             }
         }),
         menu: (base: any) => ({
-        ...base,
-        borderRadius: 0,
-                    marginTop: 0,
-                    background: "rgb(45, 45, 45)",
-                    color: "white"
+            ...base,
+            borderRadius: 0,
+            marginTop: 0,
+            background: "rgb(45, 45, 45)",
+            color: "white"
         }),
         menuList: (base: any) => ({
             ...base,
-            padding: 0
+            padding: 0,
+            "::-webkit-scrollbar": {
+                width: "2px"
+            },
+            "::-webkit-scrollbar-track": {
+                background: "black"
+            },
+            "::-webkit-scrollbar-thumb": {
+                background: "#888"
+            },
+            "::-webkit-scrollbar-thumb:hover": {
+                background: "#555"
+            }
         }),
         option: (styles: any, {isFocused, isSelected}: any) => ({
             ...styles,
@@ -233,6 +245,10 @@ const FaucetForm = (props: any) => {
                     undefined,
             zIndex: 1
         }),
+        input: (base: any) => ({
+            ...base,
+            color: "white"
+        }),
         singleValue: (base: any) => ({
             ...base,
             color: "white"
@@ -246,6 +262,7 @@ const FaucetForm = (props: any) => {
                 value={options[chain!]}
                 onChange={updateChain}
                 styles={customStyles}
+                getOptionValue ={(option: any)=>option.search}
             />
         </div>
     )

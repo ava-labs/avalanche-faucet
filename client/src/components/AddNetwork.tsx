@@ -73,7 +73,7 @@ export default function AddNetwork(props: any) {
                 props?.config?.CONTRACTADDRESS
                 &&
                 <button className="add-network" onClick={() => {addAsset(props.config)}}>
-                    <img style={{width: "25px", height: "25px", marginRight: "5px"}} src={props?.config?.IMAGE}/>
+                    <img style={{width: "25px", height: "25px", marginRight: "5px", borderRadius: "25px"}} src={props?.config?.IMAGE}/>
                     Add Asset to Metamask
                 </button>
             }
