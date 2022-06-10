@@ -7,6 +7,7 @@ import './styles/FaucetForm.css'
 import ReCaptcha from './ReCaptcha';
 import FooterBox from './FooterBox';
 import queryString from 'query-string';
+import ERC20Switch from './ERC20Switch';
 
 const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null);
@@ -17,6 +18,7 @@ const FaucetForm = (props: any) => {
     const [options, setOptions] = useState([]);
     const [balance, setBalance] = useState(0);
     const [shouldAllowSend, setShouldAllowSend] = useState(false);
+    const [isERC20, setIsERC20] = useState(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [sendTokenResponse, setSendTokenResponse] = useState<any>({
         txHash: null,
@@ -49,34 +51,76 @@ const FaucetForm = (props: any) => {
         let newOptions: any = []
         
         chainConfigs?.forEach((chain: any, i: number) => {
-            let item =  <div className='select-dropdown'>
+            let item = <div className='select-dropdown'>
                 <img src = { chain.IMAGE } />
                 { chain.NAME }
-                { chain.CONTRACTADDRESS && <span style={{color: 'rgb(180, 180, 183)', fontSize: "12px", marginLeft: "5px"}}>ERC20</span>}
+
+                {
+                    chain.CONTRACTADDRESS &&
+                    <span style={{color: 'rgb(180, 180, 183)', fontSize: "10px", marginLeft: "5px"}}>
+                        {
+                            chainConfigs[chainToIndex(chain.HOSTID) || 0]?.NAME
+                        }
+                    </span>
+                }
             </div>
 
-            newOptions.push({label: item, value: i, search: chain.NAME});
+            if(isERC20 && chain.CONTRACTADDRESS) {
+                newOptions.push({label: item, value: i, search: chain.NAME});
+            } else if(!isERC20 && !chain.CONTRACTADDRESS) {
+                newOptions.push({label: item, value: i, search: chain.NAME});
+            }
         });
-
-        setOptions(newOptions)
-    }, [chainConfigs]);
+        setOptions(newOptions);
+        console.log(newOptions[0]?.value, chain)
+        setChain(newOptions[0]?.value)
+    }, [chainConfigs, isERC20]);
 
     useEffect(() => {
         updateFaucetAddress()
     }, [chain, chainConfigs]);
 
+    /*
+    1. type=erc20 - only erc20 tokens in the list
+    2. subnet=<id> - default selected subnet (only networks in the list)
+    3. erc20=<id> - default selected id (only erc20 in the list)
+
+    1&2 - erc20 tokens of only subnet id in the list
+    1&3 - effect of 3
+    2&3 - effect of 3
+    */
+
     useEffect(() => {
         const query = queryString.parse(window.location.search);
-        if(typeof query?.address == "string") {
+        
+        const { address, type, subnet, erc20 } = query;
+        
+        if(typeof address == "string") {
             updateAddress(query?.address);
         }
 
-        if(typeof query?.erc20 == "string") {
-            setChain(chainToIndex(query.erc20))
-        } else if(typeof query?.subnet == "string") {
-            setChain(chainToIndex(query.subnet))
+        if(typeof type == "string") {
+            if(type == "erc20") {
+
+            }
+        }
+
+        if(typeof query?.type == "string") {
+            if(query?.type == "erc20") {
+                setIsERC20(true);
+            } else if(typeof query?.subnet == "string") {
+                setChain(chainToIndex(query.subnet))
+            } else {
+                setChain(0)
+            }
         } else {
-            setChain(0)
+            if(typeof query?.erc20 == "string") {
+                setIsERC20(true)
+            } else if(typeof query?.subnet == "string") {
+                setChain(chainToIndex(query.subnet))
+            } else {
+                setChain(0)
+            }
         }
     }, [window.location.search, chainConfigs]);
 
@@ -198,6 +242,16 @@ const FaucetForm = (props: any) => {
         setIsLoading(false);
     }
 
+    const getOptionByValue = (value: any) => {
+        let selectedOption: any = options[0];
+        options.forEach((option: any) => {
+            if(option.value == value) {
+                selectedOption = option;
+            }
+        });
+        return selectedOption;
+    }
+
     const customStyles = {
         control: (base: any, state: { isFocused: any; }) => ({
             ...base,
@@ -259,7 +313,7 @@ const FaucetForm = (props: any) => {
         <div style={{width: "100%", marginTop: "5px"}}>
             <Select
                 options={options}
-                value={options[chain!]}
+                value={getOptionByValue(chain)}
                 onChange={updateChain}
                 styles={customStyles}
                 getOptionValue ={(option: any)=>option.search}
@@ -297,11 +351,13 @@ const FaucetForm = (props: any) => {
                 <div className='box-content'>
                     <div className='box-header'>
                         <span>
-                            <span style={{color: "grey"}}>Select Network</span>
+                            <span style={{color: "grey"}}>Select { isERC20 ? "Token" : "Network" }</span>
                             <span style={{color: "grey"}}>Faucet balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[chain!]?.TOKEN}</span>
                         </span>
 
                         <ChainDropdown />
+
+                        <ERC20Switch isERC20={isERC20} setIsERC20={setIsERC20}/>
                     </div>
 
                     {
@@ -355,7 +411,7 @@ const FaucetForm = (props: any) => {
                 </div>
             </div>
 
-            <FooterBox chain={chain} chainConfigs={chainConfigs} faucetAddress={faucetAddress}/>
+            <FooterBox chain={chain} chainConfigs={chainConfigs} chainToIndex={chainToIndex} faucetAddress={faucetAddress}/>
         </div>
 
 
