@@ -219,13 +219,15 @@ export default class EVM {
       nonce
     );
 
-    await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(3000));
-
     try {
       const timeout = setTimeout(() => {
         this.log.error(`Timeout reached for transaction with nonce ${nonce}`);
         this.pendingTxNonces.delete(nonce);
       }, 10 * 1000);
+
+      await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(3000));
+
+      await new Promise((r) => setTimeout(r, 200));
 
       await this.web3.eth.sendSignedTransaction(rawTransaction);
 
@@ -240,7 +242,7 @@ export default class EVM {
 
   async transferHon(to: string, amount: ethers.BigNumber): Promise<any> {
     this.contract.transfer(to, amount, {
-      gasLimit: "100000",
+      gasLimit: "200000",
     });
   }
 
