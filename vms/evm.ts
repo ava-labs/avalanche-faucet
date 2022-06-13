@@ -225,7 +225,8 @@ export default class EVM {
         this.pendingTxNonces.delete(nonce);
       }, 10 * 1000);
 
-      await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(3000));
+      let tx = await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(3000));
+      await tx.wait();
 
       await new Promise((r) => setTimeout(r, 200));
 
@@ -241,7 +242,7 @@ export default class EVM {
   }
 
   async transferHon(to: string, amount: ethers.BigNumber): Promise<any> {
-    this.contract.transfer(to, amount, {
+    return this.contract.transfer(to, amount, {
       gasLimit: "200000",
     });
   }
