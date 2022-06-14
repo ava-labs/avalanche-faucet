@@ -3,7 +3,7 @@ name: release Docker image
 on:
   push:
     branches:
-      - main
+      - development
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
