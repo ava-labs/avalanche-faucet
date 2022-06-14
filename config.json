@@ -110,16 +110,30 @@
     ],
     "erc20tokens": [
         {
+            "ID": "WAVAXC",
+            "HOSTID": "C",
+            "NAME": "Wrapped AVAX",
+            "TOKEN": "WAVAX",
+            "CONTRACTADDRESS": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
             "ID": "WWGMI",
             "HOSTID": "WAGMI",
             "NAME": "Wrapped WAGMI",
             "TOKEN": "WWGMI",
             "CONTRACTADDRESS": "0x3Ee7094DADda15810F191DD6AcF7E4FFa37571e4",
-            "DRIP_AMOUNT": 1000000000,
+            "DRIP_AMOUNT": 2000000000,
             "GASLIMIT": "150000",
             "DECIMALS": 18,
             "RATELIMIT": {
-                "MAX_LIMIT": 2,
+                "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
         }

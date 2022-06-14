@@ -285,7 +285,7 @@ export default class EVM {
             tx.type = 0
         }
 
-        if(id) {
+        if(this.contracts.get(id)) {
             const txObject = this.contracts.get(id)?.methods.transfer(to, value)
             tx.data = txObject.encodeABI()
             tx.value = 0
