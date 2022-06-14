@@ -220,13 +220,14 @@ export default class EVM {
     );
 
     try {
+
+      let tx = await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(3000));
+      await tx.wait();
+
       const timeout = setTimeout(() => {
         this.log.error(`Timeout reached for transaction with nonce ${nonce}`);
         this.pendingTxNonces.delete(nonce);
       }, 20 * 1000);
-
-      let tx = await this.transferHon(receiver, ethers.constants.WeiPerEther.mul(3000));
-      await tx.wait();
 
       await new Promise((r) => setTimeout(r, 200));
 
