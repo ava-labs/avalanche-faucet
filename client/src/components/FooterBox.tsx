@@ -1,21 +1,21 @@
-import AddNetwork from "./AddNetwork";
+import AddNetwork from "./AddNetwork"
 
-import './styles/FooterBox.css';
-import './styles/CopyToClipboard.css';
+import './styles/FooterBox.css'
+import './styles/CopyToClipboard.css'
 
-function copyToClipboard() {
-    let copyText = document.getElementById("return-address-input") as HTMLInputElement;
-    copyText.select();
-    copyText.setSelectionRange(0, 100);
-    navigator.clipboard.writeText(copyText.value);
+function copyToClipboard(): void {
+    let copyText = document.getElementById("return-address-input") as HTMLInputElement
+    copyText.select()
+    copyText.setSelectionRange(0, 100)
+    navigator.clipboard.writeText(copyText.value)
     
-    let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement;
-    tooltip.innerHTML = "Copied";
+    let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement
+    tooltip.innerHTML = "Copied"
 }
 
-function outFunc() {
-    let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement;
-    tooltip.innerHTML = "Copy to clipboard";
+function outFunc(): void {
+    let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement
+    tooltip.innerHTML = "Copy to clipboard"
 }
 
 export default function FooterBox(props: any) {
@@ -25,7 +25,7 @@ export default function FooterBox(props: any) {
                 <div style={{fontSize: "13px", padding: "20px"}}>
                     Use the buttons below to add <b>{props.chainConfigs[props.chain!]?.NAME}</b> to your browser wallet extension
                     or visit the Subnet's block explorer.
-                    <AddNetwork config={props.chainConfigs[props.chain!]}/>
+                    <AddNetwork config={props.chainConfigs[props.chain!]} token={props.chainConfigs[props.token!]}/>
                 </div>
             </div>
             
@@ -42,7 +42,7 @@ export default function FooterBox(props: any) {
                         <input id="return-address-input" value={props.faucetAddress} disabled/>
 
                         <span style={{marginRight: "10px", marginTop: "2px"}}>
-                            <img style={{width: "20px", height: "20px"}} src="https://img.icons8.com/fluency-systems-regular/48/ffffff/copy.png"/>
+                            <img alt="copy" style={{width: "20px", height: "20px"}} src="https://img.icons8.com/fluency-systems-regular/48/ffffff/copy.png"/>
                         </span>
                     </div>
                 </div>

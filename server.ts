@@ -3,79 +3,152 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import path from 'path'
 import dotenv from 'dotenv'
+import { BN } from 'avalanche'
 
 import { RateLimiter, VerifyCaptcha } from './middlewares'
 import EVM from './vms/evm'
 
-import { SendTokenResponse } from './types'
+import {
+    SendTokenResponse,
+    ChainType,
+    EVMInstanceAndConfig,
+    ERC20Type
+} from './types'
 
-import { evmchains, GLOBAL_RL } from './config.json'
-import { BN } from 'avalanche'
+import {
+    evmchains,
+    erc20tokens,
+    GLOBAL_RL
+} from './config.json'
 
 dotenv.config()
 
 const app: any = express()
-const router: any = express.Router();
+const router: any = express.Router()
 
-app.use(express.static(path.join(__dirname, "client")));
+app.use(express.static(path.join(__dirname, "client")))
 app.use(cors())
 app.use(bodyParser.json())
 
-new RateLimiter(app, [GLOBAL_RL]);
-new RateLimiter(app, evmchains);
+new RateLimiter(app, [GLOBAL_RL])
 
-const captcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!);
+new RateLimiter(app, [
+    ...evmchains,
+    ...erc20tokens
+])
 
-let evms: any = {};
+const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!)
 
-evmchains.forEach((chain) => {
-    const chainInstance = new EVM(chain, process.env[chain.ID] || process.env.PK);
+let evms = new Map<string, EVMInstanceAndConfig>()
+
+// Get the complete config object from the array of config objects (chains) with ID as id
+const getChainByID = (chains: ChainType[], id: string): ChainType | undefined => {
+    let reply: ChainType | undefined
+    chains.forEach((chain: ChainType): void => {
+        if(chain.ID == id) {
+            reply = chain
+        }
+    })
+    return reply
+}
+
+// Populates the missing config keys of the child using the parent's config
+const populateConfig = (child: any, parent: any): any => {
+    Object.keys(parent || {}).forEach((key) => {
+        if(!child[key]) {
+            child[key] = parent[key]
+        }
+    })
+    return child
+}
+
+// Setting up instance for EVM chains
+evmchains.forEach((chain: ChainType): void => {
+    const chainInstance: EVM = new EVM(chain, process.env[chain.ID] || process.env.PK)
     
-    evms[chain.ID] = {
+    evms.set(chain.ID, {
         config: chain,
         instance: chainInstance
+    })
+})
+
+// Adding ERC20 token contracts to their HOST evm instances
+erc20tokens.forEach((token: ERC20Type, i: number): void => {
+    if(token.HOSTID) {
+        token = populateConfig(token, getChainByID(evmchains, token.HOSTID))
     }
-});
 
+    erc20tokens[i] = token
+    const evm: EVMInstanceAndConfig = evms.get(getChainByID(evmchains, token.HOSTID)?.ID!)!
+
+    evm?.instance.addERC20Contract(token)
+})
+
+// POST request for sending tokens or coins
 router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
-    const address = req.body?.address;
-    const chain = req.body?.chain;
+    const address: string = req.body?.address
+    const chain: string = req.body?.chain
+    const erc20: string | undefined = req.body?.erc20
 
-    evms[chain]?.instance?.sendToken(address, (data: SendTokenResponse) => {
-        const { status, message, txHash } = data;
+    const evm: EVMInstanceAndConfig = evms.get(chain)!
+
+    evm?.instance.sendToken(address, erc20, (data: SendTokenResponse) => {
+        const { status, message, txHash } = data
         res.status(status).send({message, txHash})
-    });
-});
+    })
+})
 
+// GET request for fetching all the chain and token configurations
 router.get('/getChainConfigs', (req: any, res: any) => {
-    res.send(evmchains)
-});
+    const configs: any = [...evmchains, ...erc20tokens]
+    res.send({ configs })
+})
 
+// GET request for fetching faucet address for the specified chain
 router.get('/faucetAddress', (req: any, res: any) => {
-    res.send(evms[req.query?.chain!]?.instance?.account?.address)
+    const chain: string = req.query?.chain
+    const evm: EVMInstanceAndConfig = evms.get(chain)!
+
+    res.send({
+        address: evm?.instance.account.address
+    })
 })
 
+// GET request for fetching faucet balance for the specified chain or token
 router.get('/getBalance', (req: any, res: any) => {
-    let chain = req.query?.chain;
-    let balance = evms[chain]?.instance?.balance?.div(new BN(1e9))?.toString();
-    res.send(balance)
+    const chain: string = req.query?.chain
+    const erc20: string | undefined = req.query?.erc20
+
+    const evm: EVMInstanceAndConfig = evms.get(chain)!
+
+    let balance: BN = evm?.instance.getBalance(erc20)
+
+    if(balance) {
+        balance = balance.div(new BN(1e9))
+    } else {
+        balance = new BN(0)
+    }
+
+    res.status(200).send({
+        balance: balance?.toString()
+    })
 })
 
-app.use('/api', router);
+app.use('/api', router)
 
 app.get('/health', (req: any, res: any) => {
     res.status(200).send('Server healthy')
-});
+})
 
 app.get('/ip', (req: any, res: any) => {
     res.status(200).send({
         ip: req.headers["cf-connecting-ip"] || req.ip
-    });
+    })
 })
 
 app.get('*', async (req: any, res: any) => {
     res.sendFile(path.join(__dirname, "client", "index.html"))
-});
+})
 
 app.listen(process.env.PORT || 8000, () => {
     console.log(`Server started at port ${process.env.PORT || 8000}`)
