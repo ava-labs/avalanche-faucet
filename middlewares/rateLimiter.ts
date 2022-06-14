@@ -1,16 +1,16 @@
-import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
-import { searchIP } from 'range_check';
-import { RateLimiterConfig } from '../types';
+import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit'
+import { searchIP } from 'range_check'
+import { RateLimiterConfig } from '../types'
 
 export class RateLimiter {
-    PATH: string;
+    PATH: string
 
     constructor(app: any, configs: RateLimiterConfig[]) {
-        this.PATH = configs[0].RATELIMIT.PATH || '/api/sendToken';
+        this.PATH = configs[0].RATELIMIT.PATH || '/api/sendToken'
 
         let rateLimiters: any = new Map()
         configs.forEach((config: any) => {
-            const { RATELIMIT } = config;
+            const { RATELIMIT } = config
 
             let RL_CONFIG = {
                 MAX_LIMIT: RATELIMIT.MAX_LIMIT,
@@ -18,8 +18,8 @@ export class RateLimiter {
                 SKIP_FAILED_REQUESTS: RATELIMIT.SKIP_FAILED_REQUESTS || true,
             }
             
-            rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG));
-        });
+            rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG))
+        })
 
         if(configs[0]?.RATELIMIT?.REVERSE_PROXIES) {
             app.set('trust proxy', configs[0]?.RATELIMIT?.REVERSE_PROXIES)
@@ -31,7 +31,7 @@ export class RateLimiter {
             } else {
                 return rateLimiters.get(configs[0].ID)(req, res, next)
             }
-        });
+        })
     }
 
     getLimiter(config: any): RateLimitRequestHandler {
@@ -45,18 +45,18 @@ export class RateLimiter {
                 message: `Too many requests. Please try again after ${config.WINDOW_SIZE} minutes`
             },
             keyGenerator: (req, res) => {
-                const ip = this.getIP(req);
+                const ip = this.getIP(req)
                 if(ip != null) {
-                    return ip + req.body?.chain;
+                    return ip + req.body?.chain
                 }
             }
-        });
+        })
 
-        return limiter;
+        return limiter
     }
 
     getIP(req: any) {
-        const ip = req.headers['cf-connecting-ip'] || req.ip;
-        return searchIP(ip);
+        const ip = req.headers['cf-connecting-ip'] || req.ip
+        return searchIP(ip)
     }
 }

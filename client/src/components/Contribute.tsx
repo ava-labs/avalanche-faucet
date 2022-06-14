@@ -1,4 +1,4 @@
-import { useState } from 'react'; 
+import { useState } from 'react' 
 import './styles/Contribute.css'
 
 const Contribute = () => {
@@ -6,7 +6,7 @@ const Contribute = () => {
 
     setTimeout(() => {
         setHiddenClass("hide-button")
-    }, 2000);
+    }, 2000)
 
     return (
         <div
@@ -22,4 +22,4 @@ const Contribute = () => {
     )
 }
 
-export default Contribute;
+export default Contribute

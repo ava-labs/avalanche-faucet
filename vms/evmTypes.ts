@@ -1,4 +1,4 @@
-import { BN } from 'avalanche';
+import { BN } from 'avalanche'
 
 export type ChainType = {
     ID: string,

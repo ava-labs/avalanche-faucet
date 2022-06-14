@@ -1,55 +1,55 @@
-import { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+import { useState, useEffect } from 'react'
+import { ethers } from 'ethers'
 import { ClipLoader } from "react-spinners"
-import Select from 'react-select';
+import Select from 'react-select'
 
 import './styles/FaucetForm.css'
-import ReCaptcha from './ReCaptcha';
-import FooterBox from './FooterBox';
-import queryString from 'query-string';
-import ERC20Switch from './ERC20Switch';
-import { DropdownOption } from './types';
-import { AxiosResponse } from 'axios';
+import ReCaptcha from './ReCaptcha'
+import FooterBox from './FooterBox'
+import queryString from 'query-string'
+import ERC20Switch from './ERC20Switch'
+import { DropdownOption } from './types'
+import { AxiosResponse } from 'axios'
 
 const FaucetForm = (props: any) => {
-    const [chain, setChain] = useState<number | null>(null);
-    const [chainConfigs, setChainConfigs] = useState<any>([]);
-    const [inputAddress, setInputAddress] = useState<string>("");
-    const [address, setAddress] = useState<string | null>(null);
-    const [faucetAddress, setFaucetAddress] = useState<string | null>(null);
-    const [options, setOptions] = useState<DropdownOption[]>([]);
-    const [balance, setBalance] = useState<number>(0);
-    const [shouldAllowSend, setShouldAllowSend] = useState<boolean>(false);
-    const [isERC20, setIsERC20] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [chain, setChain] = useState<number | null>(null)
+    const [chainConfigs, setChainConfigs] = useState<any>([])
+    const [inputAddress, setInputAddress] = useState<string>("")
+    const [address, setAddress] = useState<string | null>(null)
+    const [faucetAddress, setFaucetAddress] = useState<string | null>(null)
+    const [options, setOptions] = useState<DropdownOption[]>([])
+    const [balance, setBalance] = useState<number>(0)
+    const [shouldAllowSend, setShouldAllowSend] = useState<boolean>(false)
+    const [isERC20, setIsERC20] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [sendTokenResponse, setSendTokenResponse] = useState<any>({
         txHash: null,
         message: null
-    });
+    })
 
-    const recaptcha: ReCaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION);
+    const recaptcha: ReCaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION)
 
     // Update chain configs
     useEffect(() => {
-        updateChainConfigs();
-    }, []);
+        updateChainConfigs()
+    }, [])
 
     // Update balance whenver chain changes or after transaction is processed
     useEffect(() => {
         updateBalance()
-    }, [chain, sendTokenResponse, chainConfigs]);
+    }, [chain, sendTokenResponse, chainConfigs])
 
     // Make REQUEST button disabled if either address is not valid or balance is low
     useEffect(() => {
         if(address) {
             if(balance > chainConfigs[chain!]?.DRIP_AMOUNT) {
-                setShouldAllowSend(true);
-                return;
+                setShouldAllowSend(true)
+                return
             }
         }
         
-        setShouldAllowSend(false);
-    }, [address, balance]);
+        setShouldAllowSend(false)
+    }, [address, balance])
 
     useEffect(() => {
         let newOptions: DropdownOption[] = []
@@ -74,23 +74,23 @@ const FaucetForm = (props: any) => {
                     label: item,
                     value: i,
                     search: chain.NAME
-                });
+                })
             } else if(!isERC20 && !chain.CONTRACTADDRESS) {
                 newOptions.push({
                     label: item,
                     value: i,
                     search: chain.NAME
-                });
+                })
             }
-        });
+        })
         
-        setOptions(newOptions);
+        setOptions(newOptions)
         setChain(newOptions[0]?.value)
-    }, [chainConfigs, isERC20]);
+    }, [chainConfigs, isERC20])
 
     useEffect(() => {
         updateFaucetAddress()
-    }, [chain, chainConfigs]);
+    }, [chain, chainConfigs])
 
     /*
     1. type=erc20 - only erc20 tokens in the list
@@ -103,12 +103,12 @@ const FaucetForm = (props: any) => {
     */
 
     useEffect(() => {
-        const query = queryString.parse(window.location.search);
+        const query = queryString.parse(window.location.search)
         
-        const { address, type, subnet, erc20 } = query;
+        const { address, type, subnet, erc20 } = query
         
         if(typeof address == "string") {
-            updateAddress(query?.address);
+            updateAddress(query?.address)
         }
 
         if(typeof type == "string") {
@@ -119,7 +119,7 @@ const FaucetForm = (props: any) => {
 
         if(typeof query?.type == "string") {
             if(query?.type == "erc20") {
-                setIsERC20(true);
+                setIsERC20(true)
             } else if(typeof query?.subnet == "string") {
                 setChain(chainToIndex(query.subnet))
             } else {
@@ -134,28 +134,28 @@ const FaucetForm = (props: any) => {
                 setChain(0)
             }
         }
-    }, [window.location.search, chainConfigs]);
+    }, [window.location.search, chainConfigs])
 
     // API calls
     async function updateChainConfigs(): Promise<void> {
         const response: AxiosResponse = await props.axios.get(
             props.config.api.getChainConfigs
-        );
-        setChainConfigs(response?.data?.configs);
+        )
+        setChainConfigs(response?.data?.configs)
     }
 
     function getChainParams(): {chain: string, erc20: string} {
         let params = {
             chain: "",
             erc20: "" 
-        };
-        if(chainConfigs[chain!]?.HOSTID) {
-            params.chain = chainConfigs[chain!]?.HOSTID;
-            params.erc20 = chainConfigs[chain!]?.ID;
-        } else {
-            params.chain = chainConfigs[chain!]?.ID;
         }
-        return params;
+        if(chainConfigs[chain!]?.HOSTID) {
+            params.chain = chainConfigs[chain!]?.HOSTID
+            params.erc20 = chainConfigs[chain!]?.ID
+        } else {
+            params.chain = chainConfigs[chain!]?.ID
+        }
+        return params
     }
 
     async function updateBalance(): Promise<void> {
@@ -170,23 +170,23 @@ const FaucetForm = (props: any) => {
             })
         
             if(response?.data?.balance || response?.data?.balance == 0) {
-                setBalance(response?.data?.balance);
+                setBalance(response?.data?.balance)
             }
         }
     }
 
     async function updateFaucetAddress(): Promise<void> {
         if((chain || chain == 0) && chainConfigs.length > 0) {
-            let { chain } = getChainParams();
+            let { chain } = getChainParams()
             
             const response: AxiosResponse = await props.axios.get(props.config.api.faucetAddress, {
                 params: {
                     chain
                 }
-            });
+            })
             
             if(response?.data) {
-                setFaucetAddress(response?.data?.address);
+                setFaucetAddress(response?.data?.address)
             }
         }
     }
@@ -194,17 +194,17 @@ const FaucetForm = (props: any) => {
     function chainToIndex(id: any): number | null {
         if(chainConfigs?.length > 0) {
             if(typeof id == "string") {
-                id = id.toUpperCase();
+                id = id.toUpperCase()
             }
-            let index: number = 0;
+            let index: number = 0
             chainConfigs.forEach((chain: any, i: number) => {
                 if(id == chain.ID) {
-                    index = i;
+                    index = i
                 }
-            });
-            return index;
+            })
+            return index
         } else {
-            return null;
+            return null
         }
     }
 
@@ -213,38 +213,38 @@ const FaucetForm = (props: any) => {
         
         if (addr) {
             if (ethers.utils.isAddress(addr)) {
-                setAddress(addr);
+                setAddress(addr)
             } else {
-                setAddress(null);
+                setAddress(null)
             }
         } else if (address != null) {
-            setAddress(null);
+            setAddress(null)
         }
     }
 
     async function getCaptchaToken(): Promise<string> {
-        const token: string = await recaptcha.getToken();
-        return token;
+        const token: string = await recaptcha.getToken()
+        return token
     }
 
     function updateChain(option: any): void {
         let chainNum: number = option.value
         
         if(chainNum >= 0 &&  chainNum < chainConfigs.length) {
-            setChain(chainNum);
-            back();
+            setChain(chainNum)
+            back()
         }
     }
 
     async function sendToken(): Promise<void> {
         if(!shouldAllowSend) {
-            return;
+            return
         } 
-        let data: any;
+        let data: any
         try {
-            setIsLoading(true);
+            setIsLoading(true)
 
-            const token = await getCaptchaToken();
+            const token = await getCaptchaToken()
 
             let { chain, erc20 } = getChainParams()
 
@@ -253,8 +253,8 @@ const FaucetForm = (props: any) => {
                 token,
                 chain,
                 erc20
-            });
-            data = response?.data;
+            })
+            data = response?.data
         } catch(err: any) {
             data = err?.response?.data || err
         }
@@ -264,21 +264,21 @@ const FaucetForm = (props: any) => {
             message: data?.message
         })
 
-        setIsLoading(false);
+        setIsLoading(false)
     }
 
     const getOptionByValue = (value: any): DropdownOption => {
-        let selectedOption: DropdownOption = options[0];
+        let selectedOption: DropdownOption = options[0]
         options.forEach((option: DropdownOption): void => {
             if(option.value == value) {
-                selectedOption = option;
+                selectedOption = option
             }
-        });
-        return selectedOption;
+        })
+        return selectedOption
     }
 
     const customStyles = {
-        control: (base: any, state: { isFocused: any; }) => ({
+        control: (base: any, state: { isFocused: any }) => ({
             ...base,
             background: "#333",
             borderRadius: state.isFocused ? "5px 5px 0 0" : 5,
@@ -350,15 +350,15 @@ const FaucetForm = (props: any) => {
         setSendTokenResponse({
             txHash: null,
             message: null
-        });
+        })
     }
 
     const toString = (mins: number): string => {
         if(mins < 60) {
             return `${mins} minute${mins > 1 ? 's' : ''}`
         } else {
-            const hour = ~~(mins / 60);
-            const minute = mins % 60;
+            const hour = ~~(mins / 60)
+            const minute = mins % 60
 
             if(minute == 0) {
                 return `${hour} hour${hour > 1 ? 's' : ''}`
@@ -454,4 +454,4 @@ const FaucetForm = (props: any) => {
     )
 }
 
-export default FaucetForm;
+export default FaucetForm

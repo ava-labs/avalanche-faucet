@@ -1,8 +1,8 @@
 import FaucetForm from './components/FaucetForm'
 import Contribute from './components/Contribute'
 
-import axios, { config } from './configure';
-import './App.css';
+import axios, { config } from './configure'
+import './App.css'
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
 
       <Contribute/>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

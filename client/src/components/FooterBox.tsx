@@ -1,21 +1,21 @@
-import AddNetwork from "./AddNetwork";
+import AddNetwork from "./AddNetwork"
 
-import './styles/FooterBox.css';
-import './styles/CopyToClipboard.css';
+import './styles/FooterBox.css'
+import './styles/CopyToClipboard.css'
 
 function copyToClipboard(): void {
-    let copyText = document.getElementById("return-address-input") as HTMLInputElement;
-    copyText.select();
-    copyText.setSelectionRange(0, 100);
-    navigator.clipboard.writeText(copyText.value);
+    let copyText = document.getElementById("return-address-input") as HTMLInputElement
+    copyText.select()
+    copyText.setSelectionRange(0, 100)
+    navigator.clipboard.writeText(copyText.value)
     
-    let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement;
-    tooltip.innerHTML = "Copied";
+    let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement
+    tooltip.innerHTML = "Copied"
 }
 
 function outFunc(): void {
-    let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement;
-    tooltip.innerHTML = "Copy to clipboard";
+    let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement
+    tooltip.innerHTML = "Copy to clipboard"
 }
 
 export default function FooterBox(props: any) {

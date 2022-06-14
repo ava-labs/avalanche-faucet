@@ -1,15 +1,15 @@
 declare global {
     interface Window {
-        ethereum: any;
+        ethereum: any
     }
 }
 
 const addNetwork = async (config: any): Promise<void> => {
     if(!config) {
-        return;
+        return
     }
     if(window.ethereum == undefined) {
-        window.open('https://metamask.io/download', '_blank');
+        window.open('https://metamask.io/download', '_blank')
     }
 
     await window?.ethereum?.request({
@@ -27,15 +27,15 @@ const addNetwork = async (config: any): Promise<void> => {
         }]
     }).catch((error: any): void => {
         console.log(error)
-    });      
+    })      
 }
 
 const addAsset = async (config: any): Promise<void> => {
     if(!config) {
-        return;
+        return
     }
     if(window.ethereum == undefined) {
-        window.open('https://metamask.io/download', '_blank');
+        window.open('https://metamask.io/download', '_blank')
     }
 
     await window?.ethereum?.request({
@@ -50,7 +50,7 @@ const addAsset = async (config: any): Promise<void> => {
         }
     }).catch((error: any): void => {
         console.log(error)
-    });  
+    })  
 }
 
 export default function AddNetwork(props: any) {
