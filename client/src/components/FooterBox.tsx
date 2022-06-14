@@ -3,7 +3,7 @@ import AddNetwork from "./AddNetwork";
 import './styles/FooterBox.css';
 import './styles/CopyToClipboard.css';
 
-function copyToClipboard() {
+function copyToClipboard(): void {
     let copyText = document.getElementById("return-address-input") as HTMLInputElement;
     copyText.select();
     copyText.setSelectionRange(0, 100);
@@ -13,7 +13,7 @@ function copyToClipboard() {
     tooltip.innerHTML = "Copied";
 }
 
-function outFunc() {
+function outFunc(): void {
     let tooltip = document.getElementById("tooltip-text") as HTMLSpanElement;
     tooltip.innerHTML = "Copy to clipboard";
 }
@@ -42,7 +42,7 @@ export default function FooterBox(props: any) {
                         <input id="return-address-input" value={props.faucetAddress} disabled/>
 
                         <span style={{marginRight: "10px", marginTop: "2px"}}>
-                            <img style={{width: "20px", height: "20px"}} src="https://img.icons8.com/fluency-systems-regular/48/ffffff/copy.png"/>
+                            <img alt="copy" style={{width: "20px", height: "20px"}} src="https://img.icons8.com/fluency-systems-regular/48/ffffff/copy.png"/>
                         </span>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'; 
+import { useState } from 'react'; 
 import './styles/Contribute.css'
 
 const Contribute = () => {
@@ -9,8 +9,14 @@ const Contribute = () => {
     }, 2000);
 
     return (
-        <div className={`contribute-button ${hiddenClass}`} onClick={() => {window.open('https://github.com/ava-labs/avalanche-faucet', '_blank')}}>
-            <img src="/github.png"/>
+        <div
+            className = {`contribute-button ${hiddenClass}`}
+            onClick={
+                () => {
+                    window.open('https://github.com/ava-labs/avalanche-faucet', '_blank')
+                }
+            }>
+            <img alt='github' src="/github.png"/>
             Contribute on Github
         </div>
     )

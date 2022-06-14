@@ -8,34 +8,38 @@ import ReCaptcha from './ReCaptcha';
 import FooterBox from './FooterBox';
 import queryString from 'query-string';
 import ERC20Switch from './ERC20Switch';
+import { DropdownOption } from './types';
+import { AxiosResponse } from 'axios';
 
 const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null);
     const [chainConfigs, setChainConfigs] = useState<any>([]);
-    const [inputAddress, setInputAddress] = useState("");
+    const [inputAddress, setInputAddress] = useState<string>("");
     const [address, setAddress] = useState<string | null>(null);
-    const [faucetAddress, setFaucetAddress] = useState(null);
-    const [options, setOptions] = useState([]);
-    const [balance, setBalance] = useState(0);
-    const [shouldAllowSend, setShouldAllowSend] = useState(false);
-    const [isERC20, setIsERC20] = useState(false);
+    const [faucetAddress, setFaucetAddress] = useState<string | null>(null);
+    const [options, setOptions] = useState<DropdownOption[]>([]);
+    const [balance, setBalance] = useState<number>(0);
+    const [shouldAllowSend, setShouldAllowSend] = useState<boolean>(false);
+    const [isERC20, setIsERC20] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [sendTokenResponse, setSendTokenResponse] = useState<any>({
         txHash: null,
         message: null
     });
 
-    const recaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION);
+    const recaptcha: ReCaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION);
 
     // Update chain configs
     useEffect(() => {
         updateChainConfigs();
     }, []);
 
+    // Update balance whenver chain changes or after transaction is processed
     useEffect(() => {
         updateBalance()
     }, [chain, sendTokenResponse, chainConfigs]);
 
+    // Make REQUEST button disabled if either address is not valid or balance is low
     useEffect(() => {
         if(address) {
             if(balance > chainConfigs[chain!]?.DRIP_AMOUNT) {
@@ -48,11 +52,11 @@ const FaucetForm = (props: any) => {
     }, [address, balance]);
 
     useEffect(() => {
-        let newOptions: any = []
+        let newOptions: DropdownOption[] = []
         
         chainConfigs?.forEach((chain: any, i: number) => {
             let item = <div className='select-dropdown'>
-                <img src = { chain.IMAGE } />
+                <img alt = { chain.NAME } src = { chain.IMAGE } />
                 { chain.NAME }
 
                 {
@@ -66,13 +70,21 @@ const FaucetForm = (props: any) => {
             </div>
 
             if(isERC20 && chain.CONTRACTADDRESS) {
-                newOptions.push({label: item, value: i, search: chain.NAME});
+                newOptions.push({
+                    label: item,
+                    value: i,
+                    search: chain.NAME
+                });
             } else if(!isERC20 && !chain.CONTRACTADDRESS) {
-                newOptions.push({label: item, value: i, search: chain.NAME});
+                newOptions.push({
+                    label: item,
+                    value: i,
+                    search: chain.NAME
+                });
             }
         });
+        
         setOptions(newOptions);
-        console.log(newOptions[0]?.value, chain)
         setChain(newOptions[0]?.value)
     }, [chainConfigs, isERC20]);
 
@@ -125,12 +137,14 @@ const FaucetForm = (props: any) => {
     }, [window.location.search, chainConfigs]);
 
     // API calls
-    async function updateChainConfigs() {
-        const response = await props.axios.get(props.config.api.getChainConfigs);
+    async function updateChainConfigs(): Promise<void> {
+        const response: AxiosResponse = await props.axios.get(
+            props.config.api.getChainConfigs
+        );
         setChainConfigs(response?.data?.configs);
     }
 
-    function getChainParams() {
+    function getChainParams(): {chain: string, erc20: string} {
         let params = {
             chain: "",
             erc20: "" 
@@ -144,10 +158,16 @@ const FaucetForm = (props: any) => {
         return params;
     }
 
-    async function updateBalance() {
+    async function updateBalance(): Promise<void> {
         if((chain || chain == 0) && chainConfigs.length > 0) {
             let { chain, erc20 } = getChainParams()
-            const response = await props.axios.get(props.config.api.getBalance, { params: {chain, erc20} });
+            
+            const response: AxiosResponse = await props.axios.get(props.config.api.getBalance, {
+                params: {
+                    chain,
+                    erc20
+                }
+            })
         
             if(response?.data?.balance || response?.data?.balance == 0) {
                 setBalance(response?.data?.balance);
@@ -155,10 +175,15 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    async function updateFaucetAddress() {
+    async function updateFaucetAddress(): Promise<void> {
         if((chain || chain == 0) && chainConfigs.length > 0) {
             let { chain } = getChainParams();
-            const response = await props.axios.get(props.config.api.faucetAddress, {params: { chain }});
+            
+            const response: AxiosResponse = await props.axios.get(props.config.api.faucetAddress, {
+                params: {
+                    chain
+                }
+            });
             
             if(response?.data) {
                 setFaucetAddress(response?.data?.address);
@@ -166,12 +191,12 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    function chainToIndex(id: any) {
+    function chainToIndex(id: any): number | null {
         if(chainConfigs?.length > 0) {
             if(typeof id == "string") {
                 id = id.toUpperCase();
             }
-            let index = 0;
+            let index: number = 0;
             chainConfigs.forEach((chain: any, i: number) => {
                 if(id == chain.ID) {
                     index = i;
@@ -197,13 +222,13 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    async function getCaptchaToken() {
-        const token = await recaptcha.getToken();
+    async function getCaptchaToken(): Promise<string> {
+        const token: string = await recaptcha.getToken();
         return token;
     }
 
-    async function updateChain(option: any) {
-        let chainNum = option.value
+    function updateChain(option: any): void {
+        let chainNum: number = option.value
         
         if(chainNum >= 0 &&  chainNum < chainConfigs.length) {
             setChain(chainNum);
@@ -211,7 +236,7 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    async function sendToken() {
+    async function sendToken(): Promise<void> {
         if(!shouldAllowSend) {
             return;
         } 
@@ -242,9 +267,9 @@ const FaucetForm = (props: any) => {
         setIsLoading(false);
     }
 
-    const getOptionByValue = (value: any) => {
-        let selectedOption: any = options[0];
-        options.forEach((option: any) => {
+    const getOptionByValue = (value: any): DropdownOption => {
+        let selectedOption: DropdownOption = options[0];
+        options.forEach((option: DropdownOption): void => {
             if(option.value == value) {
                 selectedOption = option;
             }
@@ -321,7 +346,7 @@ const FaucetForm = (props: any) => {
         </div>
     )
 
-    const back = () => {
+    const back = (): void => {
         setSendTokenResponse({
             txHash: null,
             message: null
@@ -401,7 +426,13 @@ const FaucetForm = (props: any) => {
                             <div>
                                 <span className='bold-text'>Transaction ID</span>
                                 <p className='rate-limit-text'>
-                                    <a target={'_blank'} href={chainConfigs[chain!].EXPLORER + '/tx/' + sendTokenResponse.txHash}>{sendTokenResponse.txHash}</a>
+                                    <a
+                                        target = {'_blank'}
+                                        href = {chainConfigs[chain!].EXPLORER + '/tx/' + sendTokenResponse.txHash}
+                                        rel = "noreferrer"
+                                    >
+                                        {sendTokenResponse.txHash}
+                                    </a>
                                 </p>
                             </div>
 
@@ -411,7 +442,12 @@ const FaucetForm = (props: any) => {
                 </div>
             </div>
 
-            <FooterBox chain={chain} chainConfigs={chainConfigs} chainToIndex={chainToIndex} faucetAddress={faucetAddress}/>
+            <FooterBox
+                chain = {chain}
+                chainConfigs = {chainConfigs}
+                chainToIndex = {chainToIndex}
+                faucetAddress = {faucetAddress}
+            />
         </div>
 
 

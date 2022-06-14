@@ -23,7 +23,7 @@ export default class ReCaptcha {
     }
 }
 
-const loadReCaptcha = (siteKey: string) => {
+const loadReCaptcha = (siteKey: string): boolean => {
     const script = document.createElement('script')
     script.src = `https://www.recaptcha.net/recaptcha/api.js?render=${siteKey}`
     document.body.appendChild(script)

@@ -1,12 +1,10 @@
-import { ethers } from 'ethers';
-
 declare global {
     interface Window {
         ethereum: any;
     }
 }
 
-const addNetwork = async (config: any) => {
+const addNetwork = async (config: any): Promise<void> => {
     if(!config) {
         return;
     }
@@ -27,12 +25,12 @@ const addNetwork = async (config: any) => {
             rpcUrls: [config.RPC],
             blockExplorerUrls: config.EXPLORER ? [config.EXPLORER] : null
         }]
-    }).catch((error: any) => {
+    }).catch((error: any): void => {
         console.log(error)
     });      
 }
 
-const addAsset = async (config: any) => {
+const addAsset = async (config: any): Promise<void> => {
     if(!config) {
         return;
     }
@@ -40,7 +38,6 @@ const addAsset = async (config: any) => {
         window.open('https://metamask.io/download', '_blank');
     }
 
-    console.log(config)
     await window?.ethereum?.request({
         method: 'wallet_watchAsset',
         params: {
@@ -51,7 +48,7 @@ const addAsset = async (config: any) => {
                 decimals: config.DECIMALS || 18
             }
         }
-    }).catch((error: any) => {
+    }).catch((error: any): void => {
         console.log(error)
     });  
 }
@@ -60,12 +57,12 @@ export default function AddNetwork(props: any) {
     return (
         <div className='footer-buttons'>
             <button className="add-network" onClick={() => {addNetwork(props.config)}}>
-                <img style={{width: "25px", height: "25px", marginRight: "5px"}} src="/memtamask.png"/>
+                <img alt='metamask' style={{width: "25px", height: "25px", marginRight: "5px"}} src="/memtamask.png"/>
                 Add Subnet to Metamask
             </button>
 
             <button className="add-network" onClick={() => {window.open(`${props.config.EXPLORER}`, '_blank')}}>
-                <img style={{width: "25px", height: "25px"}} src="/avaxblack.png"/>
+                <img alt="block-explorer" style={{width: "25px", height: "25px"}} src="/avaxblack.png"/>
                 View Block Explorer
             </button>
 
@@ -73,7 +70,7 @@ export default function AddNetwork(props: any) {
                 props?.config?.CONTRACTADDRESS
                 &&
                 <button className="add-network" onClick={() => {addAsset(props.config)}}>
-                    <img style={{width: "25px", height: "25px", marginRight: "5px", borderRadius: "25px"}} src={props?.config?.IMAGE}/>
+                    <img alt='asset' style={{width: "25px", height: "25px", marginRight: "5px", borderRadius: "25px"}} src={props?.config?.IMAGE}/>
                     Add Asset to Metamask
                 </button>
             }
