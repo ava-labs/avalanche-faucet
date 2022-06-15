@@ -124,10 +124,24 @@
             }
         },
         {
-            "ID": "WWGMI",
+            "ID": "WAVAXWAGMI",
+            "HOSTID": "WAGMI",
+            "NAME": "Wrapped AVAX",
+            "TOKEN": "WAVAX",
+            "CONTRACTADDRESS": "0x21cf0eB2E3Ab483a67C900b27dA8F34185991982",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "WWGM",
             "HOSTID": "WAGMI",
             "NAME": "Wrapped WAGMI",
-            "TOKEN": "WWGMI",
+            "TOKEN": "WWGM",
             "CONTRACTADDRESS": "0x3Ee7094DADda15810F191DD6AcF7E4FFa37571e4",
             "DRIP_AMOUNT": 2000000000,
             "GASLIMIT": "150000",

@@ -82,7 +82,7 @@ export default class EVM {
         }
     }
 
-    // Function to issue transfer transaction. For ERC20 transfers, id will be string
+    // Function to issue transfer transaction. For ERC20 transfers, 'id' will be a string representing ERC20 token ID
     async sendToken(
         receiver: string,
         id: string | undefined,
