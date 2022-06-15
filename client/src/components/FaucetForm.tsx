@@ -22,6 +22,7 @@ const FaucetForm = (props: any) => {
     const [balance, setBalance] = useState<number>(0)
     const [shouldAllowSend, setShouldAllowSend] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isFetchingBalance, setIsFetchingBalance] = useState<AbortController | null>(null)
     const [sendTokenResponse, setSendTokenResponse] = useState<any>({
         txHash: null,
         message: null
@@ -178,6 +179,13 @@ const FaucetForm = (props: any) => {
     }
 
     async function updateBalance(): Promise<void> {
+        // Abort pending requests
+        const controller = new AbortController();
+        if(isFetchingBalance) {
+            isFetchingBalance.abort()
+        }
+        setIsFetchingBalance(controller)
+
         if((chain || chain == 0) && chainConfigs.length > 0) {
             let { chain, erc20 } = getChainParams()
             
@@ -185,7 +193,8 @@ const FaucetForm = (props: any) => {
                 params: {
                     chain,
                     erc20
-                }
+                },
+                signal: controller.signal
             })
         
             if(response?.data?.balance || response?.data?.balance == 0) {
