@@ -148,11 +148,11 @@ const FaucetForm = (props: any) => {
         const tokenIndex: number = getConfigByTokenAndNetwork(erc20, subnet)
         
         if(typeof address == "string") {
-            updateAddress(query?.address)
+            updateAddress(address)
         }
 
         if(typeof subnet == "string") {
-            setChain(chainToIndex(query.subnet))
+            setChain(chainToIndex(subnet))
             if(typeof erc20 == "string") {
                 setToken(tokenIndex)
             }
