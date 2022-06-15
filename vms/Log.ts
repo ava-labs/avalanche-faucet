@@ -1,17 +1,17 @@
 export default class Log {
-    chain: string;
+    chain: string
 
     constructor(chain: string) {
-        this.chain = chain;
+        this.chain = chain
     }
     
     error = (message: any) => {
-        console.log(`ERROR ${this.chain}: ${message}`);
+        console.log(`ERROR ${this.chain}: ${message}`)
     }
     warn = (message: any) => {
-        console.log(`WARNING ${this.chain}: ${message}`);
+        console.log(`WARNING ${this.chain}: ${message}`)
     }
     info = (message: any) => {
-        console.log(`INFO ${this.chain}: ${message}`);
+        console.log(`INFO ${this.chain}: ${message}`)
     }
 }

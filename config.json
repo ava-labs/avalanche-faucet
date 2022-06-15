@@ -17,7 +17,7 @@
             "RPC": "https://api.avax-test.network/ext/C/rpc",
             "CHAINID": 43113,
             "EXPLORER": "https://testnet.snowtrace.io",
-            "IMAGE": "/avaxred.png",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/43113/token-logo.png",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 2000000000,
@@ -34,7 +34,7 @@
             "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
             "CHAINID": 11111,
             "EXPLORER": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/explorer",
-            "IMAGE": "/wagmi.png",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/11111/token-logo.png",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 2000000000,
@@ -102,6 +102,51 @@
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        }
+    ],
+    "erc20tokens": [
+        {
+            "ID": "WAVAXC",
+            "HOSTID": "C",
+            "NAME": "Wrapped AVAX",
+            "TOKEN": "WAVAX",
+            "CONTRACTADDRESS": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "WAVAXWAGMI",
+            "HOSTID": "WAGMI",
+            "NAME": "Wrapped AVAX",
+            "TOKEN": "WAVAX",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/43113/token-logo.png",
+            "CONTRACTADDRESS": "0x21cf0eB2E3Ab483a67C900b27dA8F34185991982",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "WWGM",
+            "HOSTID": "WAGMI",
+            "NAME": "Wrapped WAGMI",
+            "TOKEN": "WWGM",
+            "CONTRACTADDRESS": "0x3Ee7094DADda15810F191DD6AcF7E4FFa37571e4",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
