@@ -7,7 +7,6 @@ import './styles/FaucetForm.css'
 import ReCaptcha from './ReCaptcha'
 import FooterBox from './FooterBox'
 import queryString from 'query-string'
-import ERC20Switch from './ERC20Switch'
 import { DropdownOption } from './types'
 import { AxiosResponse } from 'axios'
 
@@ -148,11 +147,11 @@ const FaucetForm = (props: any) => {
         const tokenIndex: number = getConfigByTokenAndNetwork(erc20, subnet)
         
         if(typeof address == "string") {
-            updateAddress(query?.address)
+            updateAddress(address)
         }
 
         if(typeof subnet == "string") {
-            setChain(chainToIndex(query.subnet))
+            setChain(chainToIndex(subnet))
             if(typeof erc20 == "string") {
                 setToken(tokenIndex)
             }
@@ -386,7 +385,7 @@ const FaucetForm = (props: any) => {
     )
 
     const TokenDropdown = () => (
-        <div style={{width: "100%", marginTop: "5px"}}>
+        <div style={{width: "100%"}}>
             <Select
                 options={tokenOptions}
                 value={getTokenOptionByValue(token)}
@@ -434,10 +433,14 @@ const FaucetForm = (props: any) => {
 
                         <div>
                             <div style={{width: "100%"}}>
-                            <span style={{color: "grey", fontSize: "12px", float: "right"}}>Faucet balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[token!]?.TOKEN}</span>
+                                <span style={{color: "grey", fontSize: "12px", float: "right"}}>
+                                    Faucet balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[token!]?.TOKEN}
+                                </span>
+
                                 <span style={{color: "grey", fontSize: "12px"}}>
                                     Select Token
-                                </span> 
+                                </span>
+
                                 <TokenDropdown/>
                             </div>
                         </div>
