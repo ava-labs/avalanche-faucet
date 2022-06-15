@@ -7,7 +7,6 @@ import './styles/FaucetForm.css'
 import ReCaptcha from './ReCaptcha'
 import FooterBox from './FooterBox'
 import queryString from 'query-string'
-import ERC20Switch from './ERC20Switch'
 import { DropdownOption } from './types'
 import { AxiosResponse } from 'axios'
 
