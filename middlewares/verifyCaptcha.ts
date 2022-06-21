@@ -48,7 +48,7 @@ export class VerifyCaptcha {
 
         if(data?.success) {
             if(data?.action == 'faucetdrip') {
-                if(data?.score > 1) {
+                if(data?.score > 0.5) {
                     return true
                 }
             }

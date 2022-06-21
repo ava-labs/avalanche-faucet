@@ -8,13 +8,17 @@ export default class ReCaptcha {
     siteKey: string
     v2siteKey?: string
     action: string
+    widgetID: string | undefined
+    setWidgetID: any
         
-    constructor(SITE_KEY: string, ACTION: string, V2_SITE_KEY: string) {
+    constructor(SITE_KEY: string, ACTION: string, V2_SITE_KEY: string, setWidgetID: any, widgetID: string | undefined) {
         this.loadReCaptcha(SITE_KEY)
         
         this.siteKey = SITE_KEY
         this.v2siteKey = V2_SITE_KEY
         this.action = ACTION
+        this.widgetID = widgetID
+        this.setWidgetID = setWidgetID
     }
 
     async getToken(isV2 = false): Promise<{token?: string, v2Token?: string}> {
@@ -25,26 +29,37 @@ export default class ReCaptcha {
             })
         
         if(isV2){
-            const widgetID = getWidgetID()
-            v2Token = await window.grecaptcha.getResponse(widgetID)
+            v2Token = await window.grecaptcha.getResponse(this.widgetID)
         }
 
         return { token, v2Token }
     }
 
+    resetV2Captcha = () => {
+        const v2CaptchaContainer = <HTMLElement>document.getElementsByClassName('v2-recaptcha')[0]
+        if(v2CaptchaContainer) {
+            if(this.widgetID) {
+                window.grecaptcha.reset(this.widgetID)
+            }
+            v2CaptchaContainer.style.display = "none"
+        }
+    }
+
     loadV2Captcha = (v2siteKey: string) => {
         const v2CaptchaContainer = document.getElementsByClassName('v2-recaptcha')[0]
 
-        const widgetID = window.grecaptcha.render(v2CaptchaContainer, {
-            'sitekey' : v2siteKey,
-            'theme': 'dark'
-        })
-
-        const widgetContainer = document.createElement('div')
-        const widgetElem = `<input style='display:none' id='widgetID' value="${widgetID}"/>`
-        widgetContainer.innerHTML = widgetElem
-                
-        document.body.appendChild(widgetContainer)
+        if(this.widgetID || this.widgetID == "0") {
+            const v2CaptchaContainer = <HTMLElement>document.getElementsByClassName('v2-recaptcha')[0]
+            if(v2CaptchaContainer) {
+                v2CaptchaContainer.style.display = "block"
+            }
+        } else {
+            const widgetID = window.grecaptcha.render(v2CaptchaContainer, {
+                'sitekey' : v2siteKey,
+                'theme': 'dark'
+            })
+            this.setWidgetID(widgetID)
+        }
 
         return true
     }
@@ -56,9 +71,4 @@ export default class ReCaptcha {
         document.body.appendChild(script)
         return true
     }
-}
-
-const getWidgetID = () => {
-    const elem = <HTMLInputElement>document.getElementById('widgetID');
-    return elem!?.value
 }
