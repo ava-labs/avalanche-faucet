@@ -301,7 +301,7 @@ const FaucetForm = (props: any) => {
         if(typeof data?.message == "string") {
             if(data.message.includes("Captcha verification failed")) {
                 setIsV2(true)
-                !isV2 && recaptcha?.loadV2Captcha();
+                !isV2 && recaptcha?.loadV2Captcha(props.config.V2_SITE_KEY);
             }
         } 
 
@@ -414,9 +414,13 @@ const FaucetForm = (props: any) => {
         </div>
     )
 
-    const back = (): void => {
+    const resetRecaptcha = (): void => {
         setIsV2(false)
-        recaptcha.loadReCaptcha(props.config.SITE_KEY, props.config.V2_SITE_KEY)
+        recaptcha.loadReCaptcha(props.config.SITE_KEY)
+    }
+
+    const back = (): void => {
+        resetRecaptcha()
         setSendTokenResponse({
             txHash: null,
             message: null
