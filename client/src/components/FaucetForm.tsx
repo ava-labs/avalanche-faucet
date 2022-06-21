@@ -13,6 +13,7 @@ import { AxiosResponse } from 'axios'
 const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null)
     const [token, setToken] = useState<number | null>(null)
+    const [isV2, setIsV2] = useState<boolean>(false)
     const [chainConfigs, setChainConfigs] = useState<any>([])
     const [inputAddress, setInputAddress] = useState<string>("")
     const [address, setAddress] = useState<string | null>(null)
@@ -28,7 +29,7 @@ const FaucetForm = (props: any) => {
         message: null
     })
 
-    const recaptcha: ReCaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION)
+    const recaptcha: ReCaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION, props.config.V2_SITE_KEY)
 
     // Update chain configs
     useEffect(() => {
@@ -250,9 +251,9 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    async function getCaptchaToken(): Promise<string> {
-        const token: string = await recaptcha.getToken()
-        return token
+    async function getCaptchaToken(): Promise<{token?:string, v2Token?: string}> {
+        const { token, v2Token } = await recaptcha.getToken(isV2)
+        return { token, v2Token }
     }
 
     function updateChain(option: any): void {
@@ -281,13 +282,14 @@ const FaucetForm = (props: any) => {
         try {
             setIsLoading(true)
 
-            const token = await getCaptchaToken()
+            const { token, v2Token } = await getCaptchaToken()
 
             let { chain, erc20 } = getChainParams()
 
             const response = await props.axios.post(props.config.api.sendToken, {
                 address,
                 token,
+                v2Token,
                 chain,
                 erc20
             })
@@ -295,6 +297,13 @@ const FaucetForm = (props: any) => {
         } catch(err: any) {
             data = err?.response?.data || err
         }
+
+        if(typeof data?.message == "string") {
+            if(data.message.includes("Captcha verification failed")) {
+                setIsV2(true)
+                !isV2 && recaptcha?.loadV2Captcha();
+            }
+        } 
 
         setSendTokenResponse({
             txHash: data?.txHash,
@@ -406,6 +415,8 @@ const FaucetForm = (props: any) => {
     )
 
     const back = (): void => {
+        setIsV2(false)
+        recaptcha.loadReCaptcha(props.config.SITE_KEY, props.config.V2_SITE_KEY)
         setSendTokenResponse({
             txHash: null,
             message: null
@@ -473,6 +484,8 @@ const FaucetForm = (props: any) => {
                             </div>
                             <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
 
+                            <div className='v2-recaptcha' style={{marginTop: "10px"}}></div>
+                            
                             <div className="beta-alert">
                                 <p>This is a testnet faucet. Funds are not real.</p>
                             </div>
