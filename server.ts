@@ -37,7 +37,7 @@ new RateLimiter(app, [
     ...erc20tokens
 ])
 
-const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!)
+const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET)
 
 let evms = new Map<string, EVMInstanceAndConfig>()
 

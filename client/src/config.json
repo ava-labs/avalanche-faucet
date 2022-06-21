@@ -5,6 +5,7 @@
     "apiTimeout": 10000,
     "CAPTCHA": {
         "siteKey": "6LerTgYgAAAAALa7WiJs3q0pM30PH6JH4oDi_DaK",
+        "v2siteKey": "6LcPmIYgAAAAADKWHw28ercYsZV7QbDMz_SUeK-Q", 
         "action": "faucetdrip"
     }
 }

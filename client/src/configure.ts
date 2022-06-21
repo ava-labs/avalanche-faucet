@@ -14,6 +14,7 @@ export const config = {
         faucetAddress: 'faucetAddress'
     },
     SITE_KEY: configurations.CAPTCHA.siteKey,
+    V2_SITE_KEY: configurations.CAPTCHA.v2siteKey,
     ACTION: configurations.CAPTCHA.action,
     banner: configurations.banner
 }
