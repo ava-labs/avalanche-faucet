@@ -13,6 +13,8 @@ import { AxiosResponse } from 'axios'
 const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null)
     const [token, setToken] = useState<number | null>(null)
+    const [widgetID, setwidgetID] = useState<string | undefined>(undefined)
+    const [isV2, setIsV2] = useState<boolean>(false)
     const [chainConfigs, setChainConfigs] = useState<any>([])
     const [inputAddress, setInputAddress] = useState<string>("")
     const [address, setAddress] = useState<string | null>(null)
@@ -28,7 +30,13 @@ const FaucetForm = (props: any) => {
         message: null
     })
 
-    const recaptcha: ReCaptcha = new ReCaptcha(props.config.SITE_KEY, props.config.ACTION)
+    const recaptcha: ReCaptcha = new ReCaptcha(
+        props.config.SITE_KEY,
+        props.config.ACTION,
+        props.config.V2_SITE_KEY,
+        setwidgetID,
+        widgetID
+    )
 
     // Update chain configs
     useEffect(() => {
@@ -250,9 +258,9 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    async function getCaptchaToken(): Promise<string> {
-        const token: string = await recaptcha.getToken()
-        return token
+    async function getCaptchaToken(): Promise<{token?:string, v2Token?: string}> {
+        const { token, v2Token } = await recaptcha.getToken(isV2)
+        return { token, v2Token }
     }
 
     function updateChain(option: any): void {
@@ -281,13 +289,14 @@ const FaucetForm = (props: any) => {
         try {
             setIsLoading(true)
 
-            const token = await getCaptchaToken()
+            const { token, v2Token } = await getCaptchaToken()
 
             let { chain, erc20 } = getChainParams()
 
             const response = await props.axios.post(props.config.api.sendToken, {
                 address,
                 token,
+                v2Token,
                 chain,
                 erc20
             })
@@ -295,6 +304,13 @@ const FaucetForm = (props: any) => {
         } catch(err: any) {
             data = err?.response?.data || err
         }
+
+        if(typeof data?.message == "string") {
+            if(data.message.includes("Captcha verification failed")) {
+                setIsV2(true)
+                !isV2 && recaptcha?.loadV2Captcha(props.config.V2_SITE_KEY);
+            }
+        } 
 
         setSendTokenResponse({
             txHash: data?.txHash,
@@ -405,7 +421,13 @@ const FaucetForm = (props: any) => {
         </div>
     )
 
+    const resetRecaptcha = (): void => {
+        setIsV2(false)
+        recaptcha.resetV2Captcha()
+    }
+
     const back = (): void => {
+        resetRecaptcha()
         setSendTokenResponse({
             txHash: null,
             message: null
@@ -457,58 +479,56 @@ const FaucetForm = (props: any) => {
 
                     <br/>
 
-                    {
-                        !sendTokenResponse.txHash
-                        ?
-                        <div>
-                            <p className='rate-limit-text'>
-                                Drops are limited to 
-                                <span>
-                                    {chainConfigs[token!]?.RATELIMIT?.MAX_LIMIT} request in {toString(chainConfigs[token!]?.RATELIMIT?.WINDOW_SIZE)}.
-                                </span>
-                            </p>
+                    <div style={{ display: sendTokenResponse?.txHash ? "none" : "block" }}>
+                        <p className='rate-limit-text'>
+                            Drops are limited to 
+                            <span>
+                                {chainConfigs[token!]?.RATELIMIT?.MAX_LIMIT} request in {toString(chainConfigs[token!]?.RATELIMIT?.WINDOW_SIZE)}.
+                            </span>
+                        </p>
 
-                            <div className='address-input'>
-                                <input placeholder='Hexadecimal Address (0x...)' value={inputAddress || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
-                            </div>
-                            <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
+                        <div className='address-input'>
+                            <input placeholder='Hexadecimal Address (0x...)' value={inputAddress || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
+                        </div>
+                        <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
 
-                            <div className="beta-alert">
-                                <p>This is a testnet faucet. Funds are not real.</p>
-                            </div>
+                        <div className='v2-recaptcha' style={{marginTop: "10px"}}></div>
                         
-                            <button className={shouldAllowSend ? 'send-button' : 'send-button-disabled'} onClick={sendToken}>
-                                {
-                                    isLoading
-                                    ?
-                                    <ClipLoader size="20px" speedMultiplier={0.3} color="403F40"/>
-                                    :
-                                    <span>Request {chainConfigs[token || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[token || 0]?.TOKEN}</span>
-                                }
-                            </button>
+                        <div className="beta-alert">
+                            <p>This is a testnet faucet. Funds are not real.</p>
                         </div>
-                        :
+                    
+                        <button className={shouldAllowSend ? 'send-button' : 'send-button-disabled'} onClick={sendToken}>
+                            {
+                                isLoading
+                                ?
+                                <ClipLoader size="20px" speedMultiplier={0.3} color="403F40"/>
+                                :
+                                <span>Request {chainConfigs[token || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[token || 0]?.TOKEN}</span>
+                            }
+                        </button>
+                    </div>
+                    
+                    <div style={{ display: sendTokenResponse?.txHash ? "block" : "none" }}>
+                        <p className='rate-limit-text'>
+                            {sendTokenResponse?.message}
+                        </p>
+
                         <div>
+                            <span className='bold-text'>Transaction ID</span>
                             <p className='rate-limit-text'>
-                                {sendTokenResponse.message}
+                                <a
+                                    target = {'_blank'}
+                                    href = {chainConfigs[token!]?.EXPLORER + '/tx/' + sendTokenResponse?.txHash}
+                                    rel = "noreferrer"
+                                >
+                                    {sendTokenResponse?.txHash}
+                                </a>
                             </p>
-
-                            <div>
-                                <span className='bold-text'>Transaction ID</span>
-                                <p className='rate-limit-text'>
-                                    <a
-                                        target = {'_blank'}
-                                        href = {chainConfigs[token!].EXPLORER + '/tx/' + sendTokenResponse.txHash}
-                                        rel = "noreferrer"
-                                    >
-                                        {sendTokenResponse.txHash}
-                                    </a>
-                                </p>
-                            </div>
-
-                            <button className='back-button' onClick={back}>Back</button>
                         </div>
-                    }
+
+                        <button className='back-button' onClick={back}>Back</button>
+                    </div>
                 </div>
             </div>
 
