@@ -1,5 +1,5 @@
 {
-    "banner": "/banner.png",
+    "banner": "/banner.webp",
     "apiBaseEndpointProduction": "/api/",
     "apiBaseEndpointDevelopment": "http://localhost:8000/api/",
     "apiTimeout": 10000,
