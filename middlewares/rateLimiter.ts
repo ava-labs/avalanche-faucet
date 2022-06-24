@@ -47,7 +47,7 @@ export class RateLimiter {
             keyGenerator: (req, res) => {
                 const ip = this.getIP(req)
                 if(ip != null) {
-                    return ip + req.body?.chain
+                    return ip
                 }
             }
         })

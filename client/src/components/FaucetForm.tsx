@@ -14,6 +14,7 @@ const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null)
     const [token, setToken] = useState<number | null>(null)
     const [widgetID, setwidgetID] = useState<string | undefined>(undefined)
+    const [recaptcha, setRecaptcha] = useState<ReCaptcha | undefined>(undefined)
     const [isV2, setIsV2] = useState<boolean>(false)
     const [chainConfigs, setChainConfigs] = useState<any>([])
     const [inputAddress, setInputAddress] = useState<string>("")
@@ -30,16 +31,15 @@ const FaucetForm = (props: any) => {
         message: null
     })
 
-    const recaptcha: ReCaptcha = new ReCaptcha(
-        props.config.SITE_KEY,
-        props.config.ACTION,
-        props.config.V2_SITE_KEY,
-        setwidgetID,
-        widgetID
-    )
-
     // Update chain configs
     useEffect(() => {
+        setRecaptcha(new ReCaptcha(
+            props.config.SITE_KEY,
+            props.config.ACTION,
+            props.config.V2_SITE_KEY,
+            setwidgetID,
+            widgetID
+        ))
         updateChainConfigs()
     }, [])
 
@@ -259,7 +259,7 @@ const FaucetForm = (props: any) => {
     }
 
     async function getCaptchaToken(): Promise<{token?:string, v2Token?: string}> {
-        const { token, v2Token } = await recaptcha.getToken(isV2)
+        const { token, v2Token } = await recaptcha!.getToken(isV2)
         return { token, v2Token }
     }
 
@@ -423,7 +423,7 @@ const FaucetForm = (props: any) => {
 
     const resetRecaptcha = (): void => {
         setIsV2(false)
-        recaptcha.resetV2Captcha()
+        recaptcha!.resetV2Captcha()
     }
 
     const back = (): void => {
