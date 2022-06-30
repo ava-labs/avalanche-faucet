@@ -16,7 +16,7 @@ const Contribute = () => {
                     window.open('https://github.com/ava-labs/avalanche-faucet', '_blank')
                 }
             }>
-            <img alt='github' src="/github.png"/>
+            <img alt='github' src="/github.webp"/>
             Contribute on Github
         </div>
     )

@@ -5,7 +5,7 @@ import path from 'path'
 import dotenv from 'dotenv'
 import { BN } from 'avalanche'
 
-import { RateLimiter, VerifyCaptcha } from './middlewares'
+import { RateLimiter, VerifyCaptcha, parseURI } from './middlewares'
 import EVM from './vms/evm'
 
 import {
@@ -28,6 +28,7 @@ const router: any = express.Router()
 
 app.use(express.static(path.join(__dirname, "client")))
 app.use(cors())
+app.use(parseURI)
 app.use(bodyParser.json())
 
 new RateLimiter(app, [GLOBAL_RL])
@@ -37,7 +38,7 @@ new RateLimiter(app, [
     ...erc20tokens
 ])
 
-const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!)
+const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET)
 
 let evms = new Map<string, EVMInstanceAndConfig>()
 
