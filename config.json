@@ -114,7 +114,7 @@
             "RPC": "https://rpc-testnet.pirateverse.finance/",
             "CHAINID": 56766,
             "EXPLORER": "https://testnet.piratescan.io",
-            "IMAGE": "/pirateverse.png",
+            "IMAGE": "https://pirateverse.finance/images/pirateverse.png",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 2000000000,
