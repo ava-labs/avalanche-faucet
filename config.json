@@ -108,7 +108,7 @@
             }
         },
         {
-            "ID": "PirateVerse",
+            "ID": "PIRATEVERSE",
             "NAME": "PirateVerseTestnet",
             "TOKEN": "PVF",
             "RPC": "https://rpc-testnet.pirateverse.finance/",
