@@ -82,7 +82,7 @@
             "RPC": "https://subnets.avax.network/swimmer/testnet/rpc",
             "CHAINID": 73773,
             "EXPLORER": "https://subnets.avax.network/swimmer/testnet/explorer",
-            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/73771/chain-logo.png",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/73773/chain-logo.png",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "11000000000000",
             "DRIP_AMOUNT": 2000000000,
