@@ -1,204 +1,204 @@
 {
-  "GLOBAL_RL": {
-    "ID": "GLOBAL",
-    "RATELIMIT": {
-      "REVERSE_PROXIES": 2,
-      "MAX_LIMIT": 40,
-      "WINDOW_SIZE": 1,
-      "PATH": "/",
-      "SKIP_FAILED_REQUESTS": false
-    }
-  },
-  "evmchains": [
-    {
-      "ID": "C",
-      "NAME": "Fuji (C-Chain)",
-      "TOKEN": "AVAX",
-      "RPC": "https://api.avax-test.network/ext/C/rpc",
-      "CHAINID": 43113,
-      "EXPLORER": "https://testnet.snowtrace.io",
-      "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/43113/token-logo.png",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "100000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RECALIBRATE": 30,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
+    "GLOBAL_RL": {
+        "ID": "GLOBAL",
+        "RATELIMIT": {
+            "REVERSE_PROXIES": 2,
+            "MAX_LIMIT": 40,
+            "WINDOW_SIZE": 1,
+            "PATH": "/",
+            "SKIP_FAILED_REQUESTS": false
+        }
     },
-    {
-      "ID": "WAGMI",
-      "NAME": "WAGMI Testnet",
-      "TOKEN": "WGM",
-      "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
-      "CHAINID": 11111,
-      "EXPLORER": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/explorer",
-      "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/11111/token-logo.png",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "100000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "DFK",
-      "NAME": "DeFi Kingdoms Testnet",
-      "TOKEN": "JEWEL",
-      "RPC": "https://subnets.avax.network/defi-kingdoms/dfk-chain-testnet/rpc",
-      "CHAINID": 335,
-      "EXPLORER": "https://subnets.avax.network/defi-kingdoms/dfk-chain-testnet/explorer",
-      "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/335/chain-logo.png",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "100000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "DEXALOT",
-      "NAME": "Dexalot Testnet",
-      "TOKEN": "ALOT",
-      "RPC": "https://subnets.avax.network/dexalot/testnet/rpc",
-      "CHAINID": 432201,
-      "EXPLORER": "https://subnets.avax.network/dexalot/testnet/explorer",
-      "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/432201/chain-logo.png",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "100000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "SWIMMER",
-      "NAME": "Swimmer Testnet",
-      "TOKEN": "TUS",
-      "RPC": "https://subnets.avax.network/swimmer/testnet/rpc",
-      "CHAINID": 73773,
-      "EXPLORER": "https://subnets.avax.network/swimmer/testnet/explorer",
-      "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/73773/chain-logo.png",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "11000000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "CASTLECRUSH",
-      "NAME": "Castle Crush Testnet",
-      "TOKEN": "ACS",
-      "RPC": "https://subnets.avax.network/castle-crush/testnet/rpc",
-      "CHAINID": 31416,
-      "EXPLORER": "https://subnets.avax.network/castle-crush/testnet/explorer",
-      "IMAGE": "https://subnets.avax.network/assets/Castle_Crush_Logo.1233a91e.jpeg",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "100000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "PIRATEVERSE",
-      "NAME": "PirateVerseTestnet",
-      "TOKEN": "PVF",
-      "RPC": "https://rpc-testnet.pirateverse.finance/",
-      "CHAINID": 56766,
-      "EXPLORER": "https://testnet.piratescan.io",
-      "IMAGE": "https://pirateverse.finance/images/pirateverse.png",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "100000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "DIGARD",
-      "NAME": "Digard Network Test",
-      "TOKEN": "DIGA",
-      "RPC": "https://api.digard.network/ext/bc/sNUvM8CDbYbwi99ih238cbwyRiDYsX6GPKnFF1NzignfKfte4/rpc",
-      "CHAINID": 960006,
-      "EXPLORER": "https://testnet.avascan.info/blockchain/digard",
-      "IMAGE": "https://cdn.digard.io/digard.png",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "100000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "NMAC",
-      "NAME": "Rise of the Warbots Testnet",
-      "TOKEN": "NMAC",
-      "RPC": "https://testnet1.rotw.games",
-      "CHAINID": 7777,
-      "EXPLORER": "https://testnet.avascan.info/blockchain/nmac",
-      "IMAGE": "https://rotw.games/assets/icons/icon_nmac_fill.png",
-      "MAX_PRIORITY_FEE": "2000000000",
-      "MAX_FEE": "100000000000",
-      "DRIP_AMOUNT": 2000000000,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    }
-  ],
-  "erc20tokens": [
-    {
-      "ID": "WAVAXC",
-      "HOSTID": "C",
-      "NAME": "Wrapped AVAX",
-      "TOKEN": "WAVAX",
-      "CONTRACTADDRESS": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
-      "DRIP_AMOUNT": 2000000000,
-      "GASLIMIT": "150000",
-      "DECIMALS": 18,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "WAVAXWAGMI",
-      "HOSTID": "WAGMI",
-      "NAME": "Wrapped AVAX",
-      "TOKEN": "WAVAX",
-      "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/43113/token-logo.png",
-      "CONTRACTADDRESS": "0x21cf0eB2E3Ab483a67C900b27dA8F34185991982",
-      "DRIP_AMOUNT": 2000000000,
-      "GASLIMIT": "150000",
-      "DECIMALS": 18,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    },
-    {
-      "ID": "WWGM",
-      "HOSTID": "WAGMI",
-      "NAME": "Wrapped WAGMI",
-      "TOKEN": "WWGM",
-      "CONTRACTADDRESS": "0x3Ee7094DADda15810F191DD6AcF7E4FFa37571e4",
-      "DRIP_AMOUNT": 2000000000,
-      "GASLIMIT": "150000",
-      "DECIMALS": 18,
-      "RATELIMIT": {
-        "MAX_LIMIT": 1,
-        "WINDOW_SIZE": 1440
-      }
-    }
-  ]
+    "evmchains": [
+        {
+            "ID": "C",
+            "NAME": "Fuji (C-Chain)",
+            "TOKEN": "AVAX",
+            "RPC": "https://api.avax-test.network/ext/C/rpc",
+            "CHAINID": 43113,
+            "EXPLORER": "https://testnet.snowtrace.io",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/43113/token-logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RECALIBRATE": 30,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "WAGMI",
+            "NAME": "WAGMI Testnet",
+            "TOKEN": "WGM",
+            "RPC": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/rpc",
+            "CHAINID": 11111,
+            "EXPLORER": "https://subnets.avax.network/wagmi/wagmi-chain-testnet/explorer",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/11111/token-logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "DFK",
+            "NAME": "DeFi Kingdoms Testnet",
+            "TOKEN": "JEWEL",
+            "RPC": "https://subnets.avax.network/defi-kingdoms/dfk-chain-testnet/rpc",
+            "CHAINID": 335,
+            "EXPLORER": "https://subnets.avax.network/defi-kingdoms/dfk-chain-testnet/explorer",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/335/chain-logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "DEXALOT",
+            "NAME": "Dexalot Testnet",
+            "TOKEN": "ALOT",
+            "RPC": "https://subnets.avax.network/dexalot/testnet/rpc",
+            "CHAINID": 432201,
+            "EXPLORER": "https://subnets.avax.network/dexalot/testnet/explorer",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/432201/chain-logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "SWIMMER",
+            "NAME": "Swimmer Testnet",
+            "TOKEN": "TUS",
+            "RPC": "https://subnets.avax.network/swimmer/testnet/rpc",
+            "CHAINID": 73773,
+            "EXPLORER": "https://subnets.avax.network/swimmer/testnet/explorer",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/73773/chain-logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "11000000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "CASTLECRUSH",
+            "NAME": "Castle Crush Testnet",
+            "TOKEN": "ACS",
+            "RPC": "https://subnets.avax.network/castle-crush/testnet/rpc",
+            "CHAINID": 31416,
+            "EXPLORER": "https://subnets.avax.network/castle-crush/testnet/explorer",
+            "IMAGE": "https://subnets.avax.network/assets/Castle_Crush_Logo.1233a91e.jpeg",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "PIRATEVERSE",
+            "NAME": "PirateVerseTestnet",
+            "TOKEN": "PVF",
+            "RPC": "https://rpc-testnet.pirateverse.finance/",
+            "CHAINID": 56766,
+            "EXPLORER": "https://testnet.piratescan.io",
+            "IMAGE": "https://pirateverse.finance/images/pirateverse.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "DIGARD",
+            "NAME": "Digard Network Test",
+            "TOKEN": "DIGA",
+            "RPC": "https://api.digard.network/ext/bc/sNUvM8CDbYbwi99ih238cbwyRiDYsX6GPKnFF1NzignfKfte4/rpc",
+            "CHAINID": 960006,
+            "EXPLORER": "https://testnet.avascan.info/blockchain/digard",
+            "IMAGE": "https://cdn.digard.io/digard.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "NMAC",
+            "NAME": "Rise of the Warbots Testnet",
+            "TOKEN": "NMAC",
+            "RPC": "https://testnet1.rotw.games",
+            "CHAINID": 7777,
+            "EXPLORER": "https://testnet.avascan.info/blockchain/nmac",
+            "IMAGE": "https://rotw.games/assets/icons/icon_nmac_fill.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        }
+    ],
+    "erc20tokens": [
+        {
+            "ID": "WAVAXC",
+            "HOSTID": "C",
+            "NAME": "Wrapped AVAX",
+            "TOKEN": "WAVAX",
+            "CONTRACTADDRESS": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "WAVAXWAGMI",
+            "HOSTID": "WAGMI",
+            "NAME": "Wrapped AVAX",
+            "TOKEN": "WAVAX",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/43113/token-logo.png",
+            "CONTRACTADDRESS": "0x21cf0eB2E3Ab483a67C900b27dA8F34185991982",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "WWGM",
+            "HOSTID": "WAGMI",
+            "NAME": "Wrapped WAGMI",
+            "TOKEN": "WWGM",
+            "CONTRACTADDRESS": "0x3Ee7094DADda15810F191DD6AcF7E4FFa37571e4",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        }
+    ]
 }
