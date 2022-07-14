@@ -138,6 +138,22 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "NMAC",
+            "NAME": "Rise of the Warbots Testnet",
+            "TOKEN": "NMAC",
+            "RPC": "https://testnet1.rotw.games",
+            "CHAINID": 7777,
+            "EXPLORER": "https://testnet.avascan.info/blockchain/nmac",
+            "IMAGE": "https://rotw.games/assets/icons/icon_nmac_fill.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
