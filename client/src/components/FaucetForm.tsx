@@ -8,6 +8,7 @@ import ReCaptcha from './ReCaptcha'
 import FooterBox from './FooterBox'
 import queryString from 'query-string'
 import { DropdownOption } from './types'
+import { connectAccount } from './Metamask'
 import { AxiosResponse } from 'axios'
 
 const FaucetForm = (props: any) => {
@@ -41,6 +42,8 @@ const FaucetForm = (props: any) => {
             widgetID
         ))
         updateChainConfigs()
+        connectAccount(updateAddress, false)
+
     }, [])
 
     // Update balance whenver chain changes or after transaction is processed
@@ -488,7 +491,17 @@ const FaucetForm = (props: any) => {
                         </p>
 
                         <div className='address-input'>
-                            <input placeholder='Hexadecimal Address (0x...)' value={inputAddress || ""} onChange={(e) => updateAddress(e.target.value)} autoFocus/>
+                            <input
+                                placeholder='Hexadecimal Address (0x...)'
+                                value={inputAddress || ""}
+                                onChange={(e) => updateAddress(e.target.value)}
+                                autoFocus
+                            />
+
+                            <span className='connect-metamask' onClick={ () => connectAccount(updateAddress) }>
+                                <img alt='metamask' src="/memtamask.webp"/>
+                                Connect
+                            </span>
                         </div>
                         <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
 

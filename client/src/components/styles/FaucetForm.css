@@ -106,6 +106,25 @@ a {
     padding: 0 12px;
 }
 
+.connect-metamask {
+    cursor: pointer;
+    color: rgb(180, 180, 183);
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 10px
+}
+
+.connect-metamask > img {
+    width: 25px;
+    height: 25px;
+}
+
+.connect-metamask:hover {
+    color: white;
+}
+
 .beta-alert {
     color: #ff5252;
     font-size: 14px;
