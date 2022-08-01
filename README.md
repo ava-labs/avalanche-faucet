@@ -27,19 +27,19 @@ You can also integrate a new Subnet on the live [faucet](https://faucet.avax.net
 
 ```json
 {
-    "ID": string,
-    "NAME": string,
-    "TOKEN": string,
-    "RPC": string,
-    "CHAINID": number,
-    "EXPLORER": string,
-    "IMAGE": string,
-    "MAX_PRIORITY_FEE": string,
-    "MAX_FEE": string,
-    "DRIP_AMOUNT": number,
+    "ID": "string",
+    "NAME": "string",
+    "TOKEN": "string",
+    "RPC": "string",
+    "CHAINID": "number",
+    "EXPLORER": "string",
+    "IMAGE": "string",
+    "MAX_PRIORITY_FEE": "string",
+    "MAX_FEE": "string",
+    "DRIP_AMOUNT": "number",
     "RATELIMIT": {
-        "MAX_LIMIT": number,
-        "WINDOW_SIZE": number
+        "MAX_LIMIT": "number",
+        "WINDOW_SIZE": "number"
     }
 }
 ```
@@ -253,7 +253,7 @@ The IPs of all the proxies that the request has hopped through are stuffed insid
 
 The proxies that are set up by the owner of the server (reverse-proxies) are the trusted proxies on which we can rely and know that they have stuffed the actual IP of the requesters in between. Any proxy that is not set up by the server, should be considered an untrusted proxy. So, we can jump to the IP address added by the last proxy that we trust. The number of jumps that we want can be configured in the `config.json` file inside the `GLOBAL_RL` object.
 
-![](/img/faucet-5.png)
+![](https://raw.githubusercontent.com/ava-labs/avalanche-docs/master/static/img/faucet-5.png)
 
 
 
@@ -261,7 +261,7 @@ The proxies that are set up by the owner of the server (reverse-proxies) are the
 
 Consider the below diagram. The server is set up with 2 reverse proxies. If the client is behind proxies, then we cannot get the client's actual IP, and instead will consider the proxy's IP as the client's IP. And if some other client is behind the same proxy, then those clients will be considered as a single entity and might get rate-limited faster.
 
-![](/img/faucet-6.png)
+![](https://raw.githubusercontent.com/ava-labs/avalanche-docs/master/static/img/faucet-6.png)
 
 
 Therefore it is advised to the users, to avoid using any proxy for accessing applications that have critical rate limits, like this faucet.
@@ -278,7 +278,7 @@ So, if you want to deploy this faucet, and have some reverse proxies in between,
         ...
 ```
 
-![](/img/faucet-7.png)
+![](https://raw.githubusercontent.com/ava-labs/avalanche-docs/master/static/img/faucet-7.png)
 
 
 It is also quite common to have Cloudflare as the last reverse proxy or the exposed server. Cloudflare provides a header **cf-connecting-ip** which is the IP of the client that requested the faucet and hence Cloudflare. We are using this as default.
@@ -388,25 +388,25 @@ Using the faucet is quite straightforward, but for the sake of completeness, let
 
 Go to https://faucet.avax.network. You will see various network parameters like network name, faucet balance, drop amount, drop limit, faucet address, etc.
 
-![](/img/faucet-1.jpeg)
+![](https://raw.githubusercontent.com/ava-labs/avalanche-docs/master/static/img/faucet-1.jpeg)
 
 ### Select Network
 
 You can use the dropdown to select the network of your choice and get some free coins (each network may have a different drop amount).
 
-![](/img/faucet-2.png)
+![](https://raw.githubusercontent.com/ava-labs/avalanche-docs/master/static/img/faucet-2.png)
 
 ### Put Address and Request Coins
 
 Put your wallet address where you want to get a drop, and click the **Request** button. Within a second, you will get a **transaction hash** for the processed transaction. The hash would be a hyperlink to Subnet's explorer. You can see the transaction status, by clicking on that hyperlink.
 
-![](/img/faucet-3.png)
+![](https://raw.githubusercontent.com/ava-labs/avalanche-docs/master/static/img/faucet-3.png)
 
 ### More Interactions
 
 This is not just it. Using the buttons shown below, you can go to the Subnet explorer or add the Subnet to your browser wallet extensions like Metamask with a single click.
 
-![](/img/faucet-4.png)
+![](https://raw.githubusercontent.com/ava-labs/avalanche-docs/master/static/img/faucet-4.png)
 
 ### Probable Errors and Troubleshooting
 
