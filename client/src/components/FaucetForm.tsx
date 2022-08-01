@@ -72,7 +72,7 @@ const FaucetForm = (props: any) => {
         
         chainConfigs?.forEach((chain: any, i: number) => {
             let item = <div className='select-dropdown'>
-                <img alt = { chain.NAME } src = { chain.IMAGE } />
+                <img alt = { chain.NAME[0] } src = { chain.IMAGE } />
                 { chain.NAME }
 
                 {
@@ -105,7 +105,7 @@ const FaucetForm = (props: any) => {
             const { chain: ch } = getChainParams();
 
             let item = <div className='select-dropdown'>
-                <img alt = { chain.NAME } src = { chain.IMAGE } />
+                <img alt = { chain.NAME[0] } src = { chain.IMAGE } />
                 { chain.ID == ch ? chain.TOKEN : chain.NAME }
 
                 <span style={{color: 'rgb(180, 180, 183)', fontSize: "10px", marginLeft: "5px"}}>
