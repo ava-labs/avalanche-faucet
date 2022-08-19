@@ -9,6 +9,7 @@ import FooterBox from './FooterBox'
 import queryString from 'query-string'
 import { DropdownOption } from './types'
 import { connectAccount } from './Metamask'
+import { AddFaucet } from './AddFaucet'
 import { AxiosResponse } from 'axios'
 
 const FaucetForm = (props: any) => {
@@ -459,6 +460,7 @@ const FaucetForm = (props: any) => {
 
                 <div className='box-content'>
                     <div className='box-header'>
+                        <AddFaucet/>
                         <span>
                             <span style={{color: "grey"}}>Select Network</span>
                         </span>

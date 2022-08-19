@@ -1,0 +1,103 @@
+.Content {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    border: 1px solid rgb(51, 51, 51);
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    padding: 20px;
+    margin-right: -50%;
+    max-height: 600px;
+    width: 700px;
+    max-width: 90%;
+    transform: translate(-50%, -50%);
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    color: grey;
+}
+
+.Overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(15px);
+}
+
+.submit-button {
+    color:white;
+    margin-top: 20px;
+    height: 36px;
+    width: 50%;
+    padding: 0 16px;
+    border: 0px;
+    border-radius: 4px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.submit-button:hover {
+    background-color: #333;
+}
+
+.submit-button-disabled {
+    color:rgba(255, 255, 255, 0.406);
+    margin-top: 20px;
+    height: 36px;
+    width: 100%;
+    padding: 0 16px;
+    border: 0px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.15);
+    cursor: not-allowed;
+    text-transform: uppercase;
+}
+
+.textarea-input {
+    display: flex;
+    align-items: center;
+    color: white;
+    background-color: rgb(43, 43, 43);
+    width: 100%;
+    margin-top: 8px;
+    border-radius: 3px;
+}
+
+.file-output {
+    display: flex;
+    align-items: center;
+    color: white;
+    background-color: rgb(43, 43, 43);
+    width: 100%;
+    margin-top: 8px;
+    border-radius: 3px;
+}
+
+.file-upload-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgb(192, 192, 192);
+    height: 45px;
+    background-color: rgb(43, 43, 43);
+    width: 50%;
+    margin-bottom: 8px;
+    border-radius: 5px;
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 2px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgb(0, 0, 0);
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgb(113, 113, 113);
+}
