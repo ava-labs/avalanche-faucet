@@ -1,12 +1,25 @@
 import { useEffect, useState } from 'react';
 
-export function UploadFile() {
-	const [selectedFile, setSelectedFile] = useState<any>();
-	const [isSelected, setIsSelected] = useState(false);
+export function UploadJSON(props: any) {
+	const [selectedFile, setSelectedFile] = useState<any>()
+	const [isSelected, setIsSelected] = useState(false)
+    const [config, setConfig] = useState({})
+    const [canSubmit, setCanSubmit] = useState(false)
 
     const reader = new FileReader();
     reader.addEventListener("load", () => {
-        document.getElementById('file-data')!.innerHTML = (reader.result == null ? "" : reader.result).toString()
+        const cfgStr = (reader.result == null ? "" : reader.result).toString()
+        document.getElementById('file-data')!.innerHTML = cfgStr
+        
+        const elem = document.getElementById('json-error')
+        try {
+            setConfig(JSON.parse(cfgStr))
+            setCanSubmit(true)
+            elem!.innerHTML = ""
+        } catch(err: any) {
+            setCanSubmit(false)
+            elem!.innerHTML = "Invalid JSON: " + err.message
+        }
     }, false);
 
 	const changeHandler = (event: any) => {
@@ -30,28 +43,22 @@ export function UploadFile() {
     }, [selectedFile])
 
 	const handleSubmission = () => {
-		const formData = new FormData();
-
-		formData.append('File', selectedFile!);
-
-		// fetch(
-		// 	'https://freeimage.host/api/1/upload?key=<YOUR_API_KEY>',
-		// 	{
-		// 		method: 'POST',
-		// 		body: formData,
-		// 	}
-		// )
-        // .then((response) => response.json())
-        // .then((result) => {
-        //     console.log('Success:', result);
-        // })
-        // .catch((error) => {
-        //     console.error('Error:', error);
-        // });
+        if(selectedFile) {
+            if(canSubmit) {
+                props.submitJSON(config)
+            }
+        }
 	}
 
 	return(
         <div>
+            <span style={{color: "grey"}}>
+                Upload your JSON file here.
+                Learn more about the format <a target = "_blank" rel="noreferrer" style={{color: "#eb4034"}} href="https://github.com/ava-labs/avalanche-faucet#adding-a-new-subnet">here</a>.
+            </span>   
+            <br/> 
+            <br/> 
+
             <div style={{ display: "flex", justifyContent: "center" }}>
                 <label className="file-upload-input">
                     <input id="file-upload" type="file" accept=".json" style={{display: "none"}} onChange={ changeHandler }/>
@@ -64,10 +71,12 @@ export function UploadFile() {
             {
                 isSelected && (
                     <div>
+                        <span id="json-error"></span>
+
                         <textarea rows={19} className='file-output scrollbar' id='file-data'/>
 
                         <div style={{display: "flex"}}>
-                            <button className={'submit-button'} style = {{width: "50%"}}>
+                            <button onClick={handleSubmission} className={canSubmit ? 'submit-button' : "submit-button-disabled"} style = {{width: "50%"}}>
                                 Submit
                             </button>
                         </div>
