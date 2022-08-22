@@ -8,7 +8,7 @@ export default function AddNetwork(props: any) {
                 Add Subnet to Metamask
             </button>
 
-            <button className="add-network" onClick={() => {window.open(`${props.config.EXPLORER}`, '_blank')}}>
+            <button className="add-network" onClick={() => {window.open(`${props.config.EXPLORER}${props.token?.CONTRACTADDRESS ? "/address/" + props.token.CONTRACTADDRESS : ""}`, '_blank')}}>
                 <img alt="block-explorer" style={{width: "25px", height: "25px"}} src="/avaxblack.webp"/>
                 View Block Explorer
             </button>
