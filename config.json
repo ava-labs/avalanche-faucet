@@ -60,22 +60,6 @@
             }
         },
         {
-            "ID": "DEXALOT",
-            "NAME": "Dexalot Testnet",
-            "TOKEN": "ALOT",
-            "RPC": "https://subnets.avax.network/dexalot/testnet/rpc",
-            "CHAINID": 432201,
-            "EXPLORER": "https://subnets.avax.network/dexalot/testnet/explorer",
-            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/432201/chain-logo.png",
-            "MAX_PRIORITY_FEE": "2000000000",
-            "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 2000000000,
-            "RATELIMIT": {
-                "MAX_LIMIT": 1,
-                "WINDOW_SIZE": 1440
-            }
-        },
-        {
             "ID": "SWIMMER",
             "NAME": "Swimmer Testnet",
             "TOKEN": "TUS",
@@ -179,6 +163,21 @@
             "NAME": "Wrapped AVAX",
             "TOKEN": "WAVAX",
             "CONTRACTADDRESS": "0xd00ae08403B9bbb9124bB305C09058E32C39A48c",
+            "DRIP_AMOUNT": 2000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "DEXALOTC",
+            "HOSTID": "C",
+            "NAME": "Dexalot",
+            "TOKEN": "ALOT",
+            "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/432201/chain-logo.png",
+            "CONTRACTADDRESS": "0x9983F755Bbd60d1886CbfE103c98C272AA0F03d6",
             "DRIP_AMOUNT": 2000000000,
             "GASLIMIT": "150000",
             "DECIMALS": 18,
