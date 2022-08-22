@@ -174,7 +174,7 @@
         {
             "ID": "DEXALOTC",
             "HOSTID": "C",
-            "NAME": "Dexalot",
+            "NAME": "Dexalot Token (ALOT)",
             "TOKEN": "ALOT",
             "IMAGE": "https://raw.githubusercontent.com/ava-labs/subnet-assets/main/chains/432201/chain-logo.png",
             "CONTRACTADDRESS": "0x9983F755Bbd60d1886CbfE103c98C272AA0F03d6",
