@@ -1,7 +1,6 @@
 import { useState } from "react"
 import Modal from 'react-modal'
 
-import { parseConfiguration } from "./parseConfiguration"
 import { AddFaucetForm, PasteJSON, UploadJSON } from "./utilities"
 
 import './styles/AddFaucet.css'
@@ -18,20 +17,22 @@ export function AddFaucet() {
         setIsOpen(false);
     }
 
-    const submitJSON = (config: any) => {
-        console.log("Received submission:", config)
-        
+    const submitJSON = async (config: any) => {
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        return {isError: false, message: "Successful!"}
+
     }
 
     function RenderForm() {
         switch(selected) {
             case 0:
                 return (
-                    <AddFaucetForm submitJSON = {submitJSON}/>
+                    <PasteJSON submitJSON = {submitJSON}/>
                 )
             case 1:
                 return (
-                    <PasteJSON submitJSON = {submitJSON}/>
+                    <AddFaucetForm submitJSON = {submitJSON}/>
                 )
             case 2:
                 return (
@@ -39,7 +40,7 @@ export function AddFaucet() {
                 )
             default:
                 return (
-                    <AddFaucetForm submitJSON = {submitJSON}/>
+                    <PasteJSON submitJSON = {submitJSON}/>
                 )
         }
     }
@@ -72,7 +73,7 @@ export function AddFaucet() {
                 <br/>
 
                 <span style={{color: "grey"}}>
-                    You can even <span style={{color: "#eb4034", cursor: "pointer"}} onClick = {() => {setSelected(1)}}> <u>paste</u> </span> your subnet's JSON configuration, or simply <span style={{color: "#eb4034", cursor: "pointer"}} onClick = {() => {setSelected(2)}}> <u>upload</u> </span> the JSON file.
+                    You can even <span style={{color: "#eb4034", cursor: "pointer"}} onClick = {() => {setSelected(2)}}> <u>upload</u> </span> the JSON file, or simply fill this <span style={{color: "#eb4034", cursor: "pointer"}} onClick = {() => {setSelected(1)}}> <u>form</u>. </span>
                 </span>
                 <br/><br/>
 

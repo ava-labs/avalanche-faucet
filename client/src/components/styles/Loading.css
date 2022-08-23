@@ -1,0 +1,77 @@
+/* This code is from https://codepen.io/nzbin/pen/GGrXbp */
+
+.dot-pulse {
+    position: relative;
+    left: -9999px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: rgb(235, 64, 52);
+    color: rgb(235, 64, 52);
+    box-shadow: 9999px 0 0 -5px rgb(235, 64, 52);
+    animation: dotPulse 1.5s infinite linear;
+    animation-delay: .25s;
+}
+
+.dot-pulse::before, .dot-pulse::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: rgb(235, 64, 52);
+    color: rgb(235, 64, 52);
+}
+
+.dot-pulse::before {
+    box-shadow: 9984px 0 0 -5px rgb(235, 64, 52);
+    animation: dotPulseBefore 1.5s infinite linear;
+    animation-delay: 0s;
+}
+
+.dot-pulse::after {
+    box-shadow: 10014px 0 0 -5px rgb(235, 64, 52);
+    animation: dotPulseAfter 1.5s infinite linear;
+    animation-delay: .5s;
+}
+
+@keyframes dotPulseBefore {
+    0% {
+        box-shadow: 9984px 0 0 -5px rgb(235, 64, 52);
+    }
+    30% {
+        box-shadow: 9984px 0 0 2px rgb(235, 64, 52);
+    }
+    60%,
+    100% {
+        box-shadow: 9984px 0 0 -5px rgb(235, 64, 52);
+    }
+}
+
+@keyframes dotPulse {
+    0% {
+        box-shadow: 9999px 0 0 -5px rgb(235, 64, 52);
+    }
+    30% {
+        box-shadow: 9999px 0 0 2px rgb(235, 64, 52);
+    }
+    60%,
+    100% {
+        box-shadow: 9999px 0 0 -5px rgb(235, 64, 52);
+    }
+}
+
+@keyframes dotPulseAfter {
+    0% {
+        box-shadow: 10014px 0 0 -5px rgb(235, 64, 52);
+    }
+    30% {
+        box-shadow: 10014px 0 0 2px rgb(235, 64, 52);
+    }
+    60%,
+    100% {
+        box-shadow: 10014px 0 0 -5px rgb(235, 64, 52);
+    }
+}
