@@ -38,6 +38,18 @@ new RateLimiter(app, [
     ...erc20tokens
 ])
 
+// address rate limiter
+new RateLimiter(app, [
+    ...evmchains,
+    ...erc20tokens
+], (req: any, res: any) => {
+    const addr = req.body?.address
+
+    if(addr) {
+        return addr.toUpperCase()
+    }
+})
+
 const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET)
 
 let evms = new Map<string, EVMInstanceAndConfig>()
@@ -93,10 +105,14 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 
     const evm: EVMInstanceAndConfig = evms.get(chain)!
 
-    evm?.instance.sendToken(address, erc20, (data: SendTokenResponse) => {
-        const { status, message, txHash } = data
-        res.status(status).send({message, txHash})
-    })
+    if(evm) {
+        evm?.instance.sendToken(address, erc20, (data: SendTokenResponse) => {
+            const { status, message, txHash } = data
+            res.status(status).send({message, txHash})
+        })
+    } else {
+        res.status(400).send({message: "Invalid parameters passed!"})
+    }
 })
 
 // GET request for fetching all the chain and token configurations
