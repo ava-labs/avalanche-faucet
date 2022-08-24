@@ -5,7 +5,7 @@ import { AddFaucetForm, PasteJSON, UploadJSON } from "./utilities"
 
 import './styles/AddFaucet.css'
 
-export function AddFaucet() {
+export function AddFaucet(props: any) {
     const [modalIsOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState(0);
 
@@ -18,10 +18,12 @@ export function AddFaucet() {
     }
 
     const submitJSON = async (config: any) => {
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
-        return {isError: false, message: "Successful!"}
-
+        try {
+            const response = await props.axios.post('/addFaucet', { config })
+            return response.data
+        } catch(err: any) {
+            return {isError: true, message: err?.response?.data?.message}
+        }
     }
 
     function RenderForm() {

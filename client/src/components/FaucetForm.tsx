@@ -460,7 +460,7 @@ const FaucetForm = (props: any) => {
 
                 <div className='box-content'>
                     <div className='box-header'>
-                        <AddFaucet/>
+                        <AddFaucet axios = {props.axios}/>
                         <span>
                             <span style={{color: "grey"}}>Select Network</span>
                         </span>

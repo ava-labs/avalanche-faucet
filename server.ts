@@ -2,10 +2,11 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import path from 'path'
-import dotenv from 'dotenv'
+import dotenv, { config } from 'dotenv'
 import { BN } from 'avalanche'
 
 import { RateLimiter, VerifyCaptcha, parseURI } from './middlewares'
+import { parseConfig } from './utilities'
 import EVM from './vms/evm'
 
 import {
@@ -33,7 +34,7 @@ app.use(bodyParser.json())
 
 new RateLimiter(app, [GLOBAL_RL])
 
-new RateLimiter(app, [
+const evmRateLimiter = new RateLimiter(app, [
     ...evmchains,
     ...erc20tokens
 ])
@@ -63,14 +64,19 @@ const populateConfig = (child: any, parent: any): any => {
     return child
 }
 
-// Setting up instance for EVM chains
-evmchains.forEach((chain: ChainType): void => {
+// Add evm faucet instance
+const addEVMInstance = (chain: ChainType) => {
     const chainInstance: EVM = new EVM(chain, process.env[chain.ID] || process.env.PK)
     
     evms.set(chain.ID, {
         config: chain,
         instance: chainInstance
     })
+}
+
+// Setting up instance for EVM chains
+evmchains.forEach((chain: ChainType): void => {
+    addEVMInstance(chain)
 })
 
 // Adding ERC20 token contracts to their HOST evm instances
@@ -83,6 +89,20 @@ erc20tokens.forEach((token: ERC20Type, i: number): void => {
     const evm: EVMInstanceAndConfig = evms.get(getChainByID(evmchains, token.HOSTID)?.ID!)!
 
     evm?.instance.addERC20Contract(token)
+})
+
+router.post('/addFaucet', async (req: any, res: any) => {
+    const chainConfig = req.body?.config
+    const response = await parseConfig(chainConfig, evmchains)
+
+    if(!response.isError) {
+        addEVMInstance(response.config)
+        evmchains.push(response.config)
+        evmRateLimiter.addNewConfig(response.config)
+        res.status(200).send(response)
+    } else {
+        res.status(500).send(response)
+    }
 })
 
 // POST request for sending tokens or coins

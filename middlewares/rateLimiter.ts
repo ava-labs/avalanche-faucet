@@ -4,21 +4,14 @@ import { RateLimiterConfig } from '../types'
 
 export class RateLimiter {
     PATH: string
+    rateLimiters: Map<any, any>
 
     constructor(app: any, configs: RateLimiterConfig[]) {
         this.PATH = configs[0].RATELIMIT.PATH || '/api/sendToken'
 
-        let rateLimiters: any = new Map()
+        this.rateLimiters = new Map()
         configs.forEach((config: any) => {
-            const { RATELIMIT } = config
-
-            let RL_CONFIG = {
-                MAX_LIMIT: RATELIMIT.MAX_LIMIT,
-                WINDOW_SIZE: RATELIMIT.WINDOW_SIZE,
-                SKIP_FAILED_REQUESTS: RATELIMIT.SKIP_FAILED_REQUESTS || true,
-            }
-            
-            rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG))
+            this.addNewConfig(config)
         })
 
         if(configs[0]?.RATELIMIT?.REVERSE_PROXIES) {
@@ -27,11 +20,23 @@ export class RateLimiter {
 
         app.use(this.PATH, (req: any, res: any, next: any) => {
             if(this.PATH == '/api/sendToken' && req.body.chain) {
-                return rateLimiters.get(req.body.erc20 ? req.body.erc20 : req.body.chain)(req, res, next)
+                return this.rateLimiters.get(req.body.erc20 ? req.body.erc20 : req.body.chain)(req, res, next)
             } else {
-                return rateLimiters.get(configs[0].ID)(req, res, next)
+                return this.rateLimiters.get(configs[0].ID)(req, res, next)
             }
         })
+    }
+
+    addNewConfig(config: any) {
+        const { RATELIMIT } = config
+
+        let RL_CONFIG = {
+            MAX_LIMIT: RATELIMIT.MAX_LIMIT,
+            WINDOW_SIZE: RATELIMIT.WINDOW_SIZE,
+            SKIP_FAILED_REQUESTS: RATELIMIT.SKIP_FAILED_REQUESTS || true,
+        }
+
+        this.rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG))
     }
 
     getLimiter(config: any): RateLimitRequestHandler {
