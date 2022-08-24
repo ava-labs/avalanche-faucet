@@ -5,7 +5,7 @@ import { RateLimiterConfig } from '../types'
 export class RateLimiter {
     PATH: string
 
-    constructor(app: any, configs: RateLimiterConfig[]) {
+    constructor(app: any, configs: RateLimiterConfig[], keyGenerator?: any) {
         this.PATH = configs[0].RATELIMIT.PATH || '/api/sendToken'
 
         let rateLimiters: any = new Map()
@@ -18,7 +18,7 @@ export class RateLimiter {
                 SKIP_FAILED_REQUESTS: RATELIMIT.SKIP_FAILED_REQUESTS || true,
             }
             
-            rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG))
+            rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG, keyGenerator))
         })
 
         if(configs[0]?.RATELIMIT?.REVERSE_PROXIES) {
@@ -34,7 +34,7 @@ export class RateLimiter {
         })
     }
 
-    getLimiter(config: any): RateLimitRequestHandler {
+    getLimiter(config: any, keyGenerator?: any): RateLimitRequestHandler {
         const limiter = rateLimit({
             windowMs: config.WINDOW_SIZE * 60 * 1000,
             max: config.MAX_LIMIT,
@@ -44,7 +44,7 @@ export class RateLimiter {
             message: {
                 message: `Too many requests. Please try again after ${config.WINDOW_SIZE} minutes`
             },
-            keyGenerator: (req, res) => {
+            keyGenerator: keyGenerator ? keyGenerator : (req, res) => {
                 const ip = this.getIP(req)
                 if(ip != null) {
                     return ip
