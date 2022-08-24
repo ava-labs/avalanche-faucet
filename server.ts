@@ -45,7 +45,7 @@ new RateLimiter(app, [
 ], (req: any, res: any) => {
     const addr = req.body?.address
 
-    if(addr) {
+    if(typeof addr == "string" && addr) {
         return addr.toUpperCase()
     }
 })
@@ -98,7 +98,7 @@ erc20tokens.forEach((token: ERC20Type, i: number): void => {
 })
 
 // POST request for sending tokens or coins
-router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
+router.post('/sendToken', async (req: any, res: any) => {
     const address: string = req.body?.address
     const chain: string = req.body?.chain
     const erc20: string | undefined = req.body?.erc20
