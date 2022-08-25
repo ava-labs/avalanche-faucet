@@ -1,62 +1,196 @@
 import axios from 'axios'
 
-const generateID = (baseID: string, evmchains: any): any => {
-    const newID = baseID
-    for(let i = 0; i < evmchains.length; i++) {
-        if(evmchains[i].ID == newID) {
+// Generates unique all-caps ID from the list of configs provided
+const generateID = (baseID: string, configs: any): any => {
+    const newID = baseID.toUpperCase()
+    for(let i = 0; i < configs.length; i++) {
+        if(configs[i].ID == newID) {
             const randNumber = parseInt((100 * Math.random()).toString())
-            return generateID(baseID + randNumber, evmchains)
+            return generateID(baseID + randNumber, configs)
         }
     }
     
     return newID
 }
 
-const getChainID = async (RPC: string, evmchains: any) => {
-    const { data } = await axios.post(RPC, {
-        "jsonrpc": "2.0",
-        "method": "eth_chainId",
-        "params": [],
-        "id": 1
-    })
-    const chainID =  parseInt(data.result)
-
-    for(let i = 0; i < evmchains.length; i++) {
-        if(evmchains[i].CHAINID == chainID) {
+// Check name should be unique withing configs
+const parseName = (name: string, configs: any) => {
+    for(let i = 0; i < configs.length; i++) {
+        if(configs[i].NAME == name) {
             return {
                 isError: true,
-                message: `Duplicate Chain ID ${chainID} found!`,
-                chainID
+                message: "Should have a unique name!"
             }
         }
     }
 
     return {
         isError: false,
-        message: "",
-        chainID
+        message: ""
     }
 }
 
-const getRateLimit = (config: any) => {
-    const rateLimitConfig = {
-        MAX_LIMIT: config.MAX_LIMIT || 1, // 1 request
-        WINDOW_SIZE: config.WINDOW_SIZE || 1440 // 24 hours
+// parse tokens to all-caps and less than 10 characters
+const parseToken = (token: string) => {
+    token = token.toUpperCase()
+
+    if(token.length > 10 || token.length == 0) {
+        return {
+            isError: true,
+            message: "Invalid token name!",
+            token
+        }
     }
 
-    return rateLimitConfig
+    return {
+        isError: false,
+        message: "",
+        token
+    }
+}
+
+// Validates RPC by fetching ChainID. ChainID should be unique within the configs passed
+const getChainID = async (RPC: string, configs: any) => {
+    try {
+        const { data } = await axios.post(RPC, {
+            "jsonrpc": "2.0",
+            "method": "eth_chainId",
+            "params": [],
+            "id": 1
+        })
+        const chainID =  parseInt(data.result)
+
+        for(let i = 0; i < configs.length; i++) {
+            if(configs[i].CHAINID == chainID) {
+                return {
+                    isError: true,
+                    message: `Duplicate Chain ID ${chainID} found!`,
+                    chainID
+                }
+            }
+        }
+    } catch(err: any) {
+        return {
+            isError: true,
+            message: "Error fetching chain ID. Invalid RPC!"
+        }
+    }
+
+    return {
+        isError: false,
+        message: ""
+    }
+}
+
+const validateURL = async (url: string, type: string) => {
+    let resp = {
+        isError: true,
+        message: `Invalid ${type} URL`
+    }
+    try {
+        const res = await axios.get(url)
+        if(res.status < 400) {
+            return {
+                isError: false,
+                message: ""
+            }
+        } else {
+            return resp
+        }
+    } catch(err: any) {
+        return resp
+    }
+}
+
+// Parse Rate limiting config
+const getRateLimit = (config: any) => {
+    const maxLimit = parseInt(config.RATELIMIT.MAX_LIMIT) || 1
+    const windowSize = parseInt(config.RATELIMIT.WINDOW_SIZE) || 1440
+
+    const rateLimitConfig = {
+        MAX_LIMIT: maxLimit, // 1 request
+        WINDOW_SIZE: windowSize // 24 hours
+    }
+
+    if(maxLimit < 1 || maxLimit > 100 || windowSize < 60 || windowSize > 1440) {
+        return {isError: true, message: "Invalid rate limit config!", rateLimitConfig}
+    }
+
+    return {isError: false, message: "", rateLimitConfig}
+}
+
+const parseFee = (config: any) => {
+    let { MAX_FEE, MAX_PRIORITY_FEE } = config
+
+    const response = {
+        isError: true,
+        message: "Invalid max fee or max priority fee!",
+        MAX_FEE,
+        MAX_PRIORITY_FEE
+    }
+
+    try {
+        MAX_FEE = parseInt(MAX_FEE)
+        MAX_PRIORITY_FEE = parseInt(MAX_PRIORITY_FEE)
+    } catch(err: any) {
+        response.message = "Fee configs should be a number!"
+        return response
+    }
+
+    if(MAX_FEE < MAX_PRIORITY_FEE) {
+        response.message = "Max priority fee cannot be greater than max fee!"
+        return response
+    }
+
+    if(MAX_FEE > 1e4 || MAX_FEE <= 0) {
+        response.message = "Max fee is in invalid range!"
+        return response
+    }
+
+    if(MAX_PRIORITY_FEE > 1e4 || MAX_PRIORITY_FEE <= 0) {
+        response.message = "Max priority fee is in invalid range!"
+        return response
+    }
+
+    MAX_FEE = (MAX_FEE * 1e9).toString()
+    MAX_PRIORITY_FEE = (MAX_PRIORITY_FEE * 1e9).toString()
+
+    return {
+        isError: false,
+        message: "",
+        MAX_FEE,
+        MAX_PRIORITY_FEE
+    }
 }
 
 const getDripAmount = (DRIP_AMOUNT: number) => {
-    // base unit to gwei
-    if(DRIP_AMOUNT) {
-        return DRIP_AMOUNT * 1e9
-    } else {
-        return 2e9
+    const response = {
+        isError: true,
+        message: "Invalid max fee or max priority fee!",
+        DRIP_AMOUNT
     }
+
+    if(DRIP_AMOUNT) {
+        if(DRIP_AMOUNT <= 0 || DRIP_AMOUNT > 1000) {
+            response.message = "Drop amount out of range!"
+        } else {
+            DRIP_AMOUNT *= 1e9
+            return {
+                isError: false,
+                message: "",
+                DRIP_AMOUNT
+            }
+        }
+    }
+
+    return response
 }
 
-export const parseConfig = async (config: any, evmchains: any) => {
+const checkFaucetBalance = async (RPC: string) => {
+    
+}
+
+export const parseConfig = async (config: any, configs: any) => {
     let response = {
         isError: true,
         message: "Internal error!",
@@ -64,23 +198,72 @@ export const parseConfig = async (config: any, evmchains: any) => {
     }
 
     try {
-        // Check ID
-        config.ID = generateID(config.TOKEN, evmchains)
+        let res
 
-        // Chain ID
-        const res = await getChainID(config.RPC, evmchains)
+        // Check ID
+        config.ID = generateID(config.TOKEN, configs)
+
+        // Check unique name
+        res = parseName(config.NAME, configs)
         if(res.isError) {
             response.message = res.message
             return response
-        } else {
-            config.CHAINID = res.chainID
         }
 
+        // RPC and Chain ID check
+        res = await getChainID(config.RPC, configs)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.CHAINID = res.chainID
+
+        // Parse token
+        res = parseToken(config.TOKEN)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.TOKEN = res.token
+
+        // Validate Explorer URL
+        res = await validateURL(config.EXPLORER, "Explorer")
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+
+        // Validate Image URL
+        res = await validateURL(config.IMAGE, "Image")
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+
+        // Parse fee configs
+        res = parseFee(config)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.MAX_FEE = res.MAX_FEE
+        config.MAX_PRIORITY_FEE = res.MAX_PRIORITY_FEE
+
         // Rate limiter
-        config.RATELIMIT = getRateLimit(config)
+        res = getRateLimit(config)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.RATELIMIT = res.rateLimitConfig
 
         // Drip amount
-        config.DRIP_AMOUNT = getDripAmount(config.AMOUNT)
+        res = getDripAmount(config.AMOUNT)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.DRIP_AMOUNT = res.DRIP_AMOUNT
 
         response = {
             isError: false,

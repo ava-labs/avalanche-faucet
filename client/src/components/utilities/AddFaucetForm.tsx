@@ -4,13 +4,19 @@ import { Failure, Loading, Success } from './Loading'
 import { ObjectCompare } from './ObjectCompare'
 
 export const AddFaucetForm = (props: any) => {
-    const [config, setConfig] = useState({})
+    const [config, setConfig] = useState({
+        RATELIMIT: {}
+    })
     const [isLoading, setIsLoading] = useState(false)
     const [response, setResponse] = useState<any>({})
 
     const handleChange = (e: any) => {
         const newConfig: any = config
-        newConfig[e.target.name] = e.target.value
+        if(e.target.name === "MAX_LIMIT" || e.target.name === "WINDOW_SIZE") {
+            newConfig["RATELIMIT"][e.target.name] = e.target.value
+        } else {
+            newConfig[e.target.name] = e.target.value
+        }
         setConfig(newConfig)
     }
 
@@ -19,13 +25,11 @@ export const AddFaucetForm = (props: any) => {
         setIsLoading(true)
         try {
             const res = await props.submitJSON(config)
-            console.log(res)
             setResponse(res)
         } catch(err: any) {
             setResponse({isError: true, message: err.message})
         }
         setIsLoading(false)
-        console.log(response, response === "")
 	}
 
     return (

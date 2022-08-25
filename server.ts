@@ -107,7 +107,7 @@ erc20tokens.forEach((token: ERC20Type, i: number): void => {
 
 router.post('/addFaucet', async (req: any, res: any) => {
     const chainConfig = req.body?.config
-    const response = await parseConfig(chainConfig, evmchains)
+    const response = await parseConfig(chainConfig, [...evmchains, ...erc20tokens])
 
     if(!response.isError) {
         addEVMInstance(response.config)
