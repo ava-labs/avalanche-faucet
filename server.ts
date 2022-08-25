@@ -34,10 +34,24 @@ app.use(bodyParser.json())
 
 new RateLimiter(app, [GLOBAL_RL])
 
-const evmRateLimiter = new RateLimiter(app, [
+const evmIPRateLimiter = new RateLimiter(app, [
     ...evmchains,
     ...erc20tokens
 ])
+
+// address rate limiter
+const getAddress = (req: any, res: any) => {
+    const addr = req.body?.address
+
+    if(typeof addr == "string" && addr) {
+        return addr.toUpperCase()
+    }
+}
+
+const evmAddressRateLimiter = new RateLimiter(app, [
+    ...evmchains,
+    ...erc20tokens
+], getAddress)
 
 const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET)
 
@@ -98,7 +112,8 @@ router.post('/addFaucet', async (req: any, res: any) => {
     if(!response.isError) {
         addEVMInstance(response.config)
         evmchains.push(response.config)
-        evmRateLimiter.addNewConfig(response.config)
+        evmIPRateLimiter.addNewConfig(response.config)
+        evmAddressRateLimiter.addNewConfig(response.config, getAddress)
         res.status(200).send(response)
     } else {
         res.status(500).send(response)
@@ -113,10 +128,14 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 
     const evm: EVMInstanceAndConfig = evms.get(chain)!
 
-    evm?.instance.sendToken(address, erc20, (data: SendTokenResponse) => {
-        const { status, message, txHash } = data
-        res.status(status).send({message, txHash})
-    })
+    if(evm) {
+        evm?.instance.sendToken(address, erc20, (data: SendTokenResponse) => {
+            const { status, message, txHash } = data
+            res.status(status).send({message, txHash})
+        })
+    } else {
+        res.status(400).send({message: "Invalid parameters passed!"})
+    }
 })
 
 // GET request for fetching all the chain and token configurations
