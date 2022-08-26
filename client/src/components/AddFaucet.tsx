@@ -1,7 +1,9 @@
 import { useState } from "react"
 import Modal from 'react-modal'
 
-import { AddFaucetForm, PasteJSON, UploadJSON } from "./utilities"
+import { AddFaucetForm } from "./utilities/AddFaucetForm"
+import { PasteJSON } from "./utilities/PasteJSON"
+import { UploadJSON } from "./utilities/UploadJSON"
 
 import './styles/AddFaucet.css'
 
