@@ -1,4 +1,4 @@
-name: release Docker image
+name: Prod - release Docker image
 
 on:
   release:
