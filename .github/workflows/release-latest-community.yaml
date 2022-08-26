@@ -1,4 +1,4 @@
-name: release Docker image
+name: Community - release Docker image
 
 on:
   push:
