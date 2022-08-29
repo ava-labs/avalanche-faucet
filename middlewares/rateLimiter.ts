@@ -7,7 +7,7 @@ export class RateLimiter {
     rateLimiters: Map<any, any>
 
     constructor(app: any, configs: RateLimiterConfig[], keyGenerator?: any) {
-        this.PATH = configs[0].RATELIMIT.PATH || '/api/sendToken'
+        this.PATH = configs[0]?.RATELIMIT?.PATH || '/api/sendToken'
 
         this.rateLimiters = new Map()
         configs.forEach((config: any) => {

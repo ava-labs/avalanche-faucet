@@ -9,6 +9,16 @@
             "SKIP_FAILED_REQUESTS": false
         }
     },
+    "ADD_FAUCET_RL": {
+        "ID": "ADD_FAUCET",
+        "RATELIMIT": {
+            "REVERSE_PROXIES": 2,
+            "MAX_LIMIT": 2,
+            "WINDOW_SIZE": 60,
+            "PATH": "/api/addFaucet",
+            "SKIP_FAILED_REQUESTS": true
+        }
+    },
     "evmchains": [
         {
             "ID": "WAGMI",

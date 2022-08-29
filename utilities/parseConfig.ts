@@ -1,5 +1,92 @@
 import axios from 'axios'
 
+export const parseConfig = async (config: any, configs: any) => {
+    let response = {
+        isError: true,
+        message: "Internal error!",
+        config
+    }
+
+    try {
+        let res
+
+        // Check ID
+        config.ID = generateID(config.TOKEN, configs)
+
+        // Check unique name
+        res = parseName(config.NAME, configs)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+
+        // RPC and Chain ID check
+        res = await getChainID(config.RPC, configs)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.CHAINID = res.chainID
+
+        // Parse token
+        res = parseToken(config.TOKEN)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.TOKEN = res.token
+
+        // Validate Explorer URL
+        res = await validateURL(config.EXPLORER, "Explorer")
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+
+        // Validate Image URL
+        res = await validateURL(config.IMAGE, "Image")
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+
+        // Parse fee configs
+        res = parseFee(config)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.MAX_FEE = res.MAX_FEE
+        config.MAX_PRIORITY_FEE = res.MAX_PRIORITY_FEE
+
+        // Rate limiter
+        res = getRateLimit(config)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.RATELIMIT = res.rateLimitConfig
+
+        // Drip amount
+        res = getDripAmount(config.DRIP_AMOUNT)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.DRIP_AMOUNT = res.DRIP_AMOUNT
+
+        response = {
+            isError: false,
+            message: "Successful!",
+            config
+        }
+    } catch(err: any) {
+        response.message = err.message
+    }
+
+    return response
+}
+
 // Generates unique all-caps ID from the list of configs provided
 const generateID = (baseID: string, configs: any): any => {
     const newID = baseID.toUpperCase()
@@ -166,7 +253,7 @@ const parseFee = (config: any) => {
 const getDripAmount = (DRIP_AMOUNT: number) => {
     const response = {
         isError: true,
-        message: "Invalid max fee or max priority fee!",
+        message: "Invalid drop amount!",
         DRIP_AMOUNT
     }
 
@@ -187,92 +274,5 @@ const getDripAmount = (DRIP_AMOUNT: number) => {
 }
 
 const checkFaucetBalance = async (RPC: string) => {
-    
-}
 
-export const parseConfig = async (config: any, configs: any) => {
-    let response = {
-        isError: true,
-        message: "Internal error!",
-        config
-    }
-
-    try {
-        let res
-
-        // Check ID
-        config.ID = generateID(config.TOKEN, configs)
-
-        // Check unique name
-        res = parseName(config.NAME, configs)
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-
-        // RPC and Chain ID check
-        res = await getChainID(config.RPC, configs)
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-        config.CHAINID = res.chainID
-
-        // Parse token
-        res = parseToken(config.TOKEN)
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-        config.TOKEN = res.token
-
-        // Validate Explorer URL
-        res = await validateURL(config.EXPLORER, "Explorer")
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-
-        // Validate Image URL
-        res = await validateURL(config.IMAGE, "Image")
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-
-        // Parse fee configs
-        res = parseFee(config)
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-        config.MAX_FEE = res.MAX_FEE
-        config.MAX_PRIORITY_FEE = res.MAX_PRIORITY_FEE
-
-        // Rate limiter
-        res = getRateLimit(config)
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-        config.RATELIMIT = res.rateLimitConfig
-
-        // Drip amount
-        res = getDripAmount(config.AMOUNT)
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-        config.DRIP_AMOUNT = res.DRIP_AMOUNT
-
-        response = {
-            isError: false,
-            message: "Successful!",
-            config
-        }
-    } catch(err: any) {
-        response.message = err.message
-    }
-
-    return response
 }

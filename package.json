@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "avalanche": "^3.13.3",
+    "aws-sdk": "^2.1204.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.18.1",

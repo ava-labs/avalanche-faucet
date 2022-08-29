@@ -2,11 +2,11 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import path from 'path'
-import dotenv, { config } from 'dotenv'
+import dotenv from 'dotenv'
 import { BN } from 'avalanche'
 
 import { RateLimiter, VerifyCaptcha, parseURI } from './middlewares'
-import { parseConfig } from './utilities'
+import { parseConfig, Storage } from './utilities'
 import EVM from './vms/evm'
 
 import {
@@ -17,9 +17,8 @@ import {
 } from './types'
 
 import {
-    evmchains,
-    erc20tokens,
-    GLOBAL_RL
+    GLOBAL_RL,
+    ADD_FAUCET_RL
 } from './config.json'
 
 dotenv.config()
@@ -32,12 +31,12 @@ app.use(cors())
 app.use(parseURI)
 app.use(bodyParser.json())
 
-new RateLimiter(app, [GLOBAL_RL])
-
-const evmIPRateLimiter = new RateLimiter(app, [
-    ...evmchains,
-    ...erc20tokens
-])
+const storage = new Storage(
+    process.env.AWS_BUCKET_NAME!,
+    process.env.AWS_BUCKET_REGION!,
+    process.env.AWS_ACCESS_KEY!,
+    process.env.AWS_SECRET_KEY!
+)
 
 // address rate limiter
 const getAddress = (req: any, res: any) => {
@@ -48,61 +47,103 @@ const getAddress = (req: any, res: any) => {
     }
 }
 
-const evmAddressRateLimiter = new RateLimiter(app, [
-    ...evmchains,
-    ...erc20tokens
-], getAddress)
+let evmchains: any = [], erc20tokens: any = []
 
-const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET)
+// Rate Limiter setup
+new RateLimiter(app, [GLOBAL_RL])
+new RateLimiter(app, [ADD_FAUCET_RL])
 
-let evms = new Map<string, EVMInstanceAndConfig>()
+let evmIPRateLimiter: any = new RateLimiter(app, evmchains)
 
-// Get the complete config object from the array of config objects (chains) with ID as id
-const getChainByID = (chains: ChainType[], id: string): ChainType | undefined => {
-    let reply: ChainType | undefined
-    chains.forEach((chain: ChainType): void => {
-        if(chain.ID == id) {
-            reply = chain
-        }
-    })
-    return reply
-}
+let evmAddressRateLimiter: any = new RateLimiter(app, evmchains, getAddress)
 
-// Populates the missing config keys of the child using the parent's config
-const populateConfig = (child: any, parent: any): any => {
-    Object.keys(parent || {}).forEach((key) => {
-        if(!child[key]) {
-            child[key] = parent[key]
-        }
-    })
-    return child
-}
+let captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET)
 
-// Add evm faucet instance
-const addEVMInstance = (chain: ChainType) => {
-    const chainInstance: EVM = new EVM(chain, process.env[chain.ID] || process.env.PK)
-    
-    evms.set(chain.ID, {
-        config: chain,
-        instance: chainInstance
-    })
-}
+let evms: any
 
-// Setting up instance for EVM chains
-evmchains.forEach((chain: ChainType): void => {
-    addEVMInstance(chain)
-})
+let addEVMInstance: any
 
-// Adding ERC20 token contracts to their HOST evm instances
-erc20tokens.forEach((token: ERC20Type, i: number): void => {
-    if(token.HOSTID) {
-        token = populateConfig(token, getChainByID(evmchains, token.HOSTID))
+const initialize = async () => {
+    evmchains = []
+    erc20tokens = []
+    evms = new Map<string, EVMInstanceAndConfig>()
+
+    try {
+        evmchains = await storage.download('evmchains.json')
+    } catch(err: any) {
+        console.log("Error!")
     }
 
-    erc20tokens[i] = token
-    const evm: EVMInstanceAndConfig = evms.get(getChainByID(evmchains, token.HOSTID)?.ID!)!
+    evmchains.forEach((config: any) => {
+        evmIPRateLimiter.addNewConfig(config)
+        evmAddressRateLimiter.addNewConfig(config, getAddress)
+    })
 
-    evm?.instance.addERC20Contract(token)
+    // Get the complete config object from the array of config objects (chains) with ID as id
+    const getChainByID = (chains: ChainType[], id: string): ChainType | undefined => {
+        let reply: ChainType | undefined
+        chains.forEach((chain: ChainType): void => {
+            if(chain.ID == id) {
+                reply = chain
+            }
+        })
+        return reply
+    }
+
+    // Populates the missing config keys of the child using the parent's config
+    const populateConfig = (child: any, parent: any): any => {
+        Object.keys(parent || {}).forEach((key) => {
+            if(!child[key]) {
+                child[key] = parent[key]
+            }
+        })
+        return child
+    }
+
+    // Add evm faucet instance
+    addEVMInstance = (chain: ChainType) => {
+        const chainInstance: EVM = new EVM(chain, process.env[chain.ID] || process.env.PK)
+        
+        evms.set(chain.ID, {
+            config: chain,
+            instance: chainInstance
+        })
+    }
+
+    // Setting up instance for EVM chains
+    evmchains.forEach((chain: ChainType): void => {
+        addEVMInstance(chain)
+    })
+
+    // Adding ERC20 token contracts to their HOST evm instances
+    erc20tokens.forEach((token: ERC20Type, i: number): void => {
+        if(token.HOSTID) {
+            token = populateConfig(token, getChainByID(evmchains, token.HOSTID))
+        }
+
+        erc20tokens[i] = token
+        const evm: EVMInstanceAndConfig = evms.get(getChainByID(evmchains, token.HOSTID)?.ID!)!
+
+        evm?.instance.addERC20Contract(token)
+    })
+}
+
+initialize()
+
+const addNewEVMFaucet = (config: any) => {
+    evmchains.push(config)
+    
+    // Asynchronously update the S3 storage
+    storage.update(evmchains, 'evmchains.json')
+    
+    addEVMInstance(config)
+    evmIPRateLimiter.addNewConfig(config)
+    evmAddressRateLimiter.addNewConfig(config, getAddress)
+}
+
+app.post('/a', async (req: any, res: any) => {
+    console.log(await storage.update(req.body.config, "evmchains.json"))
+    res.send("OK")
 })
 
 router.post('/addFaucet', async (req: any, res: any) => {
@@ -110,10 +151,7 @@ router.post('/addFaucet', async (req: any, res: any) => {
     const response = await parseConfig(chainConfig, [...evmchains, ...erc20tokens])
 
     if(!response.isError) {
-        addEVMInstance(response.config)
-        evmchains.push(response.config)
-        evmIPRateLimiter.addNewConfig(response.config)
-        evmAddressRateLimiter.addNewConfig(response.config, getAddress)
+        addNewEVMFaucet(response.config)
         res.status(200).send(response)
     } else {
         res.status(500).send(response)
