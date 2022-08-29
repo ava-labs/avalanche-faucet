@@ -16,10 +16,12 @@ export class Storage {
         this.accessKeyId = accessKeyId
         this.secretAccessKey = secretAccessKey
 
-        this.s3 = new S3({
+        this.s3 = typeof accessKeyId == "string" && accessKeyId.length > 0 ? new S3({
             region,
             accessKeyId,
             secretAccessKey
+        }) : new S3({
+            region
         })
         
         this.isUploading = false
