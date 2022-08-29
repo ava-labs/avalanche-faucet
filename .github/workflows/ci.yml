@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - community-faucet
 jobs:
   build:
     name: Build
