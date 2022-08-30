@@ -146,7 +146,7 @@ app.post('/a', async (req: any, res: any) => {
     res.send("OK")
 })
 
-router.post('/addFaucet', async (req: any, res: any) => {
+router.post('/addFaucet', captcha.middleware, async (req: any, res: any) => {
     const chainConfig = req.body?.config
     const response = await parseConfig(chainConfig, [...evmchains, ...erc20tokens])
 

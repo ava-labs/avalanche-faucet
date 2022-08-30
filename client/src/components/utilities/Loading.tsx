@@ -1,6 +1,6 @@
 import '../styles/Loading.css'
 
-export const Loading = () => {
+export function Loading() {
     return (
         <div className = "col-3">
             <div className = "snippet" data-title=".dot-pulse">
@@ -12,13 +12,13 @@ export const Loading = () => {
     )
 }
 
-export const Success = () => {
+export function Success() {
     return (
         <img style={{width: "100px", height: "100px"}} alt='success' src='/success.gif'/>
     )
 }
 
-export const Failure = () => {
+export function Failure() {
     return (
         <img style={{width: "100px", height: "100px"}} alt='failure' src='/failure.gif'/>
     )
