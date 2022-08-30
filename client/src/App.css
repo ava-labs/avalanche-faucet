@@ -12,9 +12,10 @@ body::-webkit-scrollbar-thumb {
 
 .app {
     font-family: Avenir,Helvetica,Arial,sans-serif;
-    padding-top: 5%;
+    padding-top: 2%;
     display: flex;
-    justify-content: space-around;
+    gap: 40px;
+    flex-direction: column;
     align-items: center;
 }
 
