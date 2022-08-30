@@ -1,3 +1,7 @@
+## 🚨🚨 ALERT 🚨🚨
+
+This branch is reserved for our playground faucet, where users can freely add their faucet configuration. It has some features that are not in the original Avalanche Faucet's `main` branch due to security reasons. It will not be merged to `main` anytime sooner. Please fetch this branch at your own risk.
+
 # Avalanche Subnet Faucet
 
 Right now there are thousands of networks and chains in the blockchain space, each with its capabilities and use-cases. And each network requires native coins to do any transaction on them, which can have a monetary value as well. These coins can be collected through centralized exchanges, token sales, etc in exchange for some monetary assets like USD.

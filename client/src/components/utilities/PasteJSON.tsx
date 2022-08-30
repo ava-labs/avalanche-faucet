@@ -6,7 +6,6 @@ export const PasteJSON = (props: any) => {
     const [config, setConfig] = useState({})
     const [canSubmit, setCanSubmit] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [response, setResponse] = useState<any>({})
     
     const handleChangePasteJSON = (e: any, elem: any) => {
         if(e.target?.value) {
@@ -25,10 +24,9 @@ export const PasteJSON = (props: any) => {
         if(canSubmit) {
             setIsLoading(true)
             try {
-                const res = await props.submitJSON(config)
-                setResponse(res)
+                await props.submitJSON(config)
             } catch(err: any) {
-                setResponse({isError: true, message: err.message})
+                
             }
             setIsLoading(false)
         }
@@ -37,15 +35,9 @@ export const PasteJSON = (props: any) => {
     return (
         <div>
             {
-                ObjectCompare(response, {})
+                ObjectCompare(props.response, {}) || props.response.isError
                 ?
                 (
-                    isLoading
-                    ?
-                    <div style={{display: "flex", justifyContent: "center", margin: "50px"}}>
-                        <Loading/>
-                    </div>
-                    :
                     <div>
                         <span style={{color: "grey"}}>
                             Paste JSON configuration.
@@ -63,10 +55,27 @@ export const PasteJSON = (props: any) => {
                         />
                         <br/>
         
-                        <div style={{display: "flex"}}>
-                            <button onClick={handleSubmission} className={canSubmit ? 'submit-button' : "submit-button-disabled"} style = {{width: "50%"}}>
-                                Submit
-                            </button>
+                        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                            {
+                                props.response.isError
+                                &&
+                                <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                    <Failure/>
+                                    {props.response.message}
+                                </div>
+                            }
+
+                            {
+                                isLoading
+                                ?
+                                <div style={{marginTop: "20px"}}>
+                                    <Loading/>
+                                </div>
+                                :
+                                <button onClick={handleSubmission} className={canSubmit ? 'submit-button' : "submit-button-disabled"} style = {{width: "50%"}}>
+                                    Submit
+                                </button>
+                            }
                         </div>
                     </div>
                 )
@@ -75,14 +84,10 @@ export const PasteJSON = (props: any) => {
                     (
                         <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
                             {
-                                response.isError
-                                ?
-                                <Failure/>
-                                :
-                                <Success/>
+                                !props.response.isError && <Success/>
                             }
 
-                            {response.message}
+                            {props.response.message}
                         </div>
                     )
                 )

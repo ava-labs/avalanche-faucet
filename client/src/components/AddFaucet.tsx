@@ -10,41 +10,58 @@ import './styles/AddFaucet.css'
 export function AddFaucet(props: any) {
     const [modalIsOpen, setIsOpen] = useState(false);
     const [selected, setSelected] = useState(0);
+    const [response, setResponse] = useState({})
 
     function openModal() {
         setIsOpen(true);
     }
 
     function closeModal() {
+        props.back()
+        setResponse({})
         setIsOpen(false);
     }
 
     const submitJSON = async (config: any) => {
+        const { token, v2Token } = await props.recaptcha.getCaptchaToken(1)
+
+        let data
         try {
-            const response = await props.axios.post('/addFaucet', { config })
-            return response.data
+            const response = await props.axios.post('/addFaucet', { config, token, v2Token })
+            data = response.data
         } catch(err: any) {
-            return {isError: true, message: err?.response?.data?.message}
+            data = {isError: true, message: err?.response?.data?.message}
         }
+
+        console.log(document.getElementsByClassName('v2-recaptcha')[1])
+
+        let reloadV2Widget = true
+        if(document.getElementsByClassName('v2-recaptcha')[1].innerHTML) {
+            reloadV2Widget = false
+        }
+
+        props.recaptcha.ifCaptchaFailed(data, 1, reloadV2Widget)
+
+        setResponse(data)
     }
 
     function RenderForm() {
         switch(selected) {
             case 0:
                 return (
-                    <PasteJSON submitJSON = {submitJSON}/>
+                    <PasteJSON submitJSON = {submitJSON} response = {response}/>
                 )
             case 1:
                 return (
-                    <AddFaucetForm submitJSON = {submitJSON}/>
+                    <AddFaucetForm submitJSON = {submitJSON} response = {response}/>
                 )
             case 2:
                 return (
-                    <UploadJSON submitJSON = {submitJSON}/>
+                    <UploadJSON submitJSON = {submitJSON} response = {response}/>
                 )
             default:
                 return (
-                    <PasteJSON submitJSON = {submitJSON}/>
+                    <PasteJSON submitJSON = {submitJSON} response = {response}/>
                 )
         }
     }
@@ -82,6 +99,10 @@ export function AddFaucet(props: any) {
                 <br/><br/>
 
                 <RenderForm/>
+
+                <div style={{display: "flex", justifyContent: "center"}}>
+                    <div className='v2-recaptcha' style={{marginTop: "10px"}}></div>
+                </div>
             </Modal>
         </div>
     );

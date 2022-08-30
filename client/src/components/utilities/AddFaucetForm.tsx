@@ -8,7 +8,6 @@ export const AddFaucetForm = (props: any) => {
         RATELIMIT: {}
     })
     const [isLoading, setIsLoading] = useState(false)
-    const [response, setResponse] = useState<any>({})
 
     const handleChange = (e: any) => {
         const newConfig: any = config
@@ -24,10 +23,9 @@ export const AddFaucetForm = (props: any) => {
         e.preventDefault()
         setIsLoading(true)
         try {
-            const res = await props.submitJSON(config)
-            setResponse(res)
+            await props.submitJSON(config)
         } catch(err: any) {
-            setResponse({isError: true, message: err.message})
+            console.log("Error:", err)
         }
         setIsLoading(false)
 	}
@@ -35,15 +33,9 @@ export const AddFaucetForm = (props: any) => {
     return (
         <div>
             {
-                ObjectCompare(response, {})
+                ObjectCompare(props.response, {}) || props.response.isError
                 ?
                 (
-                    isLoading
-                    ?
-                    <div style={{display: "flex", justifyContent: "center", margin: "50px"}}>
-                        <Loading/>
-                    </div>
-                    :
                     <form onSubmit={handleSubmission}>
                         <span style={{color: "grey"}}>
                             Network Name
@@ -176,26 +168,41 @@ export const AddFaucetForm = (props: any) => {
                             />
                         </div>
 
-                        <div style={{display: "flex"}}>
-                            <button type="submit" className={'submit-button'} style = {{width: "50%"}}>
-                                Submit
-                            </button>
+                        <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                            {
+                                props.response.isError
+                                &&
+                                <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                    <Failure/>
+                                    {props.response.message}
+                                </div>
+                            }
+
+                            {
+                                isLoading
+                                ?
+                                <div style={{marginTop: "20px"}}>
+                                    <Loading/>
+                                </div>
+                                :
+                                <button type="submit" className={'submit-button'} style = {{width: "50%"}}>
+                                    Submit
+                                </button>
+                            }
                         </div>
                     </form>
                 )
                 :
                 (
-                    <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
-                        {
-                            response.isError
-                            ?
-                            <Failure/>
-                            :
-                            <Success/>
-                        }
+                    (
+                        <div style={{display: "flex", alignItems: "center", flexDirection: "column"}}>
+                            {
+                                !props.response.isError && <Success/>
+                            }
 
-                        {response.message}
-                    </div>
+                            {props.response.message}
+                        </div>
+                    )
                 )
             }
         </div>
