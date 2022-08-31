@@ -6,7 +6,7 @@ import dotenv from 'dotenv'
 import { BN } from 'avalanche'
 
 import { RateLimiter, VerifyCaptcha, parseURI } from './middlewares'
-import { parseConfig, Storage } from './utilities'
+import { parseConfig, Storage, Auth } from './utilities'
 import EVM from './vms/evm'
 
 import {
@@ -37,6 +37,12 @@ const storage = new Storage(
     process.env.AWS_BUCKET_REGION!,
     process.env.AWS_ACCESS_KEY!,
     process.env.AWS_SECRET_KEY!
+)
+
+const auth = new Auth(
+    process.env.ADMIN_USERNAME!,
+    process.env.ADMIN_PASSWORD_HASH!,
+    process.env.JWT_TOKEN_KEY!
 )
 
 // address rate limiter
@@ -211,6 +217,32 @@ router.get('/getBalance', (req: any, res: any) => {
     res.status(200).send({
         balance: balance?.toString()
     })
+})
+
+// app.post('/createUser', async (req: any, res: any) => {
+//     const { password } = req.body
+
+//     const passwordHash = await bcrypt.hash(password, 10)
+
+//     console.log(passwordHash)
+
+//     res.status(200).send("Successful!")
+// })
+
+app.post('/login', async (req: any, res: any) => {
+    const { username, password, isAdmin } = req.body
+
+    const token = await auth.getAuthorizedToken(username, password, isAdmin)
+
+    if(token) {
+        res.status(200).send({token, message: "Successfully logged in!"})
+    } else {
+        res.status(403).send("Invalid username or password!")
+    }
+})
+
+app.post('/auth', auth.auth, (req: any, res: any) => {
+    res.status(200).send("Successfully authenticated!")
 })
 
 app.use('/api', router)
