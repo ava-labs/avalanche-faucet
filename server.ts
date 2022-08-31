@@ -18,7 +18,8 @@ import {
 
 import {
     GLOBAL_RL,
-    ADD_FAUCET_RL
+    ADD_FAUCET_RL,
+    FAUCET_CONFIG
 } from './config.json'
 
 dotenv.config()
@@ -148,7 +149,7 @@ app.post('/a', async (req: any, res: any) => {
 
 router.post('/addFaucet', captcha.middleware, async (req: any, res: any) => {
     const chainConfig = req.body?.config
-    const response = await parseConfig(chainConfig, [...evmchains, ...erc20tokens])
+    const response = await parseConfig(chainConfig, [...evmchains, ...erc20tokens], FAUCET_CONFIG)
 
     if(!response.isError) {
         addNewEVMFaucet(response.config)

@@ -45,7 +45,8 @@ export function UploadJSON(props: any) {
         }
     }, [selectedFile])
 
-	const handleSubmission = async () => {
+	const handleSubmission = async (e: any) => {
+        e.preventDefault()
         if(selectedFile) {
             if(canSubmit) {
                 setIsLoading(true)
@@ -65,7 +66,7 @@ export function UploadJSON(props: any) {
                 ObjectCompare(props.response, {}) || props.response.isError
                 ?
                 (
-                    <div>
+                    <form onSubmit={handleSubmission}>
                         <span style={{color: "grey"}}>
                             Upload your JSON file here.
                             Learn more about the format <a target = "_blank" rel="noreferrer" style={{color: "#eb4034"}} href="https://github.com/ava-labs/avalanche-faucet#adding-a-new-subnet">here</a>.
@@ -73,7 +74,16 @@ export function UploadJSON(props: any) {
                         <br/> 
                         <br/> 
         
-                        <div style={{ display: "flex", justifyContent: "center" }}>
+                        <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
+                            {
+                                props.response.isError
+                                &&
+                                <div style={{display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "20px"}}>
+                                    <Failure/>
+                                    {props.response.message}
+                                </div>
+                            }
+
                             <label className="file-upload-input">
                                 <input id="file-upload" type="file" accept=".json" style={{display: "none"}} onChange={ changeHandler }/>
                                 { isSelected ? getFileName() : "Choose File" }
@@ -90,14 +100,9 @@ export function UploadJSON(props: any) {
                                     <textarea rows={19} className='file-output scrollbar' id='file-data'/>
         
                                     <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                        {
-                                            props.response.isError
-                                            &&
-                                            <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
-                                                <Failure/>
-                                                {props.response.message}
-                                            </div>
-                                        }
+                                        <div style={{marginTop: "20px"}}>
+                                            <input required type={"checkbox"} style = {{marginRight: "10px"}}/>Sent 100 coins to faucet address
+                                        </div>
 
                                         {
                                             isLoading
@@ -106,7 +111,7 @@ export function UploadJSON(props: any) {
                                                 <Loading/>
                                             </div>
                                             :
-                                            <button onClick={handleSubmission} className={canSubmit ? 'submit-button' : "submit-button-disabled"} style = {{width: "50%"}}>
+                                            <button type = "submit" className={canSubmit ? 'submit-button' : "submit-button-disabled"} style = {{width: "50%"}}>
                                                 Submit
                                             </button>
                                         }
@@ -114,7 +119,7 @@ export function UploadJSON(props: any) {
                                 </div>
                             )
                         }
-                    </div>
+                    </form>
                 )
                 :
                 (

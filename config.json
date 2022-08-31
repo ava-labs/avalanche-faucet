@@ -1,4 +1,10 @@
 {
+    "FAUCET_CONFIG": {
+        "faucetAddress": "0x28344BE61250633a52e287a469012f60A901A41b",
+        "expectedBalance": 100,
+        "minFaucetDrops": 0,
+        "shouldCheckBalance": true
+    },
     "GLOBAL_RL": {
         "ID": "GLOBAL",
         "RATELIMIT": {
