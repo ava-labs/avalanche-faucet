@@ -42,8 +42,11 @@ const storage = new Storage(
 const auth = new Auth(
     process.env.ADMIN_USERNAME!,
     process.env.ADMIN_PASSWORD_HASH!,
-    process.env.JWT_TOKEN_KEY!
+    process.env.ADMIN_TOTP_KEY!,
+    process.env.ENCRYPTION_KEY!
 )
+
+let users: any
 
 // address rate limiter
 const getAddress = (req: any, res: any) => {
@@ -133,6 +136,12 @@ const initialize = async () => {
 
         evm?.instance.addERC20Contract(token)
     })
+
+    try {
+        users = await storage.download('credentials.json')
+    } catch(err: any) {
+        console.log("Error!")
+    }
 }
 
 initialize()
@@ -147,11 +156,6 @@ const addNewEVMFaucet = (config: any) => {
     evmIPRateLimiter.addNewConfig(config)
     evmAddressRateLimiter.addNewConfig(config, getAddress)
 }
-
-app.post('/a', async (req: any, res: any) => {
-    console.log(await storage.update(req.body.config, "evmchains.json"))
-    res.send("OK")
-})
 
 router.post('/addFaucet', captcha.middleware, async (req: any, res: any) => {
     const chainConfig = req.body?.config
@@ -219,30 +223,55 @@ router.get('/getBalance', (req: any, res: any) => {
     })
 })
 
-// app.post('/createUser', async (req: any, res: any) => {
-//     const { password } = req.body
+// Only signed in users can remove faucets with provided IDs
+app.post('/removeFaucets', auth.verify, async (req: any, res: any) => {
+    const IDs = req.body.IDs
 
-//     const passwordHash = await bcrypt.hash(password, 10)
+    let removedIDs: any = []
+    
+    evmchains.forEach((config: any, index: number) => {
+        if(IDs?.indexOf(config.ID) > -1) {
+            removedIDs.push(config.ID)
+            evmchains.splice(index, 1)
+            evms.delete(config.ID)
+        }
+    })
 
-//     console.log(passwordHash)
+    storage.update(evmchains, "evmchains.json")
 
-//     res.status(200).send("Successful!")
-// })
+    res.status(200).send({removedIDs})
+})
 
-app.post('/login', async (req: any, res: any) => {
-    const { username, password, isAdmin } = req.body
+// Only signed in admins can make this request to create new users
+app.post('/signup', auth.verify, async (req: any, res: any) => {
+    if(req?.user?.isAdmin) {
+        const { username, password } = req.body
 
-    const token = await auth.getAuthorizedToken(username, password, isAdmin)
+        let response = await auth.createUser(username, password, users)
 
-    if(token) {
-        res.status(200).send({token, message: "Successfully logged in!"})
+        if(response.isError) {
+            res.status(400).send(response.message)
+        } else {
+            storage.update(response.users, "credentials.json")
+    
+            res.status(200).send({totpKey: response.totpKey, message: "Successful!"})
+        }
     } else {
-        res.status(403).send("Invalid username or password!")
+        res.status(403).send("Forbidden!")
     }
 })
 
-app.post('/auth', auth.auth, (req: any, res: any) => {
-    res.status(200).send("Successfully authenticated!")
+// For signing in of admins and registered users
+app.post('/signin', async (req: any, res: any) => {
+    const { username, password, totp, isAdmin } = req.body
+
+    const token = await auth.getAuthorizedToken(username, password, totp, users, isAdmin)
+
+    if(token) {
+        res.status(200).send({token, message: "Successfully signed in!"})
+    } else {
+        res.status(403).send("Invalid username, password or TOTP!")
+    }
 })
 
 app.use('/api', router)
