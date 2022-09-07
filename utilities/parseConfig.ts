@@ -168,7 +168,7 @@ const checkBalance = async (RPC: string, token: string, faucetAddress: string, e
 
         const balance =  parseInt(data.result)
 
-        if(balance / 1e18 < expectedBalance) {
+        if(isNaN(balance) || balance / 1e18 < expectedBalance) {
             return {
                 isError: true,
                 message: `Please send at least ${expectedBalance} ${token} to the faucet address.`
@@ -200,7 +200,7 @@ const getChainID = async (RPC: string, configs: any) => {
         })
         chainID =  parseInt(data.result)
 
-        if(chainID == NaN) {
+        if(!isNaN(chainID)) {
             return {
                 isError: true,
                 message: `Invalid chain ID found!`,
