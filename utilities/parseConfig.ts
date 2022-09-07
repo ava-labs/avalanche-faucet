@@ -200,7 +200,7 @@ const getChainID = async (RPC: string, configs: any) => {
         })
         chainID =  parseInt(data.result)
 
-        if(!isNaN(chainID)) {
+        if(isNaN(chainID)) {
             return {
                 isError: true,
                 message: `Invalid chain ID found!`,
