@@ -63,9 +63,12 @@ export class Auth {
             token = this.getJWTToken(username, true)
         } else if(await this.isUser(username, password, totp, users)) {
             token = this.getJWTToken(username)
+            isAdmin = false
         }
     
-        return token
+        return {
+            token, isAdmin
+        }
     }
 
     verify = (req: any, res: any, next: any) => {
@@ -82,6 +85,8 @@ export class Auth {
             return res.status(401).send("Invalid Token:" + err);
         }
         
+        console.log("Authorized User:", req.user)
+
         return next();
     }
 

@@ -30,6 +30,7 @@ const router: any = express.Router()
 app.use(express.static(path.join(__dirname, "client")))
 app.use(cors())
 app.use(parseURI)
+app.use(express.json())
 app.use(bodyParser.json())
 
 const storage = new Storage(
@@ -145,6 +146,11 @@ const initialize = async () => {
 }
 
 initialize()
+
+app.post('/a', async (req: any, res: any) => {
+    console.log(await storage.update(req.body.config, "evmchains.json"))
+    res.send("OK")
+})
 
 const addNewEVMFaucet = (config: any) => {
     evmchains.push(config)
@@ -265,13 +271,25 @@ app.post('/signup', auth.verify, async (req: any, res: any) => {
 app.post('/signin', async (req: any, res: any) => {
     const { username, password, totp, isAdmin } = req.body
 
-    const token = await auth.getAuthorizedToken(username, password, totp, users, isAdmin)
+    const response = await auth.getAuthorizedToken(username, password, totp, users, isAdmin)
 
-    if(token) {
-        res.status(200).send({token, message: "Successfully signed in!"})
+    if(response.token) {
+        res.status(200).send({
+            token: response.token,
+            isAdmin: response.isAdmin,
+            message: "Successfully signed in!"
+        })
     } else {
         res.status(403).send("Invalid username, password or TOTP!")
     }
+})
+
+app.get('/users', auth.verify, (req: any, res: any) => {
+    const userIDs: string[] = []
+    users.forEach((user: any) => {
+        userIDs.push(user.username)
+    })
+    res.status(200).send({users: userIDs})
 })
 
 app.use('/api', router)
