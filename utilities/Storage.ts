@@ -6,8 +6,8 @@ export class Storage {
     region: string | undefined;
     accessKeyId: string | undefined;
     secretAccessKey: string | undefined;
-    isUploading: boolean;
-    config: any;
+    isUploading: Map<string, boolean>;
+    config: Map<string, any>;
     s3: any;
 
     constructor(bucketName: string, region: string, accessKeyId: string, secretAccessKey: string) {
@@ -24,25 +24,25 @@ export class Storage {
             region
         })
         
-        this.isUploading = false
-        this.config = undefined
+        this.isUploading = new Map<string, boolean>()
+        this.config = new Map<string, any>()
     }
 
     update = async (newConfig: any, fileName: string) => {
-        if(this.isUploading) {
-            this.config = newConfig
+        if(this.isUploading.get(fileName)) {
+            this.config.set(fileName, newConfig)
             return
         }
     
-        this.isUploading = true
+        this.isUploading.set(fileName, true)
         await this.upload(newConfig, fileName)
-        this.isUploading = false
+        this.isUploading.set(fileName, false)
     
-        if(this.config) {
-            this.update(this.config, fileName)
+        if(this.config.get(fileName)) {
+            this.update(this.config.get(fileName), fileName)
             return
         }
-        this.config = undefined
+        this.config.set(fileName, undefined)
     }
 
     upload = (config: any, fileName: string) => {

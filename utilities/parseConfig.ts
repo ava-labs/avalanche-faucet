@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const parseConfig = async (config: any, configs: any) => {
+export const parseConfig = async (config: any, configs: any, faucetConfig: any) => {
     let response = {
         isError: true,
         message: "Internal error!",
@@ -9,6 +9,14 @@ export const parseConfig = async (config: any, configs: any) => {
 
     try {
         let res
+
+        // Parse token
+        res = parseToken(config.TOKEN)
+        if(res.isError) {
+            response.message = res.message
+            return response
+        }
+        config.TOKEN = res.token
 
         // Check ID
         config.ID = generateID(config.TOKEN, configs)
@@ -27,14 +35,6 @@ export const parseConfig = async (config: any, configs: any) => {
             return response
         }
         config.CHAINID = res.chainID
-
-        // Parse token
-        res = parseToken(config.TOKEN)
-        if(res.isError) {
-            response.message = res.message
-            return response
-        }
-        config.TOKEN = res.token
 
         // Validate Explorer URL
         res = await validateURL(config.EXPLORER, "Explorer")
@@ -74,6 +74,16 @@ export const parseConfig = async (config: any, configs: any) => {
             return response
         }
         config.DRIP_AMOUNT = res.DRIP_AMOUNT
+
+        const expectedBalance = Math.max(faucetConfig.minFaucetDrops * config.DRIP_AMOUNT / 1e9, faucetConfig.expectedBalance)
+
+        if(faucetConfig.shouldCheckBalance) {
+            res = await checkBalance(config.RPC, config.TOKEN, faucetConfig.faucetAddress, expectedBalance)
+            if(res.isError) {
+                response.message = res.message
+                return response
+            }
+        }
 
         response = {
             isError: false,
@@ -119,7 +129,15 @@ const parseName = (name: string, configs: any) => {
 
 // parse tokens to all-caps and less than 10 characters
 const parseToken = (token: string) => {
-    token = token.toUpperCase()
+    try{
+        token = token.toUpperCase()
+    } catch(err: any) {
+        return {
+            isError: true,
+            message: "Invalid token name!",
+            token
+        }
+    }
 
     if(token.length > 10 || token.length == 0) {
         return {
@@ -136,8 +154,43 @@ const parseToken = (token: string) => {
     }
 }
 
+const checkBalance = async (RPC: string, token: string, faucetAddress: string, expectedBalance: number) => {
+    try {
+        const { data } = await axios.post(RPC, {
+            "jsonrpc": "2.0",
+            "method": "eth_getBalance",
+            "params": [
+                faucetAddress,
+                "latest"
+            ],
+            "id": 1
+        })
+
+        const balance =  parseInt(data.result)
+
+        if(balance / 1e18 < expectedBalance) {
+            return {
+                isError: true,
+                message: `Please send at least ${expectedBalance} ${token} to the faucet address.`
+            }
+        }
+
+    } catch(err: any) {
+        return {
+            isError: true,
+            message: "Error fetching balance. Invalid RPC!"
+        }
+    }
+
+    return {
+        isError: false,
+        message: ""
+    }
+}
+
 // Validates RPC by fetching ChainID. ChainID should be unique within the configs passed
 const getChainID = async (RPC: string, configs: any) => {
+    let chainID
     try {
         const { data } = await axios.post(RPC, {
             "jsonrpc": "2.0",
@@ -145,7 +198,15 @@ const getChainID = async (RPC: string, configs: any) => {
             "params": [],
             "id": 1
         })
-        const chainID =  parseInt(data.result)
+        chainID =  parseInt(data.result)
+
+        if(chainID == NaN) {
+            return {
+                isError: true,
+                message: `Invalid chain ID found!`,
+                chainID
+            }
+        }
 
         for(let i = 0; i < configs.length; i++) {
             if(configs[i].CHAINID == chainID) {
@@ -165,7 +226,8 @@ const getChainID = async (RPC: string, configs: any) => {
 
     return {
         isError: false,
-        message: ""
+        message: "",
+        chainID
     }
 }
 
@@ -271,8 +333,4 @@ const getDripAmount = (DRIP_AMOUNT: number) => {
     }
 
     return response
-}
-
-const checkFaucetBalance = async (RPC: string) => {
-
 }

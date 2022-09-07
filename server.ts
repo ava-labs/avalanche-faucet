@@ -6,7 +6,7 @@ import dotenv from 'dotenv'
 import { BN } from 'avalanche'
 
 import { RateLimiter, VerifyCaptcha, parseURI } from './middlewares'
-import { parseConfig, Storage } from './utilities'
+import { parseConfig, Storage, Auth } from './utilities'
 import EVM from './vms/evm'
 
 import {
@@ -18,7 +18,8 @@ import {
 
 import {
     GLOBAL_RL,
-    ADD_FAUCET_RL
+    ADD_FAUCET_RL,
+    FAUCET_CONFIG
 } from './config.json'
 
 dotenv.config()
@@ -29,6 +30,7 @@ const router: any = express.Router()
 app.use(express.static(path.join(__dirname, "client")))
 app.use(cors())
 app.use(parseURI)
+app.use(express.json())
 app.use(bodyParser.json())
 
 const storage = new Storage(
@@ -37,6 +39,15 @@ const storage = new Storage(
     process.env.AWS_ACCESS_KEY!,
     process.env.AWS_SECRET_KEY!
 )
+
+const auth = new Auth(
+    process.env.ADMIN_USERNAME!,
+    process.env.ADMIN_PASSWORD_HASH!,
+    process.env.ADMIN_TOTP_KEY!,
+    process.env.ENCRYPTION_KEY!
+)
+
+let users: any
 
 // address rate limiter
 const getAddress = (req: any, res: any) => {
@@ -126,9 +137,20 @@ const initialize = async () => {
 
         evm?.instance.addERC20Contract(token)
     })
+
+    try {
+        users = await storage.download('credentials.json')
+    } catch(err: any) {
+        console.log("Error!")
+    }
 }
 
 initialize()
+
+app.post('/a', async (req: any, res: any) => {
+    console.log(await storage.update(req.body.config, "evmchains.json"))
+    res.send("OK")
+})
 
 const addNewEVMFaucet = (config: any) => {
     evmchains.push(config)
@@ -141,14 +163,9 @@ const addNewEVMFaucet = (config: any) => {
     evmAddressRateLimiter.addNewConfig(config, getAddress)
 }
 
-app.post('/a', async (req: any, res: any) => {
-    console.log(await storage.update(req.body.config, "evmchains.json"))
-    res.send("OK")
-})
-
 router.post('/addFaucet', captcha.middleware, async (req: any, res: any) => {
     const chainConfig = req.body?.config
-    const response = await parseConfig(chainConfig, [...evmchains, ...erc20tokens])
+    const response = await parseConfig(chainConfig, [...evmchains, ...erc20tokens], FAUCET_CONFIG)
 
     if(!response.isError) {
         addNewEVMFaucet(response.config)
@@ -210,6 +227,69 @@ router.get('/getBalance', (req: any, res: any) => {
     res.status(200).send({
         balance: balance?.toString()
     })
+})
+
+// Only signed in users can remove faucets with provided IDs
+app.post('/removeFaucets', auth.verify, async (req: any, res: any) => {
+    const IDs = req.body.IDs
+
+    let removedIDs: any = []
+    
+    evmchains.forEach((config: any, index: number) => {
+        if(IDs?.indexOf(config.ID) > -1) {
+            removedIDs.push(config.ID)
+            evmchains.splice(index, 1)
+            evms.delete(config.ID)
+        }
+    })
+
+    storage.update(evmchains, "evmchains.json")
+
+    res.status(200).send({removedIDs})
+})
+
+// Only signed in admins can make this request to create new users
+app.post('/signup', auth.verify, async (req: any, res: any) => {
+    if(req?.user?.isAdmin) {
+        const { username, password } = req.body
+
+        let response = await auth.createUser(username, password, users)
+
+        if(response.isError) {
+            res.status(400).send(response.message)
+        } else {
+            storage.update(response.users, "credentials.json")
+    
+            res.status(200).send({totpKey: response.totpKey, message: "Successful!"})
+        }
+    } else {
+        res.status(403).send("Forbidden!")
+    }
+})
+
+// For signing in of admins and registered users
+app.post('/signin', async (req: any, res: any) => {
+    const { username, password, totp, isAdmin } = req.body
+
+    const response = await auth.getAuthorizedToken(username, password, totp, users, isAdmin)
+
+    if(response.token) {
+        res.status(200).send({
+            token: response.token,
+            isAdmin: response.isAdmin,
+            message: "Successfully signed in!"
+        })
+    } else {
+        res.status(403).send("Invalid username, password or TOTP!")
+    }
+})
+
+app.get('/users', auth.verify, (req: any, res: any) => {
+    const userIDs: string[] = []
+    users.forEach((user: any) => {
+        userIDs.push(user.username)
+    })
+    res.status(200).send({users: userIDs})
 })
 
 app.use('/api', router)

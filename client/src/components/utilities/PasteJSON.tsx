@@ -20,7 +20,8 @@ export const PasteJSON = (props: any) => {
         }
     }
 
-    const handleSubmission = async () => {
+    const handleSubmission = async (e: any) => {
+        e.preventDefault()
         if(canSubmit) {
             setIsLoading(true)
             try {
@@ -38,12 +39,11 @@ export const PasteJSON = (props: any) => {
                 ObjectCompare(props.response, {}) || props.response.isError
                 ?
                 (
-                    <div>
+                    <form onSubmit={handleSubmission}>
                         <span style={{color: "grey"}}>
                             Paste JSON configuration.
                             Learn more about the format <a target = "_blank" rel="noreferrer" style={{color: "#eb4034"}} href="https://github.com/ava-labs/avalanche-faucet#adding-a-new-subnet">here</a>.
                         </span>
-                        <br/><br/>
         
                         <span id="json-error"></span>
         
@@ -59,11 +59,15 @@ export const PasteJSON = (props: any) => {
                             {
                                 props.response.isError
                                 &&
-                                <div style={{display: "flex", flexDirection: "column", alignItems: "center"}}>
+                                <div style={{display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "20px"}}>
                                     <Failure/>
                                     {props.response.message}
                                 </div>
                             }
+
+                            <div>
+                                <input required type={"checkbox"} style = {{marginRight: "10px"}}/>Sent 100 coins to faucet address
+                            </div>
 
                             {
                                 isLoading
@@ -72,12 +76,12 @@ export const PasteJSON = (props: any) => {
                                     <Loading/>
                                 </div>
                                 :
-                                <button onClick={handleSubmission} className={canSubmit ? 'submit-button' : "submit-button-disabled"} style = {{width: "50%"}}>
+                                <button type="submit" className={canSubmit ? 'submit-button' : "submit-button-disabled"} style = {{width: "50%"}}>
                                     Submit
                                 </button>
                             }
                         </div>
-                    </div>
+                    </form>
                 )
                 :
                 (

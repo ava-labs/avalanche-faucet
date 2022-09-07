@@ -178,6 +178,10 @@ export const AddFaucetForm = (props: any) => {
                                 </div>
                             }
 
+                            <div style={{marginTop: "20px"}}>
+                                <input required type={"checkbox"} style = {{marginRight: "10px"}}/>Sent 100 coins to faucet address
+                            </div>
+
                             {
                                 isLoading
                                 ?
