@@ -159,13 +159,13 @@
             "ID": "NUM",
             "NAME": "Numbers Testnet",
             "TOKEN": "NUM",
-            "RPC": "https://testnetrpc.numbersprotocol.io",
+            "RPC": "https://testnetrpc.num.network",
             "CHAINID": 10508,
-            "EXPLORER": "https://testnet.numbersprotocol.io",
+            "EXPLORER": "https://testnet.num.network",
             "IMAGE": "https://i.imgur.com/6ZG2tIW.png",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 5000000,
+            "DRIP_AMOUNT": 2000000000,
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
