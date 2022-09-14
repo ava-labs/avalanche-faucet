@@ -171,6 +171,21 @@
             }
         },
         {
+            "ID": "RST",
+            "HOSTID": "C",
+            "NAME": "Ringo Stable Token (RST)",
+            "TOKEN": "RST",
+            "IMAGE": "https://ipfs.io/ipfs/QmQjQ9TtqNV12oTEyJbjKyXPY9Xee4PVzwVjLogULWrAhn",
+            "CONTRACTADDRESS": "0x0230a075b6c4F22ba1B01f20dE68b176f9143B24",
+            "DRIP_AMOUNT": 250000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
             "ID": "WAVAXWAGMI",
             "HOSTID": "WAGMI",
             "NAME": "Wrapped AVAX",
