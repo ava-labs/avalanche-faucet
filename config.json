@@ -44,6 +44,36 @@
             }
         },
         {
+            "ID": "USDC",
+            "HOSTID": "C",
+            "NAME": "USDC",
+            "TOKEN": "USDC",
+            "IMAGE": "/usdc.webp",
+            "CONTRACTADDRESS": "0x40fe22ceC641A1285aed69E52f156c46B9326491",
+            "DRIP_AMOUNT": 250000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 30
+            }
+        },
+        {
+            "ID": "TRYB",
+            "HOSTID": "C",
+            "NAME": "TRYB",
+            "TOKEN": "TRYB",
+            "IMAGE": "/tryb.webp",
+            "CONTRACTADDRESS": "0x7C5C3cEC1f1d48025B3dfBc117244617afe4335A",
+            "DRIP_AMOUNT": 2500000000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 30
+            }
+        },
+        {
             "ID": "DAI",
             "HOSTID": "C",
             "NAME": "DAI",
