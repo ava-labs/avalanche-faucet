@@ -20,7 +20,7 @@ function outFunc(): void {
 
 export default function FooterBox(props: any) {
     return (
-        <div className="container">
+        <div className="container" style={{ marginBottom: "5%" }}>
             <div className="footer-box">
                 <div style={{fontSize: "13px", padding: "20px"}}>
                     Use the buttons below to add <b>{props.chainConfigs[props.chain!]?.NAME}</b> to your browser wallet extension
