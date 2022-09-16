@@ -1,3 +1,11 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+section {
+    background-image: linear-gradient(to bottom right, #e3e1e6 60%, #c296ff)!important;
+}
+
 body::-webkit-scrollbar {
     width: 2px;
 }
@@ -11,7 +19,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .app {
-    font-family: Avenir,Helvetica,Arial,sans-serif;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
     padding-top: 5%;
     display: flex;
     justify-content: space-around;
