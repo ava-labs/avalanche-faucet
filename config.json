@@ -44,6 +44,21 @@
             }
         },
         {
+            "ID": "WETH.e",
+            "HOSTID": "C",
+            "NAME": "WETH.e",
+            "TOKEN": "WETH.e",
+            "IMAGE": "/eth.webp",
+            "CONTRACTADDRESS": "0x1BA40A1ab3d1d46542a5BeEB8C3ad3eEf635eA14",
+            "DRIP_AMOUNT": 100000000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 2,
+                "WINDOW_SIZE": 120
+            }
+        },
+        {
             "ID": "USDC",
             "HOSTID": "C",
             "NAME": "USDC",
