@@ -20,7 +20,7 @@
             "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/43113/chain-logo.png",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 2000000000,
+            "DRIP_AMOUNT": 100000000,
             "RECALIBRATE": 30,
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
