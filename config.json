@@ -48,7 +48,7 @@
             "HOSTID": "C",
             "NAME": "BUSD",
             "TOKEN": "BUSD",
-            "IMAGE": "/bus.webp",
+            "IMAGE": "/busd.webp",
             "CONTRACTADDRESS": "0xc248af08E075FE52308E83Ba238FF680a3ecC025",
             "DRIP_AMOUNT": 500000000000,
             "GASLIMIT": "150000",
