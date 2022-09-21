@@ -154,6 +154,23 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "HRTESTNET",
+            "NAME": "Highrise Blockchain Testnet",
+            "TOKEN": "RISE",
+            "RPC": "https://subnets.avax.network/pocket-worlds/testnet/rpc",
+            "CHAINID": 8184,
+            "EXPLORER": "https://subnets-test.avax.network/highrise",
+            "IMAGE": "https://cdn-production.joinhighrise.com/blockchain/highrise_blockchain_testnet_logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2000000000,
+            "RECALIBRATE": 30,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
