@@ -23,7 +23,7 @@ const FaucetForm = (props: any) => {
     const [faucetAddress, setFaucetAddress] = useState<string | null>(null)
     const [options, setOptions] = useState<DropdownOption[]>([])
     const [tokenOptions, setTokenOptions] = useState<DropdownOption[]>([]);
-    const [balance, setBalance] = useState<number>(0)
+    const [balance, setBalance] = useState<string>("0")
     const [shouldAllowSend, setShouldAllowSend] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [isFetchingBalance, setIsFetchingBalance] = useState<AbortController | null>(null)
@@ -54,7 +54,7 @@ const FaucetForm = (props: any) => {
     // Make REQUEST button disabled if either address is not valid or balance is low
     useEffect(() => {
         if(address) {
-            if(balance > chainConfigs[token!]?.DRIP_AMOUNT) {
+            if(BigInt(balance) > calculateBaseUnit(chainConfigs[token!]?.DRIP_AMOUNT, chainConfigs[token!]?.DECIMALS)) {
                 setShouldAllowSend(true)
                 return
             }
@@ -228,6 +228,21 @@ const FaucetForm = (props: any) => {
                 setFaucetAddress(response?.data?.address)
             }
         }
+    }
+
+    function calculateBaseUnit(amount: string, decimals: number = 18): BigInt {
+        for(let i = 0; i < decimals; i++) {
+            amount += "0"
+        }
+        return BigInt(amount)
+    }
+
+    function calculateLargestUnit(amount: string, decimals: number = 18): string {
+        let base = "1"
+        for(let i = 0; i < decimals; i++) {
+            base += "0"
+        }
+        return (BigInt(amount) / BigInt(base)).toString()
     }
 
     function chainToIndex(id: any): number | null {
@@ -468,7 +483,7 @@ const FaucetForm = (props: any) => {
                         <div>
                             <div style={{width: "100%"}}>
                                 <span style={{color: "grey", fontSize: "12px", float: "right"}}>
-                                    Faucet balance: {Math.round(balance/1e9 * 100) / 100} {chainConfigs[token!]?.TOKEN}
+                                    Faucet balance: {calculateLargestUnit(balance, chainConfigs[token!]?.DECIMALS)} {chainConfigs[token!]?.TOKEN}
                                 </span>
 
                                 <span style={{color: "grey", fontSize: "12px"}}>
@@ -517,7 +532,7 @@ const FaucetForm = (props: any) => {
                                 ?
                                 <ClipLoader size="20px" speedMultiplier={0.3} color="403F40"/>
                                 :
-                                <span>Request {chainConfigs[token || 0]?.DRIP_AMOUNT / 1e9} {chainConfigs[token || 0]?.TOKEN}</span>
+                                <span>Request {chainConfigs[token || 0]?.DRIP_AMOUNT} {chainConfigs[token || 0]?.TOKEN}</span>
                             }
                         </button>
                     </div>

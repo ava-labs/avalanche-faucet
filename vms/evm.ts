@@ -1,15 +1,16 @@
 import { BN } from 'avalanche'
 import Web3 from 'web3'
+
+import { calculateBaseUnit } from './utils'
 import Log from './Log'
 import ERC20Interface from './ERC20Interface.json'
-
 import { ChainType, SendTokenResponse, RequestType } from './evmTypes'
-
 export default class EVM {
     web3: any
     account: any
     NAME: string
-    DRIP_AMOUNT: number | BN
+    DRIP_AMOUNT: BN
+    DECIMALS: number
     LEGACY: boolean
     MAX_PRIORITY_FEE: string
     MAX_FEE: string
@@ -35,7 +36,8 @@ export default class EVM {
         this.contracts = new Map()
 
         this.NAME = config.NAME
-        this.DRIP_AMOUNT = (new BN(config.DRIP_AMOUNT)).mul(new BN(1e9))
+        this.DECIMALS = config.DECIMALS || 18
+        this.DRIP_AMOUNT = calculateBaseUnit(config.DRIP_AMOUNT.toString(), this.DECIMALS)
         this.MAX_PRIORITY_FEE = config.MAX_PRIORITY_FEE
         this.MAX_FEE = config.MAX_FEE
         this.RECALIBRATE = config.RECALIBRATE || 30
@@ -98,13 +100,13 @@ export default class EVM {
             return
         }
 
-        let amount: BN | number = this.DRIP_AMOUNT
+        let amount: BN = this.DRIP_AMOUNT
 
         // If id is provided, then it is ERC20 token transfer, so update the amount
         if(this.contracts.get(id)) {
             const dripAmount: number = this.contracts.get(id).config.DRIP_AMOUNT
             if(dripAmount) {
-                amount = (new BN(dripAmount)).mul(new BN(1e9))
+                amount = calculateBaseUnit(dripAmount.toString(), this.contracts.get(id).config.DECIMALS || 18)
             }
         }
 
@@ -227,7 +229,7 @@ export default class EVM {
             this.nonce++
             this.executeQueue()
         } else {
-            this.log.warn("Faucet balance too low!")
+            this.log.warn("Faucet balance too low!" + this.balance)
             this.hasError.set(req.receiver, "Faucet balance too low! Please try after sometime.")
         }
     }

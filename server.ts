@@ -141,7 +141,7 @@ router.get('/getBalance', (req: any, res: any) => {
     let balance: BN = evm?.instance.getBalance(erc20)
 
     if(balance) {
-        balance = balance.div(new BN(1e9))
+        balance = balance
     } else {
         balance = new BN(0)
     }
