@@ -164,7 +164,7 @@
             "HOSTID": "C",
             "NAME": "USDC (Circle)",
             "TOKEN": "USDC",
-            "IMAGE": "https://s3.amazonaws.com/usdcfaucet.com/USDC.png",
+            "IMAGE": "https://cryptologos.cc/logos/usd-coin-usdc-logo.png",
             "CONTRACTADDRESS": "0x5425890298aed601595a70ab815c96711a31bc65",
             "DRIP_AMOUNT": 1,
             "GASLIMIT": "100000",
