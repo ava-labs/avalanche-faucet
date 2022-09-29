@@ -230,14 +230,14 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    function calculateBaseUnit(amount: string, decimals: number = 18): BigInt {
+    function calculateBaseUnit(amount: string = "0", decimals: number = 18): BigInt {
         for(let i = 0; i < decimals; i++) {
             amount += "0"
         }
         return BigInt(amount)
     }
 
-    function calculateLargestUnit(amount: string, decimals: number = 18): string {
+    function calculateLargestUnit(amount: string = "0", decimals: number = 18): string {
         let base = "1"
         for(let i = 0; i < decimals; i++) {
             base += "0"
