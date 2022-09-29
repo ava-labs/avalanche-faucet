@@ -10,6 +10,7 @@ export type ChainType = {
     IMAGE: string,
     MAX_PRIORITY_FEE: string,
     MAX_FEE: string,
+    DECIMALS?: number,
     DRIP_AMOUNT: number,
     RECALIBRATE?: number,
     RATELIMIT: {
