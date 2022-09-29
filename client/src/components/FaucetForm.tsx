@@ -49,7 +49,7 @@ const FaucetForm = (props: any) => {
     // Update balance whenver chain changes or after transaction is processed
     useEffect(() => {
         updateBalance()
-    }, [chain, sendTokenResponse, chainConfigs])
+    }, [chain, token, sendTokenResponse, chainConfigs])
 
     // Make REQUEST button disabled if either address is not valid or balance is low
     useEffect(() => {
