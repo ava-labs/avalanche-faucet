@@ -109,22 +109,6 @@
             }
         },
         {
-            "ID": "PFT",
-            "NAME": "Portal Fantasy Subnet Testnet",
-            "TOKEN": "PFT",
-            "RPC": "https://subnets.avax.network/portal-fantasy/testnet/rpc",
-            "CHAINID": 808,
-            "EXPLORER": "https://subnets-test.avax.network/portal-fantasy",
-            "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/808/chain-logo.png",
-            "MAX_PRIORITY_FEE": "2000000000",
-            "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 2,
-            "RATELIMIT": {
-                "MAX_LIMIT": 1,
-                "WINDOW_SIZE": 1440
-            }
-        },
-        {
             "ID": "NUM",
             "NAME": "Numbers Testnet",
             "TOKEN": "NUM",
