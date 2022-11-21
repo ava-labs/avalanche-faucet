@@ -14,7 +14,7 @@ import { AxiosResponse } from 'axios'
 const FaucetForm = (props: any) => {
     const [chain, setChain] = useState<number | null>(null)
     const [token, setToken] = useState<number | null>(null)
-    const [widgetID, setwidgetID] = useState<string | undefined>(undefined)
+    const [widgetID, setwidgetID] = useState(new Map())
     const [recaptcha, setRecaptcha] = useState<ReCaptcha | undefined>(undefined)
     const [isV2, setIsV2] = useState<boolean>(false)
     const [chainConfigs, setChainConfigs] = useState<any>([])
@@ -38,8 +38,7 @@ const FaucetForm = (props: any) => {
             props.config.SITE_KEY,
             props.config.ACTION,
             props.config.V2_SITE_KEY,
-            setwidgetID,
-            widgetID
+            setwidgetID
         ))
         updateChainConfigs()
         connectAccount(updateAddress, false)
@@ -276,8 +275,8 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    async function getCaptchaToken(): Promise<{token?:string, v2Token?: string}> {
-        const { token, v2Token } = await recaptcha!.getToken(isV2)
+    async function getCaptchaToken(index: number = 0): Promise<{token?:string, v2Token?: string}> {
+        const { token, v2Token } = await recaptcha!.getToken(isV2, widgetID, index)
         return { token, v2Token }
     }
 
@@ -296,6 +295,15 @@ const FaucetForm = (props: any) => {
         if(tokenNum >= 0 &&  tokenNum < chainConfigs.length) {
             setToken(tokenNum)
             back()
+        }
+    }
+
+    const ifCaptchaFailed = (data: any, index: number = 0, reload: boolean = false) => {
+        if(typeof data?.message == "string") {
+            if(data.message.includes("Captcha verification failed")) {
+                setIsV2(true)
+                recaptcha?.loadV2Captcha(props.config.V2_SITE_KEY, widgetID, index, reload);
+            }
         }
     }
 
@@ -323,12 +331,7 @@ const FaucetForm = (props: any) => {
             data = err?.response?.data || err
         }
 
-        if(typeof data?.message == "string") {
-            if(data.message.includes("Captcha verification failed")) {
-                setIsV2(true)
-                !isV2 && recaptcha?.loadV2Captcha(props.config.V2_SITE_KEY);
-            }
-        } 
+        ifCaptchaFailed(data)
 
         setSendTokenResponse({
             txHash: data?.txHash,
@@ -441,7 +444,7 @@ const FaucetForm = (props: any) => {
 
     const resetRecaptcha = (): void => {
         setIsV2(false)
-        recaptcha!.resetV2Captcha()
+        recaptcha!.resetV2Captcha(widgetID)
     }
 
     const back = (): void => {
