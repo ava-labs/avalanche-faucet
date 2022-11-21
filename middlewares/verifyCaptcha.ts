@@ -2,10 +2,10 @@ const axios = require('axios')
 
 export class VerifyCaptcha {
     secret: string
-    v2secret?: string
+    v2secret: string
     middleware = (req: any, res: any, next: () => void) => this.verifyCaptcha(req, res, next)
 
-    constructor(app: any, CAPTCHA_SECRET: string, V2_CAPTCHA_SECRET?: string) {
+    constructor(app: any, CAPTCHA_SECRET: string, V2_CAPTCHA_SECRET: string) {
         if(typeof CAPTCHA_SECRET != "string") {
             throw "Captcha Secret should be string"
         }
@@ -15,19 +15,31 @@ export class VerifyCaptcha {
 
     async verifyV2Token(v2Token: string): Promise<boolean> {
         if(v2Token) {
-            const URL = `https://www.google.com/recaptcha/api/siteverify?secret=${this.v2secret}&response=${v2Token}`
+            const URL = "https://www.google.com/recaptcha/api/siteverify"
             let response
-
-            try {
-                response = await axios.post(URL)
-            } catch(err: any){
-                console.log("Recaptcha V2 error:", err?.message)
+      
+            let recaptchaBody = {
+              secret: `${this.v2secret}`,
+              response: `${v2Token}`,
             }
-
+      
+            try {
+              response = await axios
+                .get(URL, {
+                  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                  params: recaptchaBody,
+                })
+                .then((r: any) => {
+                  return r
+                })
+            } catch (err: any) {
+              console.log("Recaptcha V2 error:", err?.message)
+            }
+      
             const data = response?.data
 
             if(data?.success) {
-                return true;
+                return true
             }
         }
 
