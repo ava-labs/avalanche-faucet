@@ -14,8 +14,10 @@ export class VerifyCaptcha {
     }
 
     async verifyV2Token(v2Token: string): Promise<boolean> {
+        
         if(v2Token) {
             const URL = `https://www.google.com/recaptcha/api/siteverify?secret=${this.v2secret}&response=${v2Token}`
+            console.log("URL:", URL)
             let response
       
             try {
@@ -28,6 +30,7 @@ export class VerifyCaptcha {
             }
       
             const data = response?.data
+            console.log("verifyV2Token, response:",(data))
             
             if(data?.success) {
                 return true
