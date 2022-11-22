@@ -15,20 +15,11 @@ export class VerifyCaptcha {
 
     async verifyV2Token(v2Token: string): Promise<boolean> {
         if(v2Token) {
-            const URL = "https://www.google.com/recaptcha/api/siteverify"
+            const URL = `https://www.google.com/recaptcha/api/siteverify?secret=${this.v2secret}&response=${v2Token}`
             let response
       
-            let recaptchaBody = {
-              secret: `${this.v2secret}`,
-              response: `${v2Token}`,
-            }
-      
             try {
-              response = await axios
-                .get(URL, {
-                  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                  params: recaptchaBody,
-                })
+              response = await axios.post(URL)
                 .then((r: any) => {
                   return r
                 })
@@ -37,7 +28,8 @@ export class VerifyCaptcha {
             }
       
             const data = response?.data
-
+            console.log(data);
+            
             if(data?.success) {
                 return true
             }
