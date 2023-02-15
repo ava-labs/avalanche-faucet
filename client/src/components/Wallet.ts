@@ -9,7 +9,7 @@ export const addNetwork = async (config: any): Promise<void> => {
         return
     }
     if(window.ethereum == undefined) {
-        window.open('https://metamask.io/download', '_blank')
+        window.open('https://ethereum.org/en/wallets/find-wallet/', '_blank')
     }
 
     await window?.ethereum?.request({
@@ -35,7 +35,7 @@ export const addAsset = async (config: any): Promise<void> => {
         return
     }
     if(window.ethereum == undefined) {
-        window.open('https://metamask.io/download', '_blank')
+        window.open('https://ethereum.org/en/wallets/find-wallet/', '_blank')
     }
 
     await window?.ethereum?.request({
@@ -55,7 +55,7 @@ export const addAsset = async (config: any): Promise<void> => {
 
 export const connectAccount = async (updateAddress: any, showPopup = true) => {
     if(window.ethereum == undefined) {
-        showPopup && window.open('https://metamask.io/download', '_blank')
+        showPopup && window.open('https://ethereum.org/en/wallets/find-wallet/', '_blank')
         return
     }
 
