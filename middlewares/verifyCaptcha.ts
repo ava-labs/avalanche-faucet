@@ -14,7 +14,6 @@ export class VerifyCaptcha {
     }
 
     async verifyV2Token(v2Token: string): Promise<boolean> {
-        console.log("Recaptcha V2 Token:", v2Token)
         if(v2Token) {
             const URL = `https://www.google.com/recaptcha/api/siteverify?secret=${this.v2secret}&response=${v2Token}`
 
@@ -30,7 +29,6 @@ export class VerifyCaptcha {
             }
 
             const data = response?.data
-            console.log("Recaptcha V2 verify response:", data)
             
             if(data?.success) {
                 return true
@@ -41,8 +39,6 @@ export class VerifyCaptcha {
     }
 
     async verifyV3Token(v3Token: string): Promise<boolean> {
-        console.log("Recaptcha V3 Token:", v3Token)
-
         const URL = `https://www.google.com/recaptcha/api/siteverify?secret=${this.secret}&response=${v3Token}`
         let response
 
@@ -53,7 +49,6 @@ export class VerifyCaptcha {
         }
         
         const data = response?.data
-        console.log("Recaptcha V3 verify response:", data)
 
         if(data?.success) {
             if(data?.action == 'faucetdrip') {
@@ -67,7 +62,6 @@ export class VerifyCaptcha {
     }
 
     async shouldAllow(token: string, v2Token: string): Promise<boolean> {
-        console.log("Recaptcha tokens:", token, v2Token)
         if(await this.verifyV3Token(token)) {
             return true
         } else {
@@ -75,7 +69,6 @@ export class VerifyCaptcha {
                 return true
             }
         }
-        console.log("Recaptcha verification failed!")
         return false
     }
 
