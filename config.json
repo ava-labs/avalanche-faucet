@@ -182,6 +182,21 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "EUROEC",
+            "HOSTID": "C",
+            "NAME": "EUROe Stablecoin",
+            "TOKEN": "EUROe",
+            "IMAGE": "https://dev.euroe.com/img/euroe-token-symbol/euroe-256x256-round.png",
+            "CONTRACTADDRESS": "0xA089a21902914C3f3325dBE2334E9B466071E5f1",
+            "DRIP_AMOUNT": 10,
+            "GASLIMIT": "100000",
+            "DECIMALS": 6,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ]
 }
