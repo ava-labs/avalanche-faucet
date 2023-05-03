@@ -135,7 +135,7 @@ export default class EVM {
             if (this.hasNonce.get(receiver+id+requestId) != undefined) {
                 clearInterval(waitingForNonce)
                 
-                const nonce: number | undefined = this.hasNonce.get(receiver + id)
+                const nonce: number | undefined = this.hasNonce.get(receiver + id + requestId)
                 this.hasNonce.set(receiver + id, undefined)
                 
                 const { txHash } = await this.getTransaction(receiver, amount, nonce, id)
