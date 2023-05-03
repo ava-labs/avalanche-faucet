@@ -5,6 +5,10 @@ import { calculateBaseUnit } from './utils'
 import Log from './Log'
 import ERC20Interface from './ERC20Interface.json'
 import { ChainType, SendTokenResponse, RequestType } from './evmTypes'
+
+// cannot issue tx if no. of pending requests is > 16
+const MEMPOOL_LIMIT = 15
+
 export default class EVM {
     web3: any
     account: any
@@ -25,6 +29,7 @@ export default class EVM {
     recalibrate: boolean
     waitingForRecalibration: boolean
     waitArr: any[]
+    preMempoolQueue: any[]
     queue: any[]
     error: boolean
     log: Log
@@ -58,6 +63,7 @@ export default class EVM {
         this.waitingForRecalibration = false
 
         this.waitArr = []
+        this.preMempoolQueue = []
         this.queue = []
 
         this.error = false
@@ -68,6 +74,16 @@ export default class EVM {
         setInterval(() => {
             this.recalibrateNonceAndBalance()
         }, this.RECALIBRATE * 1000)
+
+        setInterval(() => {
+            this.emptyPreMempoolQueue()
+        }, 300)
+    }
+
+    emptyPreMempoolQueue() {
+        if (this.preMempoolQueue.length > 0 && this.pendingTxNonces.size < MEMPOOL_LIMIT) {
+            this.putInQueue(this.preMempoolQueue.shift())
+        }
     }
 
     // Setup Legacy or EIP1559 transaction type
@@ -110,11 +126,13 @@ export default class EVM {
             }
         }
 
-        this.processRequest({ receiver, amount, id })
+        const requestId = Math.random().toString()
+
+        this.processRequest({ receiver, amount, id, requestId })
 
         // After transaction is being processed, the nonce will be available and txHash can be returned to user
         const waitingForNonce = setInterval(async () => {
-            if (this.hasNonce.get(receiver+id) != undefined) {
+            if (this.hasNonce.get(receiver+id+requestId) != undefined) {
                 clearInterval(waitingForNonce)
                 
                 const nonce: number | undefined = this.hasNonce.get(receiver + id)
@@ -188,7 +206,7 @@ export default class EVM {
             await this.fetchERC20Balance()
 
             this.balance = new BN(this.balance)
-            
+
             this.error && this.log.info("RPC server recovered!")
             this.error = false 
 
@@ -223,9 +241,15 @@ export default class EVM {
     }
 
     async putInQueue(req: RequestType): Promise<void> {
+        if (this.pendingTxNonces.size >= MEMPOOL_LIMIT) {
+            // push to pre-mempool queue
+            this.preMempoolQueue.push(req)
+            return
+        }
+
         if (this.balanceCheck(req)) {
             this.queue.push({ ...req, nonce: this.nonce })
-            this.hasNonce.set(req.receiver+req.id, this.nonce)
+            this.hasNonce.set(req.receiver+req.id+req.requestId, this.nonce)
             this.nonce++
             this.executeQueue()
         } else {
@@ -252,7 +276,7 @@ export default class EVM {
             const timeout = setTimeout(() => {
                 this.log.error(`Timeout reached for transaction with nonce ${nonce}`)
                 this.pendingTxNonces.delete(nonce)
-            }, 10*1000)
+            }, 20*1000)
             
             await this.web3.eth.sendSignedTransaction(rawTransaction)
             this.pendingTxNonces.delete(nonce)
