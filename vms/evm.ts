@@ -116,6 +116,12 @@ export default class EVM {
             return
         }
 
+        // do not accept any request if mempool limit reached
+        if (this.pendingTxNonces.size >= MEMPOOL_LIMIT) {
+            cb({ status: 400, message: "High faucet usage! Please try after sometime" })
+            return
+        }
+
         let amount: BN = this.DRIP_AMOUNT
 
         // If id is provided, then it is ERC20 token transfer, so update the amount
