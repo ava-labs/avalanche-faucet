@@ -126,17 +126,17 @@ export default class EVM {
             }
         }
 
-        const requestId = Math.random().toString()
+        const requestId = receiver + id + Math.random().toString()
 
         this.processRequest({ receiver, amount, id, requestId })
 
         // After transaction is being processed, the nonce will be available and txHash can be returned to user
         const waitingForNonce = setInterval(async () => {
-            if (this.hasNonce.get(receiver+id+requestId) != undefined) {
+            if (this.hasNonce.get(requestId) != undefined) {
                 clearInterval(waitingForNonce)
                 
-                const nonce: number | undefined = this.hasNonce.get(receiver + id)
-                this.hasNonce.set(receiver + id, undefined)
+                const nonce: number | undefined = this.hasNonce.get(requestId)
+                this.hasNonce.set(requestId, undefined)
                 
                 const { txHash } = await this.getTransaction(receiver, amount, nonce, id)
                 
@@ -249,7 +249,7 @@ export default class EVM {
 
         if (this.balanceCheck(req)) {
             this.queue.push({ ...req, nonce: this.nonce })
-            this.hasNonce.set(req.receiver+req.id+req.requestId, this.nonce)
+            this.hasNonce.set(req.requestId!, this.nonce)
             this.nonce++
             this.executeQueue()
         } else {
