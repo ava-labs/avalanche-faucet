@@ -1,7 +1,7 @@
 import { BN } from 'avalanche'
 import Web3 from 'web3'
 
-import { calculateBaseUnit } from './utils'
+import { asyncCallWithTimeout, calculateBaseUnit } from './utils'
 import Log from './Log'
 import ERC20Interface from './ERC20Interface.json'
 import { ChainType, SendTokenResponse, RequestType } from './evmTypes'
@@ -11,6 +11,8 @@ const MEMPOOL_LIMIT = 15
 
 // pending tx timeout should be a function of MEMPOOL_LIMIT
 const PENDING_TX_TIMEOUT = 40 * 1000 // 40 seconds
+
+const BLOCK_FAUCET_DRIPS_TIMEOUT = 60 * 1000 // 60 seconds
 
 export default class EVM {
     web3: any
@@ -38,6 +40,7 @@ export default class EVM {
     contracts: any
     requestCount: number
     queuingInProgress: boolean
+    blockFaucetDrips: boolean
 
     constructor(config: ChainType, PK: string | undefined) {
         this.web3 = new Web3(config.RPC)
@@ -72,6 +75,7 @@ export default class EVM {
         this.queue = []
 
         this.error = false
+        this.blockFaucetDrips = true
 
         this.setupTransactionType()
         this.recalibrateNonceAndBalance()
@@ -79,6 +83,19 @@ export default class EVM {
         setInterval(() => {
             this.recalibrateNonceAndBalance()
         }, this.RECALIBRATE * 1000)
+
+        // just a check that requestCount is within the range (will indicate race condition)
+        setInterval(() => {
+            if (this.requestCount > MEMPOOL_LIMIT || this.requestCount < 0) {
+                this.log.error(`request count not in range: ${this.requestCount}`)
+            }
+        }, 10 * 1000)
+
+        // block requests during restart (to settle any pending txs initiated during shutdown)
+        setTimeout(() => {
+            this.log.info("starting faucet drips...")
+            this.blockFaucetDrips = false
+        }, BLOCK_FAUCET_DRIPS_TIMEOUT)
     }
 
     // Setup Legacy or EIP1559 transaction type
@@ -101,6 +118,11 @@ export default class EVM {
         id: string | undefined,
         cb: (param: SendTokenResponse) => void
     ): Promise<void> {
+        if(this.blockFaucetDrips) {
+            cb({ status: 400, message: "Faucet is getting started! Please try after sometime"})
+            return
+        }
+
         if(this.error) {
             cb({ status: 400, message: "Internal RPC error! Please try after sometime"})
             return
@@ -257,7 +279,7 @@ export default class EVM {
         return false
     }
 
-        /*
+    /*
     * 1. pushes a request in queue with the last calculated nonce
     * 2. sets `hasNonce` corresponding to `requestId` so users receive expected tx_hash
     * 3. increments the nonce for future request
@@ -305,21 +327,22 @@ export default class EVM {
         * and we need to cancel/re-issue the tx with higher fee.
         */
         try {
-            const timeout = setTimeout(() => {
-                this.log.error(`Timeout reached for transaction with nonce ${nonce}`)
-                this.pendingTxNonces.delete(nonce)
-                this.requestCount--
-            }, PENDING_TX_TIMEOUT)
-            
-            await this.web3.eth.sendSignedTransaction(rawTransaction)
-            this.pendingTxNonces.delete(nonce)
-            this.requestCount--
-            
-            clearTimeout(timeout)
+            /*
+            * asyncCallWithTimeout function can return
+            * 1. successfull response
+            * 2. throw API error (will be catched by catch block)
+            * 3. throw timeout error (will be catched by catch block)
+            */
+            await asyncCallWithTimeout(
+                this.web3.eth.sendSignedTransaction(rawTransaction),
+                PENDING_TX_TIMEOUT,
+                `Timeout reached for transaction with nonce ${nonce}`,
+            )
         } catch (err: any) {
+            this.log.error(err.message)
+        } finally {
             this.pendingTxNonces.delete(nonce)
             this.requestCount--
-            this.log.error(err.message)
         }
     }
 
