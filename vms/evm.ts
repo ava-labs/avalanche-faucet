@@ -407,6 +407,16 @@ export default class EVM {
         }
     }
 
+    /*
+    * This function will trigger the re-calibration of nonce and balance.
+    * 1. Sets `waitingForRecalibration` to `true`.
+    * 2. Will not trigger re-calibration if:
+    *   a. any txs are pending
+    *   b. nonce or balance are already getting updated
+    *   c. any request is being queued up for execution
+    * 3. Checks at regular interval, when all the above conditions are suitable for re-calibration
+    * 4. Keeps any new incoming request into `waitArr` until nonce and balance are updated
+    */
     async recalibrateNonceAndBalance(): Promise<void> {
         this.waitingForRecalibration = true
 
