@@ -1,13 +1,18 @@
 import { BN } from 'avalanche'
 import Web3 from 'web3'
 
-import { calculateBaseUnit } from './utils'
+import { asyncCallWithTimeout, calculateBaseUnit } from './utils'
 import Log from './Log'
 import ERC20Interface from './ERC20Interface.json'
 import { ChainType, SendTokenResponse, RequestType } from './evmTypes'
 
 // cannot issue tx if no. of pending requests is > 16
 const MEMPOOL_LIMIT = 15
+
+// pending tx timeout should be a function of MEMPOOL_LIMIT
+const PENDING_TX_TIMEOUT = 40 * 1000 // 40 seconds
+
+const BLOCK_FAUCET_DRIPS_TIMEOUT = 60 * 1000 // 60 seconds
 
 export default class EVM {
     web3: any
@@ -29,11 +34,13 @@ export default class EVM {
     recalibrate: boolean
     waitingForRecalibration: boolean
     waitArr: any[]
-    preMempoolQueue: any[]
     queue: any[]
     error: boolean
     log: Log
     contracts: any
+    requestCount: number
+    queuingInProgress: boolean
+    blockFaucetDrips: boolean
 
     constructor(config: ChainType, PK: string | undefined) {
         this.web3 = new Web3(config.RPC)
@@ -61,12 +68,14 @@ export default class EVM {
         this.isUpdating = false
         this.recalibrate = false
         this.waitingForRecalibration = false
+        this.queuingInProgress = false
 
+        this.requestCount = 0
         this.waitArr = []
-        this.preMempoolQueue = []
         this.queue = []
 
         this.error = false
+        this.blockFaucetDrips = true
 
         this.setupTransactionType()
         this.recalibrateNonceAndBalance()
@@ -75,15 +84,18 @@ export default class EVM {
             this.recalibrateNonceAndBalance()
         }, this.RECALIBRATE * 1000)
 
+        // just a check that requestCount is within the range (will indicate race condition)
         setInterval(() => {
-            this.emptyPreMempoolQueue()
-        }, 300)
-    }
+            if (this.requestCount > MEMPOOL_LIMIT || this.requestCount < 0) {
+                this.log.error(`request count not in range: ${this.requestCount}`)
+            }
+        }, 10 * 1000)
 
-    emptyPreMempoolQueue() {
-        if (this.preMempoolQueue.length > 0 && this.pendingTxNonces.size < MEMPOOL_LIMIT) {
-            this.putInQueue(this.preMempoolQueue.shift())
-        }
+        // block requests during restart (to settle any pending txs initiated during shutdown)
+        setTimeout(() => {
+            this.log.info("starting faucet drips...")
+            this.blockFaucetDrips = false
+        }, BLOCK_FAUCET_DRIPS_TIMEOUT)
     }
 
     // Setup Legacy or EIP1559 transaction type
@@ -106,6 +118,11 @@ export default class EVM {
         id: string | undefined,
         cb: (param: SendTokenResponse) => void
     ): Promise<void> {
+        if(this.blockFaucetDrips) {
+            cb({ status: 400, message: "Faucet is getting started! Please try after sometime"})
+            return
+        }
+
         if(this.error) {
             cb({ status: 400, message: "Internal RPC error! Please try after sometime"})
             return
@@ -117,10 +134,13 @@ export default class EVM {
         }
 
         // do not accept any request if mempool limit reached
-        if (this.pendingTxNonces.size >= MEMPOOL_LIMIT) {
+        if (this.requestCount >= MEMPOOL_LIMIT) {
             cb({ status: 400, message: "High faucet usage! Please try after sometime" })
             return
         }
+
+        // increasing request count before processing request
+        this.requestCount++
 
         let amount: BN = this.DRIP_AMOUNT
 
@@ -172,6 +192,14 @@ export default class EVM {
         }, 300)
     }
 
+    /*
+    * put in waiting array, if:
+    * 1. balance/nonce is not fetched yet
+    * 2. recalibrate in progress
+    * 3. waiting for pending txs to confirm to begin recalibration
+    * 
+    * else put in execution queue
+    */
     async processRequest(req: RequestType): Promise<void> {
         if (!this.isFetched || this.recalibrate || this.waitingForRecalibration) {
             this.waitArr.push(req)
@@ -202,6 +230,11 @@ export default class EVM {
     }
 
     async updateNonceAndBalance(): Promise<void> {
+        // skip if already updating
+        if (this.isUpdating) {
+            return
+        }
+
         this.isUpdating = true
         try {
             [this.nonce, this.balance] = await Promise.all([
@@ -246,24 +279,30 @@ export default class EVM {
         return false
     }
 
+    /*
+    * 1. pushes a request in queue with the last calculated nonce
+    * 2. sets `hasNonce` corresponding to `requestId` so users receive expected tx_hash
+    * 3. increments the nonce for future request
+    * 4. executes the queue
+    */
     async putInQueue(req: RequestType): Promise<void> {
-        if (this.pendingTxNonces.size >= MEMPOOL_LIMIT) {
-            // push to pre-mempool queue
-            this.preMempoolQueue.push(req)
-            return
-        }
+        // this will prevent recalibration if it's started after calling putInQueue() function
+        this.queuingInProgress = true
 
+        // checking faucet balance before putting request in queue
         if (this.balanceCheck(req)) {
             this.queue.push({ ...req, nonce: this.nonce })
             this.hasNonce.set(req.requestId!, this.nonce)
             this.nonce++
             this.executeQueue()
         } else {
+            this.queuingInProgress = false
             this.log.warn("Faucet balance too low!" + this.balance)
             this.hasError.set(req.receiver, "Faucet balance too low! Please try after sometime.")
         }
     }
 
+    // pops the 1st request in queue, and call the utility function to issue the tx
     async executeQueue(): Promise<void> {
         const { amount, receiver, nonce, id } = this.queue.shift()
         this.sendTokenUtil(amount, receiver, nonce, id)
@@ -275,22 +314,36 @@ export default class EVM {
         nonce: number,
         id?: string
     ): Promise<void> {
+        // adding pending tx nonce in a set to prevent recalibration
         this.pendingTxNonces.add(nonce)
+
+        // request from queue is now moved to pending txs list
+        this.queuingInProgress = false
+
         const { rawTransaction } = await this.getTransaction(receiver, amount, nonce, id)
 
+        /*
+        * [CRITICAL]
+        * If a issued tx fails/timed-out, all succeeding nonce will stuck
+        * and we need to cancel/re-issue the tx with higher fee.
+        */
         try {
-            const timeout = setTimeout(() => {
-                this.log.error(`Timeout reached for transaction with nonce ${nonce}`)
-                this.pendingTxNonces.delete(nonce)
-            }, 20*1000)
-            
-            await this.web3.eth.sendSignedTransaction(rawTransaction)
-            this.pendingTxNonces.delete(nonce)
-            
-            clearTimeout(timeout)
+            /*
+            * asyncCallWithTimeout function can return
+            * 1. successfull response
+            * 2. throw API error (will be catched by catch block)
+            * 3. throw timeout error (will be catched by catch block)
+            */
+            await asyncCallWithTimeout(
+                this.web3.eth.sendSignedTransaction(rawTransaction),
+                PENDING_TX_TIMEOUT,
+                `Timeout reached for transaction with nonce ${nonce}`,
+            )
         } catch (err: any) {
-            this.pendingTxNonces.delete(nonce)
             this.log.error(err.message)
+        } finally {
+            this.pendingTxNonces.delete(nonce)
+            this.requestCount--
         }
     }
 
@@ -342,6 +395,7 @@ export default class EVM {
         return this.web3.eth.getGasPrice()
     }
 
+    // get expected price from the network for legacy txs
     async getAdjustedGasPrice(): Promise<number> {
         try {
             const gasPrice: number = await this.getGasPrice()
@@ -354,10 +408,20 @@ export default class EVM {
         }
     }
 
+    /*
+    * This function will trigger the re-calibration of nonce and balance.
+    * 1. Sets `waitingForRecalibration` to `true`.
+    * 2. Will not trigger re-calibration if:
+    *   a. any txs are pending
+    *   b. nonce or balance are already getting updated
+    *   c. any request is being queued up for execution
+    * 3. Checks at regular interval, when all the above conditions are suitable for re-calibration
+    * 4. Keeps any new incoming request into `waitArr` until nonce and balance are updated
+    */
     async recalibrateNonceAndBalance(): Promise<void> {
         this.waitingForRecalibration = true
 
-        if (this.pendingTxNonces.size === 0 && this.isUpdating === false) {
+        if (this.pendingTxNonces.size === 0 && this.isUpdating === false && this.queuingInProgress === false) {
             this.isFetched = false
             this.recalibrate = true
             this.waitingForRecalibration = false
@@ -366,7 +430,7 @@ export default class EVM {
             this.updateNonceAndBalance()
         } else {
             const recalibrateNow = setInterval(() => {
-                if(this.pendingTxNonces.size === 0 && this.isUpdating === false) {
+                if(this.pendingTxNonces.size === 0 && this.isUpdating === false && this.queuingInProgress === false) {
                     clearInterval(recalibrateNow)
                     this.waitingForRecalibration = false
                     this.recalibrateNonceAndBalance()
