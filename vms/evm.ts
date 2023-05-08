@@ -296,6 +296,7 @@ export default class EVM {
             this.nonce++
             this.executeQueue()
         } else {
+            this.queuingInProgress = false
             this.log.warn("Faucet balance too low!" + this.balance)
             this.hasError.set(req.receiver, "Faucet balance too low! Please try after sometime.")
         }
