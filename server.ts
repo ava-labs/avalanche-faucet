@@ -5,7 +5,7 @@ import path from 'path'
 import dotenv from 'dotenv'
 import { BN } from 'avalanche'
 
-import { RateLimiter, VerifyCaptcha, parseURI } from './middlewares'
+import { RateLimiter, VerifyCaptcha, parseBody, parseURI } from './middlewares'
 import EVM from './vms/evm'
 
 import {
@@ -29,7 +29,7 @@ const router: any = express.Router()
 app.use(express.static(path.join(__dirname, "client")))
 app.use(cors())
 app.use(parseURI)
-app.use(bodyParser.json())
+app.use(parseBody)
 
 new RateLimiter(app, [GLOBAL_RL])
 
@@ -148,6 +148,18 @@ router.get('/getBalance', (req: any, res: any) => {
 
     res.status(200).send({
         balance: balance?.toString()
+    })
+})
+
+router.get('/faucetUsage', (req: any, res: any) => {
+    const chain: string = req.query?.chain
+
+    const evm: EVMInstanceAndConfig = evms.get(chain)!
+
+    const usage: number = evm?.instance?.getFaucetUsage()
+
+    res.status(200).send({
+        usage
     })
 })
 

@@ -41,6 +41,7 @@ export default class EVM {
     requestCount: number
     queuingInProgress: boolean
     blockFaucetDrips: boolean
+    recalibrateNowActivated: boolean
 
     constructor(config: ChainType, PK: string | undefined) {
         this.web3 = new Web3(config.RPC)
@@ -69,6 +70,7 @@ export default class EVM {
         this.recalibrate = false
         this.waitingForRecalibration = false
         this.queuingInProgress = false
+        this.recalibrateNowActivated = false
 
         this.requestCount = 0
         this.waitArr = []
@@ -297,7 +299,8 @@ export default class EVM {
             this.executeQueue()
         } else {
             this.queuingInProgress = false
-            this.log.warn("Faucet balance too low!" + this.balance)
+            this.requestCount--
+            this.log.warn("Faucet balance too low! " + req.id + " " + this.getBalance(req.id))
             this.hasError.set(req.receiver, "Faucet balance too low! Please try after sometime.")
         }
     }
@@ -428,10 +431,13 @@ export default class EVM {
             this.pendingTxNonces.clear()
 
             this.updateNonceAndBalance()
-        } else {
+        } else if (this.recalibrateNowActivated === false) {
             const recalibrateNow = setInterval(() => {
+                this.recalibrateNowActivated = true
+
                 if(this.pendingTxNonces.size === 0 && this.isUpdating === false && this.queuingInProgress === false) {
                     clearInterval(recalibrateNow)
+                    this.recalibrateNowActivated = false
                     this.waitingForRecalibration = false
                     this.recalibrateNonceAndBalance()
                 }
@@ -445,5 +451,9 @@ export default class EVM {
             balance: 0,
             config
         })
+    }
+
+    getFaucetUsage(): number {
+        return 100 * (this.requestCount / MEMPOOL_LIMIT)
     }
 }
