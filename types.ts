@@ -55,7 +55,7 @@ export type ERC20Type = {
         WINDOW_SIZE: number,
         MAX_LIMIT: number
     },
-    IMAGE?: string,
+    IMAGE: string,
     RECALIBRATE?: number,
     RPC?: string,
     CHAINID?: number,
