@@ -1,30 +1,20 @@
 import express from 'express'
-import bodyParser from 'body-parser'
 import cors from 'cors'
 import path from 'path'
 import dotenv from 'dotenv'
 import { BN } from 'avalanche'
 
-import { RateLimiter, VerifyCaptcha, parseBody, parseURI } from './middlewares'
+import { parseBody, parseURI, RateLimiter, VerifyCaptcha } from './middlewares'
 import EVM from './vms/evm'
 
-import {
-    SendTokenResponse,
-    ChainType,
-    EVMInstanceAndConfig,
-    ERC20Type
-} from './types'
+import { ChainType, ERC20Type, EVMInstanceAndConfig, SendTokenResponse } from './types'
 
-import {
-    evmchains,
-    erc20tokens,
-    GLOBAL_RL
-} from './config.json'
+import { erc20tokens, evmchains, GLOBAL_RL } from './config.json'
 
 dotenv.config()
 
 const app: any = express()
-const router: any = express.Router()
+const router = express.Router()
 
 app.use(express.static(path.join(__dirname, "client")))
 app.use(cors())
@@ -78,7 +68,7 @@ const populateConfig = (child: any, parent: any): any => {
 // Setting up instance for EVM chains
 evmchains.forEach((chain: ChainType): void => {
     const chainInstance: EVM = new EVM(chain, process.env[chain.ID] || process.env.PK)
-    
+
     evms.set(chain.ID, {
         config: chain,
         instance: chainInstance
@@ -98,22 +88,30 @@ erc20tokens.forEach((token: ERC20Type, i: number): void => {
 })
 
 // POST request for sending tokens or coins
-router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
+const sendTokenHandlers = [];
+if (process.env.DISABLE_CAPTCHA === 'true') {
+    console.log('Server will not be verifying captcha');
+} else {
+    sendTokenHandlers.push(captcha.middleware);
+}
+sendTokenHandlers.push(async (req: any, res: any) => {
     const address: string = req.body?.address
     const chain: string = req.body?.chain
     const erc20: string | undefined = req.body?.erc20
 
     const evm: EVMInstanceAndConfig = evms.get(chain)!
 
-    if(evm) {
+    if (evm) {
         evm?.instance.sendToken(address, erc20, (data: SendTokenResponse) => {
             const { status, message, txHash } = data
-            res.status(status).send({message, txHash})
+            res.status(status).send({ message, txHash })
         })
     } else {
-        res.status(400).send({message: "Invalid parameters passed!"})
+        res.status(400).send({ message: "Invalid parameters passed!" })
     }
-})
+});
+
+router.post('/sendToken', sendTokenHandlers)
 
 // GET request for fetching all the chain and token configurations
 router.get('/getChainConfigs', (req: any, res: any) => {
