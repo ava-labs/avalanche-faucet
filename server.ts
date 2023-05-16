@@ -56,8 +56,6 @@ new RateLimiter(app, [
     }
 })
 
-const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET!)
-
 const evms = new Map<string, EVMInstanceAndConfig>()
 
 // Get the complete config object from the array of config objects (chains) with ID as id
@@ -108,6 +106,7 @@ const sendTokenHandlers = [];
 if (process.env.DISABLE_CAPTCHA === 'true') {
     console.log('Server will not be verifying captcha');
 } else {
+    const captcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET!)
     sendTokenHandlers.push(captcha.middleware);
 }
 sendTokenHandlers.push(async (req: any, res: any) => {
