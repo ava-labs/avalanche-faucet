@@ -57,7 +57,6 @@ export type ERC20Type = {
     },
     IMAGE: string,
     RECALIBRATE?: number,
-    RPC?: string,
     CHAINID?: number,
     EXPLORER?: string,
     MAX_PRIORITY_FEE?: string,
