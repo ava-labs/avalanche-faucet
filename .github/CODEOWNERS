@@ -1,0 +1,5 @@
+# Order matters
+# below ones takes precedence over the upper ones
+
+# Global owners
+*                           @serejke @samtvlabs
