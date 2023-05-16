@@ -7,9 +7,13 @@ import { BN } from 'avalanche'
 import { parseBody, parseURI, RateLimiter, VerifyCaptcha } from './middlewares'
 import EVM from './vms/evm'
 
-import { ChainType, ERC20Type, EVMInstanceAndConfig, SendTokenResponse } from './types'
+import { ChainType, ConfigFileType, ERC20Type, EVMInstanceAndConfig, SendTokenResponse } from './types'
 
-import { erc20tokens, evmchains, GLOBAL_RL } from './config.json'
+import * as fs from 'fs';
+
+const configFile: ConfigFileType = JSON.parse(
+  fs.readFileSync(process.env.CONFIG_FILE ?? './config.json', 'utf-8')
+);
 
 dotenv.config()
 
@@ -21,17 +25,17 @@ app.use(cors())
 app.use(parseURI)
 app.use(parseBody)
 
-new RateLimiter(app, [GLOBAL_RL])
+new RateLimiter(app, [configFile.GLOBAL_RL])
 
 new RateLimiter(app, [
-    ...evmchains,
-    ...erc20tokens
+    ...configFile.evmchains,
+    ...configFile.erc20tokens
 ])
 
 // address rate limiter
 new RateLimiter(app, [
-    ...evmchains,
-    ...erc20tokens
+    ...configFile.evmchains,
+    ...configFile.erc20tokens
 ], (req: any, res: any) => {
     const addr = req.body?.address
 
@@ -42,7 +46,7 @@ new RateLimiter(app, [
 
 const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET!)
 
-let evms = new Map<string, EVMInstanceAndConfig>()
+const evms = new Map<string, EVMInstanceAndConfig>()
 
 // Get the complete config object from the array of config objects (chains) with ID as id
 const getChainByID = (chains: ChainType[], id: string): ChainType | undefined => {
@@ -66,7 +70,7 @@ const populateConfig = (child: any, parent: any): any => {
 }
 
 // Setting up instance for EVM chains
-evmchains.forEach((chain: ChainType): void => {
+configFile.evmchains.forEach((chain: ChainType): void => {
     const chainInstance: EVM = new EVM(chain, process.env[chain.ID] || process.env.PK)
 
     evms.set(chain.ID, {
@@ -76,13 +80,13 @@ evmchains.forEach((chain: ChainType): void => {
 })
 
 // Adding ERC20 token contracts to their HOST evm instances
-erc20tokens.forEach((token: ERC20Type, i: number): void => {
+configFile.erc20tokens.forEach((token: ERC20Type, i: number): void => {
     if(token.HOSTID) {
-        token = populateConfig(token, getChainByID(evmchains, token.HOSTID))
+        token = populateConfig(token, getChainByID(configFile.evmchains, token.HOSTID))
     }
 
-    erc20tokens[i] = token
-    const evm: EVMInstanceAndConfig = evms.get(getChainByID(evmchains, token.HOSTID)?.ID!)!
+    configFile.erc20tokens[i] = token
+    const evm: EVMInstanceAndConfig = evms.get(getChainByID(configFile.evmchains, token.HOSTID)?.ID!)!
 
     evm?.instance.addERC20Contract(token)
 })
@@ -115,7 +119,7 @@ router.post('/sendToken', sendTokenHandlers)
 
 // GET request for fetching all the chain and token configurations
 router.get('/getChainConfigs', (req: any, res: any) => {
-    const configs: any = [...evmchains, ...erc20tokens]
+    const configs: any = [...configFile.evmchains, ...configFile.erc20tokens]
     res.send({ configs })
 })
 

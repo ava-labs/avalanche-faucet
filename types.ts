@@ -63,3 +63,9 @@ export type ERC20Type = {
     MAX_PRIORITY_FEE?: string,
     MAX_FEE?: string,
 }
+
+export type ConfigFileType = {
+    GLOBAL_RL: RateLimiterConfig,
+    evmchains: ChainType[],
+    erc20tokens: ERC20Type[]
+}
