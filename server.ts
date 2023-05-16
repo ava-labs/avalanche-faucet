@@ -11,9 +11,21 @@ import { ChainType, ConfigFileType, ERC20Type, EVMInstanceAndConfig, SendTokenRe
 
 import * as fs from 'fs';
 
-const configFile: ConfigFileType = JSON.parse(
-  fs.readFileSync(process.env.CONFIG_FILE ?? './config.json', 'utf-8')
-);
+function readConfigFile(): ConfigFileType {
+    const configFile: ConfigFileType = JSON.parse(
+      fs.readFileSync(process.env.CONFIG_FILE ?? './config.json', 'utf-8')
+    );
+    configFile.evmchains.forEach((chain) => {
+        const rpcEnvName = `EVM_CHAINS_${chain.ID}_RPC`;
+        const overrideRpc = process.env[rpcEnvName];
+        if (overrideRpc) {
+            chain.RPC = overrideRpc;
+        }
+    });
+    return configFile;
+}
+
+const configFile: ConfigFileType = readConfigFile();
 
 dotenv.config()
 
@@ -36,7 +48,7 @@ new RateLimiter(app, [
 new RateLimiter(app, [
     ...configFile.evmchains,
     ...configFile.erc20tokens
-], (req: any, res: any) => {
+], (req: any, _: any) => {
     const addr = req.body?.address
 
     if(typeof addr == "string" && addr) {
@@ -142,9 +154,7 @@ router.get('/getBalance', (req: any, res: any) => {
 
     let balance: BN = evm?.instance.getBalance(erc20)
 
-    if(balance) {
-        balance = balance
-    } else {
+    if (!balance) {
         balance = new BN(0)
     }
 

@@ -14,7 +14,7 @@
             "ID": "KHALANITESTNET",
             "NAME": "Khalani (Testnet)",
             "TOKEN": "KHA",
-            "RPC": "https://www.axon-node.info",
+            "RPC": "<SECRET>",
             "CHAINID": 10012,
             "EXPLORER": "https://khalani-axon-explorer-staging.digipnyx.org/",
             "IMAGE": "https://drive.google.com/uc?export=view&id=1rWENxCSh0ugo9cXGm0AEheUHtXlui18i",
