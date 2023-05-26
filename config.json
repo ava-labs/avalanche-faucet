@@ -114,6 +114,7 @@
             "TOKEN": "sEMDX",
             "RPC": "https://subnet.emdx.io/ext/bc/2vUyanXojLnv3wb61zE4ysVwiqTZH6RyPVzAuZkJFJJsV3XYQ1/rpc",
             "CHAINID": 798990,
+            "EXPLORER": "https://subnet-explorer.emdx.io",
             "IMAGE": "https://cdn.stamp.fyi/space/emdx.eth",
             "MAX_PRIORITY_FEE": "2000000000",
             "MAX_FEE": "100000000000",
