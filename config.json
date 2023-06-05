@@ -61,22 +61,6 @@
             }
         },
         {
-            "ID": "SWIMMER",
-            "NAME": "Swimmer Testnet",
-            "TOKEN": "TUS",
-            "RPC": "https://subnets.avax.network/swimmer/testnet/rpc",
-            "CHAINID": 73773,
-            "EXPLORER": "https://subnets.avax.network/swimmer/testnet/explorer",
-            "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/73773/chain-logo.png",
-            "MAX_PRIORITY_FEE": "2000000000",
-            "MAX_FEE": "11000000000000",
-            "DRIP_AMOUNT": 2,
-            "RATELIMIT": {
-                "MAX_LIMIT": 1,
-                "WINDOW_SIZE": 1440
-            }
-        },
-        {
             "ID": "NMAC",
             "NAME": "Rise of the Warbots Testnet",
             "TOKEN": "NMAC",
