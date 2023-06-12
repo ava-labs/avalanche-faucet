@@ -26,10 +26,13 @@ dotenv.config()
 const app: any = express()
 const router: any = express.Router()
 
-app.use(express.static(path.join(__dirname, "client")))
 app.use(cors())
 app.use(parseURI)
 app.use(parseBody)
+
+if (process.env.NODE_ENV !== "production") {
+    app.use(express.static(path.join(__dirname, "client")))
+}
 
 new RateLimiter(app, [GLOBAL_RL])
 

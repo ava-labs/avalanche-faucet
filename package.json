@@ -9,8 +9,8 @@
   "scripts": {
     "postinstall": "npm install --prefix client",
     "build": "npx tsc && npm run build --prefix client",
-    "start": "node build/server.js",
-    "dev": "npx --yes concurrently \"npx --yes nodemon server.ts\" \"npm run dev --prefix client\""
+    "start": "NODE_ENV=production node build/server.js",
+    "dev": "NODE_ENV=development npx --yes concurrently \"npx --yes nodemon server.ts\" \"npm run dev --prefix client\""
   },
   "keywords": [],
   "author": "",
