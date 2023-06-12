@@ -176,7 +176,13 @@ app.get('/ip', (req: any, res: any) => {
 })
 
 app.get('*', async (req: any, res: any) => {
-    res.sendFile(path.join(__dirname, "client", "index.html"))
+    const chain = req.query.subnet;
+    const erc20 = req.query.erc20;
+    if (process.env.NODE_ENV === "production") {
+        res.redirect(`https://core.app/tools/testnet-faucet${chain ? "?subnet=" + chain + (erc20 ? "&token=" + erc20 : "") : ""}`);
+    } else {
+        res.sendFile(path.join(__dirname, "client", "index.html"))
+    }
 })
 
 app.listen(process.env.PORT || 8000, () => {
