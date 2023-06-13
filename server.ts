@@ -18,7 +18,8 @@ import {
 import {
     evmchains,
     erc20tokens,
-    GLOBAL_RL
+    GLOBAL_RL,
+    NATIVE_CLIENT
 } from './config.json'
 
 dotenv.config()
@@ -30,7 +31,7 @@ app.use(cors())
 app.use(parseURI)
 app.use(parseBody)
 
-if (process.env.NODE_ENV !== "production") {
+if (NATIVE_CLIENT) {
     app.use(express.static(path.join(__dirname, "client")))
 }
 
@@ -181,10 +182,10 @@ app.get('/ip', (req: any, res: any) => {
 app.get('*', async (req: any, res: any) => {
     const chain = req.query.subnet;
     const erc20 = req.query.erc20;
-    if (process.env.NODE_ENV === "production") {
-        res.redirect(`https://core.app/tools/testnet-faucet${chain ? "?subnet=" + chain + (erc20 ? "&token=" + erc20 : "") : ""}`);
-    } else {
+    if (NATIVE_CLIENT) {
         res.sendFile(path.join(__dirname, "client", "index.html"))
+    } else {
+        res.redirect(`https://core.app/tools/testnet-faucet${chain ? "?subnet=" + chain + (erc20 ? "&token=" + erc20 : "") : ""}`);
     }
 })
 
