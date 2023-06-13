@@ -9,6 +9,7 @@
             "SKIP_FAILED_REQUESTS": false
         }
     },
+    "NATIVE_CLIENT": false,
     "evmchains": [
         {
             "ID": "C",

@@ -18,7 +18,8 @@ import {
 import {
     evmchains,
     erc20tokens,
-    GLOBAL_RL
+    GLOBAL_RL,
+    NATIVE_CLIENT
 } from './config.json'
 
 dotenv.config()
@@ -26,10 +27,13 @@ dotenv.config()
 const app: any = express()
 const router: any = express.Router()
 
-app.use(express.static(path.join(__dirname, "client")))
 app.use(cors())
 app.use(parseURI)
 app.use(parseBody)
+
+if (NATIVE_CLIENT) {
+    app.use(express.static(path.join(__dirname, "client")))
+}
 
 new RateLimiter(app, [GLOBAL_RL])
 
@@ -176,7 +180,13 @@ app.get('/ip', (req: any, res: any) => {
 })
 
 app.get('*', async (req: any, res: any) => {
-    res.sendFile(path.join(__dirname, "client", "index.html"))
+    const chain = req.query.subnet;
+    const erc20 = req.query.erc20;
+    if (NATIVE_CLIENT) {
+        res.sendFile(path.join(__dirname, "client", "index.html"))
+    } else {
+        res.redirect(`https://core.app/tools/testnet-faucet${chain ? "?subnet=" + chain + (erc20 ? "&token=" + erc20 : "") : ""}`);
+    }
 })
 
 app.listen(process.env.PORT || 8000, () => {
