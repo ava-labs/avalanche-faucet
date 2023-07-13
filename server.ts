@@ -19,7 +19,8 @@ import {
     evmchains,
     erc20tokens,
     GLOBAL_RL,
-    NATIVE_CLIENT
+    NATIVE_CLIENT,
+    DEBUG,
 } from './config.json'
 
 dotenv.config()
@@ -110,6 +111,12 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     const evm: EVMInstanceAndConfig = evms.get(chain)!
 
     if(evm) {
+        DEBUG && console.log(
+            "address:", address,
+            "chain:", chain,
+            "erc20:", erc20,
+            "ip:", req.headers["cf-connecting-ip"] || req.ip
+        )
         evm?.instance.sendToken(address, erc20, (data: SendTokenResponse) => {
             const { status, message, txHash } = data
             res.status(status).send({message, txHash})
