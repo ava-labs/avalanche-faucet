@@ -62,7 +62,7 @@ export class VerifyCaptcha {
     }
 
     async shouldAllow(token: string, v2Token: string): Promise<boolean> {
-        if(await this.verifyV3Token(token)) {
+        if(false && await this.verifyV3Token(token)) {
             return true
         } else {
             if(await this.verifyV2Token(v2Token)) {
