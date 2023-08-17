@@ -93,6 +93,54 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "Amplify",
+            "NAME": "Amplify AWM Testnet",
+            "TOKEN": "AMP",
+            "RPC": "https://subnets.avax.network/amplify/testnet/rpc",
+            "CHAINID": 78430,
+            "EXPLORER": "https://subnets-test.avax.network/amplify",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/5fZAVhKA9gMyf6p5pRt0pV/bc1f2b3e2f4e7413602f6b868df81546/Screenshot_2023-07-27_at_10.17.25_AM_-_Cameron_Schultz.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "Bulletin",
+            "NAME": "Bulletin AWM Testnet",
+            "TOKEN": "BLT",
+            "RPC": "https://subnets.avax.network/bulletin/testnet/rpc",
+            "CHAINID": 78431,
+            "EXPLORER": "https://subnets-test.avax.network/bulletin",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/5B7Vfj3t6r3ZqlEyyAaKRI/da8ec29ddfdf7eaacd3298c01f9c798e/Screenshot_2023-07-27_at_10.17.35_AM_-_Cameron_Schultz.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "Conduit",
+            "NAME": "Conduit AWM Testnet",
+            "TOKEN": "CON",
+            "RPC": "https://subnets.avax.network/conduit/testnet/rpc",
+            "CHAINID": 78432,
+            "EXPLORER": "https://subnets-test.avax.network/conduit",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/IeLUEqVDIv4npUjEIOkSB/7d37730f211ff6449a29103c5f22b463/Screenshot_2023-07-27_at_10.17.43_AM_-_Cameron_Schultz.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
