@@ -95,7 +95,7 @@
             }
         },
         {
-            "ID": "Amplify",
+            "ID": "AMPLIFY",
             "NAME": "Amplify AWM Testnet",
             "TOKEN": "AMP",
             "RPC": "https://subnets.avax.network/amplify/testnet/rpc",
@@ -111,7 +111,7 @@
             }
         },
         {
-            "ID": "Bulletin",
+            "ID": "BULLETIN",
             "NAME": "Bulletin AWM Testnet",
             "TOKEN": "BLT",
             "RPC": "https://subnets.avax.network/bulletin/testnet/rpc",
@@ -127,7 +127,7 @@
             }
         },
         {
-            "ID": "Conduit",
+            "ID": "CONDUIT",
             "NAME": "Conduit AWM Testnet",
             "TOKEN": "CON",
             "RPC": "https://subnets.avax.network/conduit/testnet/rpc",
@@ -143,7 +143,7 @@
             }
         },
         {
-            "ID": "Beam",
+            "ID": "BEAM",
             "NAME": "Beam Testnet",
             "TOKEN": "MC",
             "RPC": "https://subnets.avax.network/beam/testnet/rpc",
