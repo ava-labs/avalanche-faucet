@@ -158,6 +158,23 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "LT0",
+            "NAME": "LT0 Testnet",
+            "TOKEN": "LT",
+            "RPC": "https://subnets.avax.network/lt0/testnet/rpc",
+            "CHAINID": 31330,
+            "EXPLORER": "https://subnets-test.avax.network/lt0",
+            "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/43113/chain-logo.png",
+            "MAX_PRIORITY_FEE": "3000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 4,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 2,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
