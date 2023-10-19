@@ -175,6 +175,23 @@
                 "MAX_LIMIT": 2,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "Eclipse",
+            "NAME": "Eclipse Testnet",
+            "TOKEN": "ECLP",
+            "RPC": "https://rpc-testnet.eclipsesub.io/",
+            "CHAINID": 17172,
+            "EXPLORER": "https://explorer-testnet.eclipsesub.io",
+            "IMAGE": "https://raw.github.com/Thor-Financial/Eclipse-assets/main/eclipse-logo.png",
+            "MAX_PRIORITY_FEE": "3000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 10,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
