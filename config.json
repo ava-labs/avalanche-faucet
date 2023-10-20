@@ -9,7 +9,7 @@
             "SKIP_FAILED_REQUESTS": false
         }
     },
-    "NATIVE_CLIENT": false,
+    "NATIVE_CLIENT": true,
     "DEBUG": true,
     "evmchains": [
         {
