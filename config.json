@@ -10,7 +10,11 @@
         }
     },
     "NATIVE_CLIENT": true,
-    "DEBUG": true,
+    "DEBUG": false,
+    "couponConfig": {
+        "IS_ENABLED": false,
+        "MAX_LIMIT_CAP": 5000
+    },
     "evmchains": [
         {
             "ID": "C",
@@ -22,12 +26,13 @@
             "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/43113/chain-logo.png",
             "MAX_PRIORITY_FEE": "10000000000",
             "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 2,
+            "DRIP_AMOUNT": 0.01,
             "DECIMALS": 18,
             "RECALIBRATE": 30,
+            "COUPON_REQUIRED": true,
             "RATELIMIT": {
-                "MAX_LIMIT": 1,
-                "WINDOW_SIZE": 1440
+                "MAX_LIMIT": 5,
+                "WINDOW_SIZE": 60
             }
         },
         {

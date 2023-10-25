@@ -19,7 +19,7 @@ export default class ReCaptcha {
         this.setWidgetID = setWidgetID
     }
 
-    async getToken(isV2 = false, widgetID: any, index: number = 0): Promise<{token?: string, v2Token?: string}> {
+    async getToken(isV2 = true, widgetID: any, index: number = 0): Promise<{token?: string, v2Token?: string}> {
         let token = "", v2Token = ""
         !isV2 && await window.grecaptcha.execute(this.siteKey, {action: this.action})
             .then((res: string) => {
@@ -39,7 +39,7 @@ export default class ReCaptcha {
             if(widgetID.get(index) || widgetID.get(index) == 0) {
                 window.grecaptcha.reset(widgetID.get(index))
             }
-            v2CaptchaContainer.style.display = "none"
+            // v2CaptchaContainer.style.display = "none"
         }
     }
 
@@ -53,7 +53,7 @@ export default class ReCaptcha {
             }
         } else {
             v2CaptchaContainer.style.display = "block"
-            const newWidgetID = window.grecaptcha.render(v2CaptchaContainer, {
+            const newWidgetID = window.grecaptcha?.render(v2CaptchaContainer, {
                 'sitekey' : v2siteKey,
                 'theme': 'dark'
             })

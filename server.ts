@@ -1,9 +1,7 @@
 import express from 'express'
-import bodyParser from 'body-parser'
 import cors from 'cors'
 import path from 'path'
 import dotenv from 'dotenv'
-import { BN } from 'avalanche'
 
 import { RateLimiter, VerifyCaptcha, parseBody, parseURI } from './middlewares'
 import EVM from './vms/evm'
@@ -18,10 +16,12 @@ import {
 import {
     evmchains,
     erc20tokens,
+    couponConfig,
     GLOBAL_RL,
     NATIVE_CLIENT,
     DEBUG,
 } from './config.json'
+import { CouponService } from './CouponService/couponService'
 
 dotenv.config()
 
@@ -55,6 +55,8 @@ new RateLimiter(app, [
     }
 })
 
+const couponService = new CouponService(couponConfig)
+
 const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET!)
 
 let evms = new Map<string, EVMInstanceAndConfig>()
@@ -73,7 +75,8 @@ const getChainByID = (chains: ChainType[], id: string): ChainType | undefined =>
 // Populates the missing config keys of the child using the parent's config
 const populateConfig = (child: any, parent: any): any => {
     Object.keys(parent || {}).forEach((key) => {
-        if(!child[key]) {
+        // Do not copy COUPON config (in ERC20 tokens) from host chain
+        if(key !== 'COUPON_REQUIRED' && !child[key]) {
             child[key] = parent[key]
         }
     })
@@ -82,7 +85,7 @@ const populateConfig = (child: any, parent: any): any => {
 
 // Setting up instance for EVM chains
 evmchains.forEach((chain: ChainType): void => {
-    const chainInstance: EVM = new EVM(chain, process.env[chain.ID] || process.env.PK)
+    const chainInstance: EVM = new EVM(chain, (process.env[chain.ID] || process.env.PK)!)
     
     evms.set(chain.ID, {
         config: chain,
@@ -107,18 +110,36 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     const address: string = req.body?.address
     const chain: string = req.body?.chain
     const erc20: string | undefined = req.body?.erc20
+    const coupon: string | undefined = req.body?.couponId
 
     const evm: EVMInstanceAndConfig = evms.get(chain)!
-
     if(evm) {
+        if(
+            couponConfig.IS_ENABLED &&
+            (
+                (erc20 && evm.instance.contracts.get(erc20)?.config.COUPON_REQUIRED) ||
+                (erc20 === undefined && evm.config.COUPON_REQUIRED)
+            )
+        ) {
+            if(!coupon || !(await couponService.consumeCouponAmount(coupon, evm.config.DRIP_AMOUNT))) {
+                res.status(400).send({message: "Invalid or expired coupon passed!"})
+                return
+            }
+        }
+
         DEBUG && console.log(
             "address:", address,
             "chain:", chain,
             "erc20:", erc20,
             "ip:", req.headers["cf-connecting-ip"] || req.ip
         )
-        evm?.instance.sendToken(address, erc20, (data: SendTokenResponse) => {
+        evm.instance.sendToken(address, erc20, async (data: SendTokenResponse) => {
             const { status, message, txHash } = data
+
+            // validate and consume coupon if required
+            if (evm.config.COUPON_REQUIRED && coupon && txHash === undefined) {
+                await couponService.reclaimCouponAmount(coupon, evm.config.DRIP_AMOUNT)
+            }
             res.status(status).send({message, txHash})
         })
     } else {
@@ -149,12 +170,12 @@ router.get('/getBalance', (req: any, res: any) => {
 
     const evm: EVMInstanceAndConfig = evms.get(chain)!
 
-    let balance: BN = evm?.instance.getBalance(erc20)
+    let balance: bigint = evm?.instance.getBalance(erc20)
 
     if(balance) {
         balance = balance
     } else {
-        balance = new BN(0)
+        balance = BigInt(0)
     }
 
     res.status(200).send({

@@ -1,4 +1,4 @@
-import { BN } from 'avalanche'
+import { ERC20Type } from '../types'
 
 export type ChainType = {
     ID: string,
@@ -26,7 +26,17 @@ export type SendTokenResponse = {
 
 export type RequestType = {
     receiver: string,
-    amount: BN | number,
+    amount: bigint,
     id?: string,
     requestId?: string,
+}
+
+export type QueueType = RequestType & {
+    nonce: number,
+}
+
+export type ContractType = {
+    methods: any,
+    balance: bigint,
+    config: ERC20Type,
 }

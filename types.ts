@@ -36,6 +36,7 @@ export type ChainType = {
     MAX_FEE: string,
     DRIP_AMOUNT: number,
     RECALIBRATE?: number,
+    COUPON_REQUIRED?: boolean,
     RATELIMIT: {
         WINDOW_SIZE: number,
         MAX_LIMIT: number
@@ -50,11 +51,12 @@ export type ERC20Type = {
     CONTRACTADDRESS: string,
     GASLIMIT: string,
     DRIP_AMOUNT: number,
-    DECIMALS: number
+    DECIMALS: number,
     RATELIMIT: {
         WINDOW_SIZE: number,
         MAX_LIMIT: number
     },
+    COUPON_REQUIRED?: boolean,
     IMAGE?: string,
     RECALIBRATE?: number,
     RPC?: string,

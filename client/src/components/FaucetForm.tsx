@@ -16,9 +16,10 @@ const FaucetForm = (props: any) => {
     const [token, setToken] = useState<number | null>(null)
     const [widgetID, setwidgetID] = useState(new Map())
     const [recaptcha, setRecaptcha] = useState<ReCaptcha | undefined>(undefined)
-    const [isV2, setIsV2] = useState<boolean>(false)
+    const [isV2, setIsV2] = useState<boolean>(true)
     const [chainConfigs, setChainConfigs] = useState<any>([])
     const [inputAddress, setInputAddress] = useState<string>("")
+    const [couponId, setCouponId] = useState<string>("")
     const [address, setAddress] = useState<string | null>(null)
     const [faucetAddress, setFaucetAddress] = useState<string | null>(null)
     const [options, setOptions] = useState<DropdownOption[]>([])
@@ -42,8 +43,16 @@ const FaucetForm = (props: any) => {
         ))
         updateChainConfigs()
         connectAccount(updateAddress, false)
-
     }, [])
+
+    useEffect(() => {
+        if (window.grecaptcha) {
+            window.grecaptcha.ready(() => {
+                setIsV2(true)
+                recaptcha?.loadV2Captcha(props.config.V2_SITE_KEY, widgetID)
+            })
+        }
+    }, [props.config.V2_SITE_KEY, recaptcha, widgetID, window.grecaptcha])
 
     // Update balance whenver chain changes or after transaction is processed
     useEffect(() => {
@@ -182,7 +191,7 @@ const FaucetForm = (props: any) => {
     function getChainParams(): {chain: string, erc20: string} {
         let params = {
             chain: chainConfigs[chain!]?.ID,
-            erc20: chainConfigs[token!]?.ID
+            erc20: chainConfigs[chain!]?.ID === chainConfigs[token!]?.ID ? undefined : chainConfigs[token!]?.ID
         }
 
         return params
@@ -229,11 +238,21 @@ const FaucetForm = (props: any) => {
         }
     }
 
-    function calculateBaseUnit(amount: string = "0", decimals: number = 18): BigInt {
-        for(let i = 0; i < decimals; i++) {
-            amount += "0"
+    function calculateBaseUnit(amount: string = "0", decimals: number = 18): bigint {
+        const parsedNumber = parseFloat(amount);
+
+        if (!isFinite(parsedNumber)) {
+            throw new Error("Invalid number input for formatting base unit: " + amount);
         }
-        return BigInt(amount)
+    
+        const formattedNumber = parsedNumber.toFixed(decimals);
+        const [integerPart, decimalPart] = formattedNumber.split('.');
+    
+        const bigInteger = BigInt(integerPart);
+        const bigDecimal = BigInt(decimalPart || '0');
+    
+        const finalAmount = bigInteger * BigInt(10 ** decimals) + bigDecimal;
+        return finalAmount
     }
 
     function calculateLargestUnit(amount: string = "0", decimals: number = 18): string {
@@ -273,6 +292,10 @@ const FaucetForm = (props: any) => {
         } else if (address != null) {
             setAddress(null)
         }
+    }
+
+    function updateCouponId(couponId: any): void {
+        setCouponId(couponId!)
     }
 
     async function getCaptchaToken(index: number = 0): Promise<{token?:string, v2Token?: string}> {
@@ -324,7 +347,8 @@ const FaucetForm = (props: any) => {
                 token,
                 v2Token,
                 chain,
-                erc20
+                erc20,
+                couponId
             })
             data = response?.data
         } catch(err: any) {
@@ -443,7 +467,7 @@ const FaucetForm = (props: any) => {
     )
 
     const resetRecaptcha = (): void => {
-        setIsV2(false)
+        // setIsV2(false)
         recaptcha!.resetV2Captcha(widgetID)
     }
 
@@ -521,6 +545,17 @@ const FaucetForm = (props: any) => {
                                 Connect
                             </span>
                         </div>
+
+                        <br/>
+
+                        <div className='address-input'>
+                            <input
+                                placeholder='Coupon ID (optional)'
+                                value={couponId || ""}
+                                onChange={(e) => updateCouponId(e.target.value)}
+                            />
+                        </div>
+
                         <span className='rate-limit-text' style={{color: "red"}}>{sendTokenResponse?.message}</span>
 
                         <div className='v2-recaptcha' style={{marginTop: "10px"}}></div>
