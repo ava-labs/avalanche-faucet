@@ -12,7 +12,7 @@
     "NATIVE_CLIENT": true,
     "DEBUG": false,
     "couponConfig": {
-        "IS_ENABLED": false,
+        "IS_ENABLED": true,
         "MAX_LIMIT_CAP": 5000
     },
     "evmchains": [
