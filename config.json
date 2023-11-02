@@ -145,13 +145,13 @@
         {
             "ID": "BEAM",
             "NAME": "Beam Testnet",
-            "TOKEN": "MC",
+            "TOKEN": "BEAM",
             "RPC": "https://subnets.avax.network/beam/testnet/rpc",
             "CHAINID": 13337,
             "EXPLORER": "https://subnets-test.avax.network/beam",
             "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/13337/chain-logo.png",
-            "MAX_PRIORITY_FEE": "3000000000",
-            "MAX_FEE": "100000000000",
+            "MAX_PRIORITY_FEE": "300000000000",
+            "MAX_FEE": "10000000000000",
             "DRIP_AMOUNT": 2,
             "DECIMALS": 18,
             "RATELIMIT": {
