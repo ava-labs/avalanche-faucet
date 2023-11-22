@@ -118,6 +118,7 @@ export default class EVM {
     async sendToken(
         receiver: string,
         id: string | undefined,
+        customAmount: number | undefined,
         cb: (param: SendTokenResponse) => void
     ): Promise<void> {
         if(this.blockFaucetDrips) {
@@ -144,17 +145,21 @@ export default class EVM {
         // increasing request count before processing request
         this.requestCount++
 
-        let amount: bigint = this.DRIP_AMOUNT
+        let amount = this.DRIP_AMOUNT
+        let decimals = this.DECIMALS
 
         // If id is provided, then it is ERC20 token transfer, so update the amount
         if(id) {
             const contract = this.contracts.get(id)
             if (contract) {
-                const dripAmount: number = contract.config.DRIP_AMOUNT
-                if(dripAmount) {
-                    amount = calculateBaseUnit(dripAmount.toString(), contract.config.DECIMALS || 18)
-                }
+                amount = contract.dripAmount
+                decimals = contract.decimals
             }
+        }
+
+        // use custom amount
+        if(customAmount) {
+            amount = calculateBaseUnit(customAmount.toString(), decimals)
         }
 
         const requestId = receiver + id + Math.random().toString()
@@ -461,7 +466,9 @@ export default class EVM {
         this.contracts.set(config.ID, {
             methods: (new this.web3.eth.Contract(JSON.parse(JSON.stringify(ERC20Interface)), config.CONTRACTADDRESS)).methods,
             balance: BigInt(0),
-            config
+            config,
+            dripAmount: calculateBaseUnit(config.DRIP_AMOUNT.toString(), config.DECIMALS || 18),
+            decimals: config.DECIMALS || 18,
         })
     }
 

@@ -56,7 +56,6 @@ export type ERC20Type = {
         WINDOW_SIZE: number,
         MAX_LIMIT: number
     },
-    COUPON_REQUIRED?: boolean,
     IMAGE?: string,
     RECALIBRATE?: number,
     RPC?: string,
@@ -64,4 +63,10 @@ export type ERC20Type = {
     EXPLORER?: string,
     MAX_PRIORITY_FEE?: string,
     MAX_FEE?: string,
+    COUPON_REQUIRED?: boolean,
+}
+
+export type CouponValidity = {
+    isValid: boolean,
+    amount: number,
 }

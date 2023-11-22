@@ -1,12 +1,16 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocumentClient, UpdateCommand, ScanCommand } from "@aws-sdk/lib-dynamodb"
 import { Mutex, MutexInterface } from 'async-mutex'
+import { CouponValidity } from "../types"
 
 type Coupon = {
     id: string,
+    faucetConfigId: string,
     maxLimitAmount: number,
     consumedAmount: number,
     expiry: number,
+    amountPerCoupon: number,
+
 }
 
 type CouponConfig = {
@@ -17,6 +21,7 @@ type CouponConfig = {
 function validateCouponData(coupon: any, couponConfig: CouponConfig): Coupon | undefined {
     if (
         coupon.id &&
+        coupon.faucetConfigId &&
         coupon.maxLimitAmount > 0 &&
         coupon.maxLimitAmount <= couponConfig.MAX_LIMIT_CAP &&
         coupon.consumedAmount <= coupon.maxLimitAmount &&
@@ -115,22 +120,25 @@ export class CouponService {
         })
     }  
 
-    async consumeCouponAmount(id: string, amount: number): Promise<boolean> {
+    async consumeCouponAmount(id: string, faucetConfigId: string, amount: number): Promise<CouponValidity> {
         // Return `true` early, if coupon system is disabled (for debugging)
-        if (!this.couponConfig.IS_ENABLED) return true
+        if (!this.couponConfig.IS_ENABLED) return { isValid: true, amount }
 
         const release = await this.mutex.acquire()
         try {
             const coupon = this.coupons.get(id)
+            const couponAmount = coupon?.amountPerCoupon ?? amount
             if (
                 coupon &&
+                coupon.faucetConfigId === faucetConfigId &&
                 coupon.expiry > (Date.now() / 1000) &&
-                coupon.consumedAmount + amount < coupon.maxLimitAmount
+                coupon.consumedAmount + couponAmount < coupon.maxLimitAmount
             ) {
-                coupon.consumedAmount += amount
-                return true
+                console.log(coupon, couponAmount)
+                coupon.consumedAmount += couponAmount
+                return { isValid: true, amount: couponAmount}
             }
-            return false
+            return { isValid: false, amount: couponAmount}
         } finally {
             release()
         }

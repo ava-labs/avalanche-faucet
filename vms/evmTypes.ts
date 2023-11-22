@@ -39,4 +39,6 @@ export type ContractType = {
     methods: any,
     balance: bigint,
     config: ERC20Type,
+    dripAmount: bigint,
+    decimals: number,
 }

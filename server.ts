@@ -10,7 +10,7 @@ import {
     SendTokenResponse,
     ChainType,
     EVMInstanceAndConfig,
-    ERC20Type
+    CouponValidity
 } from './types'
 
 import {
@@ -94,7 +94,7 @@ evmchains.forEach((chain: ChainType): void => {
 })
 
 // Adding ERC20 token contracts to their HOST evm instances
-erc20tokens.forEach((token: ERC20Type, i: number): void => {
+erc20tokens.forEach((token: any, i: number): void => {
     if(token.HOSTID) {
         token = populateConfig(token, getChainByID(evmchains, token.HOSTID))
     }
@@ -112,39 +112,60 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     const erc20: string | undefined = req.body?.erc20
     const coupon: string | undefined = req.body?.couponId
 
-    const evm: EVMInstanceAndConfig = evms.get(chain)!
-    if(evm) {
-        if(
-            couponConfig.IS_ENABLED &&
-            (
-                (erc20 && evm.instance.contracts.get(erc20)?.config.COUPON_REQUIRED) ||
-                (erc20 === undefined && evm.config.COUPON_REQUIRED)
-            )
-        ) {
-            if(!coupon || !(await couponService.consumeCouponAmount(coupon, evm.config.DRIP_AMOUNT))) {
-                res.status(400).send({message: "Invalid or expired coupon passed!"})
-                return
-            }
-        }
+    // initialize instances
+    const evm = evms.get(chain)
+    const erc20Instance = evm?.instance?.contracts?.get(erc20 ?? "")
 
-        DEBUG && console.log(
-            "address:", address,
-            "chain:", chain,
-            "erc20:", erc20,
-            "ip:", req.headers["cf-connecting-ip"] || req.ip
-        )
-        evm.instance.sendToken(address, erc20, async (data: SendTokenResponse) => {
-            const { status, message, txHash } = data
-
-            // validate and consume coupon if required
-            if (evm.config.COUPON_REQUIRED && coupon && txHash === undefined) {
-                await couponService.reclaimCouponAmount(coupon, evm.config.DRIP_AMOUNT)
-            }
-            res.status(status).send({message, txHash})
-        })
-    } else {
-        res.status(400).send({message: "Invalid parameters passed!"})
+    // validate parameters
+    if (evm === undefined || (erc20 && erc20Instance === undefined)) {
+        res.status(400).send({ message: 'Invalid parameters passed!' })
+        return
     }
+
+    // unique id for each token
+    const faucetConfigId = erc20Instance?.config.ID ?? evm?.config.ID
+
+    // drip amount (native or erc20 token) for this request as per config
+    const dripAmount = erc20Instance?.config.DRIP_AMOUNT ?? evm.config.DRIP_AMOUNT
+
+    // validate coupon
+    let couponValidity: CouponValidity = {isValid: false, amount: dripAmount}
+
+    if (
+        couponConfig.IS_ENABLED &&
+        (erc20Instance && erc20Instance.config.COUPON_REQUIRED) ||
+        (erc20Instance === undefined && evm.config.COUPON_REQUIRED)
+    ) {
+        // if coupon is required but not passed in request
+        if (coupon === undefined) {
+            res.status(400).send({message: "Coupon is required for this chain or token!"})
+            return
+        }
+        couponValidity = await couponService.consumeCouponAmount(coupon, faucetConfigId, dripAmount)
+        if (!couponValidity.isValid) {
+            res.status(400).send({message: "Invalid or expired coupon passed!"})
+            return
+        }
+    }
+
+    // logging requests (if enabled)
+    DEBUG && console.log(
+        "address:", address,
+        "chain:", chain,
+        "erc20:", erc20,
+        "ip:", req.headers["cf-connecting-ip"] || req.ip
+    )
+
+    // send request
+    evm.instance.sendToken(address, erc20, couponValidity.amount, async (data: SendTokenResponse) => {
+        const { status, message, txHash } = data
+
+        // reclaim coupon if transaction is failed
+        if (coupon && couponValidity.isValid && txHash === undefined) {
+            await couponService.reclaimCouponAmount(coupon, dripAmount)
+        }
+        res.status(status).send({message, txHash})
+    })
 })
 
 // GET request for fetching all the chain and token configurations
