@@ -134,7 +134,6 @@ export class CouponService {
                 coupon.expiry > (Date.now() / 1000) &&
                 coupon.consumedAmount + couponAmount < coupon.maxLimitAmount
             ) {
-                console.log(coupon, couponAmount)
                 coupon.consumedAmount += couponAmount
                 return { isValid: true, amount: couponAmount}
             }
