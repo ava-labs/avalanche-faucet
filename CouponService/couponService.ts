@@ -10,7 +10,7 @@ type Coupon = {
     consumedAmount: number,
     expiry: number,
     amountPerCoupon: number,
-
+    reset: boolean,
 }
 
 type CouponConfig = {
@@ -82,7 +82,8 @@ export class CouponService {
                 dbItemSet.add(coupon.id)
 
                 // Only load new coupons into memory
-                if (this.coupons.get(coupon.id) === undefined) {
+                if (this.coupons.get(coupon.id) === undefined || coupon.reset) {
+                    coupon.reset = false
                     this.coupons.set(coupon.id, coupon)
                 }
             } else {
