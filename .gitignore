@@ -9,6 +9,8 @@ build
 
 # misc
 .env
+.DS_Store
+
 
 # IDE
 .idea
