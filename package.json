@@ -16,6 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/lib-dynamodb": "^3.433.0",
+    "async-mutex": "^0.4.0",
     "avalanche": "^3.13.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",

@@ -1,10 +1,10 @@
-import { BN } from 'avalanche'
 import Web3 from 'web3'
 
 import { asyncCallWithTimeout, calculateBaseUnit } from './utils'
 import Log from './Log'
 import ERC20Interface from './ERC20Interface.json'
-import { ChainType, SendTokenResponse, RequestType } from './evmTypes'
+import { ChainType, SendTokenResponse, RequestType, ContractType, QueueType } from './evmTypes'
+import { ERC20Type } from '../types'
 
 // cannot issue tx if no. of pending requests is > 16
 const MEMPOOL_LIMIT = 15
@@ -12,13 +12,13 @@ const MEMPOOL_LIMIT = 15
 // pending tx timeout should be a function of MEMPOOL_LIMIT
 const PENDING_TX_TIMEOUT = 40 * 1000 // 40 seconds
 
-const BLOCK_FAUCET_DRIPS_TIMEOUT = 60 * 1000 // 60 seconds
+const BLOCK_FAUCET_DRIPS_TIMEOUT = 1 * 1000 // 60 seconds
 
 export default class EVM {
-    web3: any
+    web3: Web3
     account: any
     NAME: string
-    DRIP_AMOUNT: BN
+    DRIP_AMOUNT: bigint
     DECIMALS: number
     LEGACY: boolean
     MAX_PRIORITY_FEE: string
@@ -28,22 +28,22 @@ export default class EVM {
     pendingTxNonces: Set<unknown>
     hasError: Map<string, string | undefined>
     nonce: number
-    balance: any
+    balance: bigint
     isFetched: boolean
     isUpdating: boolean
     recalibrate: boolean
     waitingForRecalibration: boolean
     waitArr: any[]
-    queue: any[]
+    queue: QueueType[]
     error: boolean
     log: Log
-    contracts: any
+    contracts: Map<string, ContractType>
     requestCount: number
     queuingInProgress: boolean
     blockFaucetDrips: boolean
     recalibrateNowActivated: boolean
 
-    constructor(config: ChainType, PK: string | undefined) {
+    constructor(config: ChainType, PK: string) {
         this.web3 = new Web3(config.RPC)
         this.account = this.web3.eth.accounts.privateKeyToAccount(PK)
         this.contracts = new Map()
@@ -63,7 +63,7 @@ export default class EVM {
         this.pendingTxNonces = new Set()
 
         this.nonce = -1
-        this.balance = new BN(0)
+        this.balance = BigInt(0)
 
         this.isFetched = false
         this.isUpdating = false
@@ -118,6 +118,7 @@ export default class EVM {
     async sendToken(
         receiver: string,
         id: string | undefined,
+        customAmount: number | undefined,
         cb: (param: SendTokenResponse) => void
     ): Promise<void> {
         if(this.blockFaucetDrips) {
@@ -144,14 +145,21 @@ export default class EVM {
         // increasing request count before processing request
         this.requestCount++
 
-        let amount: BN = this.DRIP_AMOUNT
+        let amount = this.DRIP_AMOUNT
+        let decimals = this.DECIMALS
 
         // If id is provided, then it is ERC20 token transfer, so update the amount
-        if(this.contracts.get(id)) {
-            const dripAmount: number = this.contracts.get(id).config.DRIP_AMOUNT
-            if(dripAmount) {
-                amount = calculateBaseUnit(dripAmount.toString(), this.contracts.get(id).config.DECIMALS || 18)
+        if(id) {
+            const contract = this.contracts.get(id)
+            if (contract) {
+                amount = contract.dripAmount
+                decimals = contract.decimals
             }
+        }
+
+        // use custom amount
+        if(customAmount) {
+            amount = calculateBaseUnit(customAmount.toString(), decimals)
         }
 
         const requestId = receiver + id + Math.random().toString()
@@ -213,7 +221,7 @@ export default class EVM {
         }
     }
 
-    getBalance(id?: string): BN {
+    getBalance(id?: string): bigint {
         if(id && this.contracts.get(id)) {
             return this.getERC20Balance(id)
         } else {
@@ -221,13 +229,13 @@ export default class EVM {
         }
     }
 
-    getERC20Balance(id: string): BN {
-        return this.contracts.get(id)?.balance
+    getERC20Balance(id: string): bigint {
+        return this.contracts.get(id)?.balance ?? BigInt(0)
     }
 
     async fetchERC20Balance(): Promise<void> {
-        this.contracts.forEach(async (contract: any) => {
-            contract.balance = new BN(await contract.methods.balanceOf(this.account.address).call())
+        this.contracts.forEach(async (contract: ContractType) => {
+            contract.balance = BigInt(await contract.methods.balanceOf(this.account.address).call())
         })
     }
 
@@ -239,14 +247,15 @@ export default class EVM {
 
         this.isUpdating = true
         try {
-            [this.nonce, this.balance] = await Promise.all([
+            const [nonce, balance] = await Promise.all([
                 this.web3.eth.getTransactionCount(this.account.address, 'latest'),
                 this.web3.eth.getBalance(this.account.address),
             ])
 
-            await this.fetchERC20Balance()
+            this.nonce = nonce
+            this.balance = BigInt(balance)
 
-            this.balance = new BN(this.balance)
+            await this.fetchERC20Balance()
 
             this.error && this.log.info("RPC server recovered!")
             this.error = false 
@@ -266,15 +275,19 @@ export default class EVM {
     }
 
     balanceCheck(req: RequestType): Boolean {
-        const balance: BN = this.getBalance(req.id)
-        if(req.id && this.contracts.get(req.id)) {
-            if(this.contracts.get(req.id).balance.gte(req.amount)) {
-                this.contracts.get(req.id).balance = this.contracts.get(req.id).balance.sub(req.amount)
-                return true
+        const contractId = req.id
+        const amt = req.amount
+        if(contractId) {
+            const contract = this.contracts.get(contractId)
+            if (contract) {
+                if(contract.balance >= amt) {
+                    contract.balance -= BigInt(amt)
+                    return true
+                }
             }
         } else {
-            if(this.balance.gte(req.amount)) {
-                this.balance = this.balance.sub(req.amount)
+            if(this.balance >= amt) {
+                this.balance -= BigInt(amt)
                 return true
             }
         }
@@ -307,12 +320,12 @@ export default class EVM {
 
     // pops the 1st request in queue, and call the utility function to issue the tx
     async executeQueue(): Promise<void> {
-        const { amount, receiver, nonce, id } = this.queue.shift()
+        const { amount, receiver, nonce, id } = this.queue.shift()!
         this.sendTokenUtil(amount, receiver, nonce, id)
     }
 
     async sendTokenUtil(
-        amount: number,
+        amount: bigint,
         receiver: string,
         nonce: number,
         id?: string
@@ -352,7 +365,7 @@ export default class EVM {
 
     async getTransaction(
         to: string,
-        value: BN | number,
+        value: bigint,
         nonce: number | undefined,
         id?: string
     ): Promise<any> {
@@ -363,7 +376,7 @@ export default class EVM {
             to,
             maxPriorityFeePerGas: this.MAX_PRIORITY_FEE,
             maxFeePerGas: this.MAX_FEE,
-            value
+            value: value.toString()
         }
 
         if(this.LEGACY) {
@@ -373,12 +386,16 @@ export default class EVM {
             tx.type = 0
         }
 
-        if(this.contracts.get(id)) {
-            const txObject = this.contracts.get(id)?.methods.transfer(to, value)
-            tx.data = txObject.encodeABI()
-            tx.value = 0
-            tx.to = this.contracts.get(id)?.config.CONTRACTADDRESS
-            tx.gas = this.contracts.get(id)?.config.GASLIMIT
+
+        if(id) {
+            const contract = this.contracts.get(id)
+            if (contract) {
+                const txObject = contract.methods.transfer(to, value.toString())
+                tx.data = txObject.encodeABI()
+                tx.value = 0
+                tx.to = contract.config.CONTRACTADDRESS
+                tx.gas = contract.config.GASLIMIT
+            }
         }
 
         let signedTx
@@ -394,14 +411,14 @@ export default class EVM {
         return { txHash, rawTransaction }
     }
 
-    async getGasPrice(): Promise<number> {
+    async getGasPrice(): Promise<string> {
         return this.web3.eth.getGasPrice()
     }
 
     // get expected price from the network for legacy txs
     async getAdjustedGasPrice(): Promise<number> {
         try {
-            const gasPrice: number = await this.getGasPrice()
+            const gasPrice: number = parseInt(await this.getGasPrice())
             const adjustedGas: number = Math.floor(gasPrice * 1.25)
             return Math.min(adjustedGas, parseInt(this.MAX_FEE))
         } catch(err: any) {
@@ -445,11 +462,13 @@ export default class EVM {
         }
     }
 
-    async addERC20Contract(config: any) {
+    async addERC20Contract(config: ERC20Type) {
         this.contracts.set(config.ID, {
-            methods: (new this.web3.eth.Contract(ERC20Interface, config.CONTRACTADDRESS)).methods,
-            balance: 0,
-            config
+            methods: (new this.web3.eth.Contract(JSON.parse(JSON.stringify(ERC20Interface)), config.CONTRACTADDRESS)).methods,
+            balance: BigInt(0),
+            config,
+            dripAmount: calculateBaseUnit(config.DRIP_AMOUNT.toString(), config.DECIMALS || 18),
+            decimals: config.DECIMALS || 18,
         })
     }
 

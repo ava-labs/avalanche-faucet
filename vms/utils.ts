@@ -1,14 +1,21 @@
-import { BN } from 'avalanche'
+export function calculateBaseUnit(amount: string, decimals: number): bigint {
+    const parsedNumber = parseFloat(amount);
 
-export function calculateBaseUnit(amount: string, decimals: number): BN {
-    for(let i = 0; i < decimals; i++) {
-        amount += "0"
+    if (!isFinite(parsedNumber)) {
+        throw new Error("Invalid number input for formatting base unit: " + amount);
     }
 
-    return new BN(amount)
+    const formattedNumber = parsedNumber.toFixed(decimals);
+    const [integerPart, decimalPart] = formattedNumber.split('.');
+
+    const bigInteger = BigInt(integerPart);
+    const bigDecimal = BigInt(decimalPart || '0');
+
+    const finalAmount = bigInteger * BigInt(10 ** decimals) + bigDecimal;
+    return finalAmount
 }
 
-export const asyncCallWithTimeout = async (asyncPromise: Promise<void>, timeLimit: number, timeoutMessage: string) => {
+export const asyncCallWithTimeout = async (asyncPromise: Promise<any>, timeLimit: number, timeoutMessage: string) => {
     let timeoutHandle: NodeJS.Timeout;
 
     const timeoutPromise = new Promise((_resolve, reject) => {
