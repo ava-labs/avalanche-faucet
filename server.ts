@@ -143,7 +143,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
         }
         couponValidity = await couponService.consumeCouponAmount(coupon, faucetConfigId, dripAmount)
         if (!couponValidity.isValid) {
-            res.status(400).send({message: "Invalid or expired coupon passed!"})
+            res.status(400).send({message: "Invalid or expired coupon provided. Contact support team on Discord!"})
             return
         }
     }
