@@ -22,6 +22,7 @@ import {
     DEBUG,
 } from './config.json'
 import { CouponService } from './CouponService/couponService'
+import { checkMainnetBalance } from './utils/mainnetBalanceCheck'
 
 dotenv.config()
 
@@ -128,13 +129,32 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     // drip amount (native or erc20 token) for this request as per config
     const dripAmount = erc20Instance?.config.DRIP_AMOUNT ?? evm.config.DRIP_AMOUNT
 
+    /**
+     * MAINNET BALANCE OR COUPON VALIDATION checks
+     * 1. If mainnet balance check is enabled, users would be required to have mainnet balance
+     * 2. If coupon validation is enabled, users would need a specific coupon id to get tokens
+     * 3. If both are enabled, then any one would be sufficient
+     */
+
+    // mainnet balance checks
+    const mainnetCheckEnabledRPC = erc20Instance?.config.MAINNET_BALANCE_CHECK_RPC ?? evm.config.MAINNET_BALANCE_CHECK_RPC ?? false
+    let mainnetCheckPassed = false
+    if (mainnetCheckEnabledRPC && (await checkMainnetBalance(mainnetCheckEnabledRPC, address))) {
+        mainnetCheckPassed = true
+    }
+
     // validate coupon
     let couponValidity: CouponValidity = {isValid: false, amount: dripAmount}
-
     if (
+        // check coupon validation only if mainnet check failed (either no-balance or check not enabled)
+        !mainnetCheckPassed &&
+
+        // coupon checks
         couponConfig.IS_ENABLED &&
-        (erc20Instance && erc20Instance.config.COUPON_REQUIRED) ||
-        (erc20Instance === undefined && evm.config.COUPON_REQUIRED)
+        // if request is for erc20 tokens
+        ((erc20Instance && erc20Instance.config.COUPON_REQUIRED) ||
+        // if request is for evm native token
+        (erc20Instance === undefined && evm.config.COUPON_REQUIRED))
     ) {
         // if coupon is required but not passed in request
         if (coupon === undefined) {
