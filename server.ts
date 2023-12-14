@@ -149,12 +149,12 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     }
 
     // logging requests (if enabled)
-    DEBUG && console.log(
-        "address:", address,
-        "chain:", chain,
-        "erc20:", erc20,
-        "ip:", req.headers["cf-connecting-ip"] || req.ip
-    )
+    DEBUG && console.log("New faucet request:", {
+        "address": address,
+        "chain": chain,
+        "erc20": erc20,
+        "ip": req.headers["cf-connecting-ip"] || req.ip
+    })
 
     // send request
     evm.instance.sendToken(address, erc20, couponValidity.amount, async (data: SendTokenResponse) => {
