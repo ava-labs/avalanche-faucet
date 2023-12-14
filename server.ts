@@ -170,6 +170,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 
     // logging requests (if enabled)
     DEBUG && console.log("New faucet request:", JSON.stringify({
+        "type": "NewFaucetRequest",
         "address": address,
         "chain": chain,
         "erc20": erc20,

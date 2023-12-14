@@ -11,6 +11,7 @@ export async function checkMainnetBalance(faucetConfigId: string, rpc: string, a
         const balance = parseInt(response.data.result)
         if (balance > threshold) {
             console.log("Successful FaucetMainnetBalanceCheck:", JSON.stringify({
+                type: "FaucetMainnetBalanceCheckSuccess",
                 chain: faucetConfigId,
                 address: address,
                 balance: balance,
