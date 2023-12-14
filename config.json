@@ -180,6 +180,23 @@
                 "MAX_LIMIT": 2,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "FERDYNET",
+            "NAME": "FerdyFlip Testnet",
+            "TOKEN": "FAVAX",
+            "RPC": "https://testnet-rpc.ferdyflip.xyz/rpc",
+            "CHAINID": 668577,
+            "EXPLORER": "https://devnet.routescan.io",
+            "IMAGE": "https://www.ferdyflip.xyz/images/heads.png",
+            "MAX_PRIORITY_FEE": "10000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 20,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 2,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
