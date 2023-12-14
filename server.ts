@@ -139,7 +139,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     // mainnet balance checks
     const mainnetCheckEnabledRPC = erc20Instance?.config.MAINNET_BALANCE_CHECK_RPC ?? evm.config.MAINNET_BALANCE_CHECK_RPC ?? false
     let mainnetCheckPassed = false
-    if (mainnetCheckEnabledRPC && (await checkMainnetBalance(mainnetCheckEnabledRPC, address))) {
+    if (mainnetCheckEnabledRPC && (await checkMainnetBalance(faucetConfigId, mainnetCheckEnabledRPC, address))) {
         mainnetCheckPassed = true
     }
 
