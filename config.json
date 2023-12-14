@@ -30,6 +30,7 @@
             "DECIMALS": 18,
             "RECALIBRATE": 30,
             "COUPON_REQUIRED": true,
+            "MAINNET_BALANCE_CHECK_RPC": "https://api.avax.network/ext/C/rpc",
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
