@@ -73,11 +73,13 @@ const getChainByID = (chains: ChainType[], id: string): ChainType | undefined =>
     return reply
 }
 
+const separateConfigFields = ['COUPON_REQUIRED', 'MAINNET_BALANCE_CHECK_RPC']
+
 // Populates the missing config keys of the child using the parent's config
 const populateConfig = (child: any, parent: any): any => {
     Object.keys(parent || {}).forEach((key) => {
-        // Do not copy COUPON config (in ERC20 tokens) from host chain
-        if(key !== 'COUPON_REQUIRED' && !child[key]) {
+        // Do not copy configs of separateConfigFields (in ERC20 tokens) from host chain
+        if(!separateConfigFields.includes(key) && !child[key]) {
             child[key] = parent[key]
         }
     })
