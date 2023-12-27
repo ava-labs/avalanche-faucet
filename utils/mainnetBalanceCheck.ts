@@ -1,7 +1,6 @@
 import axios from "axios"
 
 export async function checkMainnetBalance(faucetConfigId: string, rpc: string, address: string, threshold = 0): Promise<boolean> {
-    console.log(rpc)
     try {
         const response = await axios.post<any, any>(rpc, {
             jsonrpc: "2.0",
@@ -14,8 +13,9 @@ export async function checkMainnetBalance(faucetConfigId: string, rpc: string, a
             console.log(JSON.stringify({
                 type: "FaucetMainnetBalanceCheckSuccess",
                 chain: faucetConfigId,
-                address: address,
-                balance: balance,
+                address,
+                balance,
+                rpc,
             }))
             return true
         }
