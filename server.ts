@@ -10,7 +10,6 @@ import {
     SendTokenResponse,
     ChainType,
     EVMInstanceAndConfig,
-    CouponValidity
 } from './types'
 
 import {
@@ -22,7 +21,13 @@ import {
     DEBUG,
 } from './config.json'
 import { CouponService } from './CouponService/couponService'
-import { checkMainnetBalance } from './utils/mainnetBalanceCheck'
+import {
+    PIPELINE_CHECKS,
+    PipelineCheckValidity,
+    checkCouponPipeline,
+    checkMainnetBalancePipeline,
+    pipelineFailureMessage
+} from './utils/pipelineChecks'
 
 dotenv.config()
 
@@ -73,11 +78,13 @@ const getChainByID = (chains: ChainType[], id: string): ChainType | undefined =>
     return reply
 }
 
+const separateConfigFields = ['COUPON_REQUIRED', 'MAINNET_BALANCE_CHECK_RPC']
+
 // Populates the missing config keys of the child using the parent's config
 const populateConfig = (child: any, parent: any): any => {
     Object.keys(parent || {}).forEach((key) => {
-        // Do not copy COUPON config (in ERC20 tokens) from host chain
-        if(key !== 'COUPON_REQUIRED' && !child[key]) {
+        // Do not copy configs of separateConfigFields (in ERC20 tokens) from host chain
+        if(!separateConfigFields.includes(key) && !child[key]) {
             child[key] = parent[key]
         }
     })
@@ -130,60 +137,50 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     const dripAmount = erc20Instance?.config.DRIP_AMOUNT ?? evm.config.DRIP_AMOUNT
 
     /**
-     * MAINNET BALANCE OR COUPON VALIDATION checks
-     * 1. If mainnet balance check is enabled, users would be required to have mainnet balance
-     * 2. If coupon validation is enabled, users would need a specific coupon id to get tokens
-     * 3. If both are enabled, then any one would be sufficient
+     * Pipeline Checks
+     * 1. Pipelines are checks or rules that a request goes through before being processed
+     * 2. The request should pass at least one pipeline check
+     * 3. If no pipeline check is required for a token, then directly process the request
+     * 4. Currently, we have 2 pipeline checks: Coupon Check & Mainnet Balance Check
      */
+    const mainnetCheckEnabledRPC = (erc20Instance ? erc20Instance.config.MAINNET_BALANCE_CHECK_RPC : evm.config.MAINNET_BALANCE_CHECK_RPC) ?? false
+    const couponCheckEnabled = couponConfig.IS_ENABLED && ((erc20Instance ? erc20Instance.config.COUPON_REQUIRED : evm.config.COUPON_REQUIRED) ?? false)
 
-    // mainnet balance checks
-    const mainnetCheckEnabledRPC = erc20Instance?.config.MAINNET_BALANCE_CHECK_RPC ?? evm.config.MAINNET_BALANCE_CHECK_RPC ?? false
-    let mainnetCheckPassed = false
-    if (mainnetCheckEnabledRPC && (await checkMainnetBalance(faucetConfigId, mainnetCheckEnabledRPC, address))) {
-        mainnetCheckPassed = true
-    }
+    let pipelineValidity: PipelineCheckValidity = {isValid: false, dripAmount}
+    !pipelineValidity.isValid && couponCheckEnabled && await checkCouponPipeline(couponService, pipelineValidity, faucetConfigId, coupon)
+    
+    // don't check mainnet balance, if coupon is provided
+    !pipelineValidity.isValid && !coupon && mainnetCheckEnabledRPC && await checkMainnetBalancePipeline(pipelineValidity, mainnetCheckEnabledRPC, address)
 
-    // validate coupon
-    let couponValidity: CouponValidity = {isValid: false, amount: dripAmount}
     if (
-        // check coupon validation only if mainnet check failed (either no-balance or check not enabled)
-        !mainnetCheckPassed &&
-
-        // coupon checks
-        couponConfig.IS_ENABLED &&
-        // if request is for erc20 tokens
-        ((erc20Instance && erc20Instance.config.COUPON_REQUIRED) ||
-        // if request is for evm native token
-        (erc20Instance === undefined && evm.config.COUPON_REQUIRED))
+        (mainnetCheckEnabledRPC || couponCheckEnabled) &&
+        !pipelineValidity.isValid
     ) {
-        // if coupon is required but not passed in request
-        if (coupon === undefined) {
-            res.status(400).send({message: "Coupon is required for this chain or token!"})
-            return
-        }
-        couponValidity = await couponService.consumeCouponAmount(coupon, faucetConfigId, dripAmount)
-        if (!couponValidity.isValid) {
-            res.status(400).send({message: "Invalid or expired coupon provided. Contact support team on Discord!"})
-            return
-        }
+        // failed
+        res.status(400).send({message: pipelineValidity.errorMessage + pipelineFailureMessage(mainnetCheckEnabledRPC, couponCheckEnabled)})
+        return
     }
 
     // logging requests (if enabled)
-    DEBUG && console.log("New faucet request:", JSON.stringify({
-        "type": "NewFaucetRequest",
-        "address": address,
-        "chain": chain,
-        "erc20": erc20,
-        "ip": req.headers["cf-connecting-ip"] || req.ip
+    DEBUG && console.log(JSON.stringify({
+        type: "NewFaucetRequest",
+        faucetConfigId,
+        address,
+        chain,
+        erc20,
+        checkPassedType: pipelineValidity.checkPassedType,
+        dripAmount: pipelineValidity.dripAmount,
+        mainnetBalance: pipelineValidity.mainnetBalance,
+        ip: req.headers["cf-connecting-ip"] || req.ip
     }))
 
     // send request
-    evm.instance.sendToken(address, erc20, couponValidity.amount, async (data: SendTokenResponse) => {
+    evm.instance.sendToken(address, erc20, pipelineValidity.dripAmount, async (data: SendTokenResponse) => {
         const { status, message, txHash } = data
 
         // reclaim coupon if transaction is failed
-        if (coupon && couponValidity.isValid && txHash === undefined) {
-            await couponService.reclaimCouponAmount(coupon, dripAmount)
+        if (pipelineValidity.checkPassedType === PIPELINE_CHECKS.COUPON && coupon && txHash === undefined) {
+            await couponService.reclaimCouponAmount(coupon, pipelineValidity.dripAmount)
         }
         res.status(status).send({message, txHash})
     })
