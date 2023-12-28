@@ -15,6 +15,7 @@
         "IS_ENABLED": true,
         "MAX_LIMIT_CAP": 5000
     },
+    "MAINNET_BALANCE_CHECK_RPC": "https://api.avax.network/ext/C/rpc",
     "evmchains": [
         {
             "ID": "C",
@@ -30,7 +31,7 @@
             "DECIMALS": 18,
             "RECALIBRATE": 30,
             "COUPON_REQUIRED": true,
-            "MAINNET_BALANCE_CHECK_RPC": "https://api.avax.network/ext/C/rpc",
+            "MAINNET_BALANCE_CHECK_ENABLED": true,
             "RATELIMIT": {
                 "MAX_LIMIT": 5,
                 "WINDOW_SIZE": 60

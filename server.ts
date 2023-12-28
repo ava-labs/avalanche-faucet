@@ -19,6 +19,7 @@ import {
     GLOBAL_RL,
     NATIVE_CLIENT,
     DEBUG,
+    MAINNET_BALANCE_CHECK_RPC,
 } from './config.json'
 import { CouponService } from './CouponService/couponService'
 import {
@@ -78,7 +79,7 @@ const getChainByID = (chains: ChainType[], id: string): ChainType | undefined =>
     return reply
 }
 
-const separateConfigFields = ['COUPON_REQUIRED', 'MAINNET_BALANCE_CHECK_RPC']
+const separateConfigFields = ['COUPON_REQUIRED', 'MAINNET_BALANCE_CHECK_ENABLED']
 
 // Populates the missing config keys of the child using the parent's config
 const populateConfig = (child: any, parent: any): any => {
@@ -143,21 +144,21 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
      * 3. If no pipeline check is required for a token, then directly process the request
      * 4. Currently, we have 2 pipeline checks: Coupon Check & Mainnet Balance Check
      */
-    const mainnetCheckEnabledRPC = (erc20Instance ? erc20Instance.config.MAINNET_BALANCE_CHECK_RPC : evm.config.MAINNET_BALANCE_CHECK_RPC) ?? false
+    const mainnetCheckEnabled = (erc20Instance ? erc20Instance.config.MAINNET_BALANCE_CHECK_ENABLED : evm.config.MAINNET_BALANCE_CHECK_ENABLED) ?? false
     const couponCheckEnabled = couponConfig.IS_ENABLED && ((erc20Instance ? erc20Instance.config.COUPON_REQUIRED : evm.config.COUPON_REQUIRED) ?? false)
 
     let pipelineValidity: PipelineCheckValidity = {isValid: false, dripAmount}
     !pipelineValidity.isValid && couponCheckEnabled && await checkCouponPipeline(couponService, pipelineValidity, faucetConfigId, coupon)
     
     // don't check mainnet balance, if coupon is provided
-    !pipelineValidity.isValid && !coupon && mainnetCheckEnabledRPC && await checkMainnetBalancePipeline(pipelineValidity, mainnetCheckEnabledRPC, address)
+    !pipelineValidity.isValid && !coupon && mainnetCheckEnabled && await checkMainnetBalancePipeline(pipelineValidity, MAINNET_BALANCE_CHECK_RPC, address)
 
     if (
-        (mainnetCheckEnabledRPC || couponCheckEnabled) &&
+        (mainnetCheckEnabled || couponCheckEnabled) &&
         !pipelineValidity.isValid
     ) {
         // failed
-        res.status(400).send({message: pipelineValidity.errorMessage + pipelineFailureMessage(mainnetCheckEnabledRPC, couponCheckEnabled)})
+        res.status(400).send({message: pipelineValidity.errorMessage + pipelineFailureMessage(MAINNET_BALANCE_CHECK_RPC, couponCheckEnabled)})
         return
     }
 
@@ -189,7 +190,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 // GET request for fetching all the chain and token configurations
 router.get('/getChainConfigs', (req: any, res: any) => {
     const configs: any = [...evmchains, ...erc20tokens]
-    res.send({ configs })
+    res.send({ configs, MAINNET_BALANCE_CHECK_RPC })
 })
 
 // GET request for fetching faucet address for the specified chain
