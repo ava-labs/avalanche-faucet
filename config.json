@@ -16,6 +16,7 @@
         "MAX_LIMIT_CAP": 5000
     },
     "MAINNET_BALANCE_CHECK_RPC": "https://api.avax.network/ext/C/rpc",
+    "MAINNET_BALANCE_CHECK_CHAIN_ID": 43114,
     "evmchains": [
         {
             "ID": "C",

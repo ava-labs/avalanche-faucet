@@ -20,6 +20,7 @@ import {
     NATIVE_CLIENT,
     DEBUG,
     MAINNET_BALANCE_CHECK_RPC,
+    MAINNET_BALANCE_CHECK_CHAIN_ID,
 } from './config.json'
 import { CouponService } from './CouponService/couponService'
 import {
@@ -190,7 +191,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 // GET request for fetching all the chain and token configurations
 router.get('/getChainConfigs', (req: any, res: any) => {
     const configs: any = [...evmchains, ...erc20tokens]
-    res.send({ configs, MAINNET_BALANCE_CHECK_RPC })
+    res.send({ configs, MAINNET_BALANCE_CHECK_RPC, MAINNET_BALANCE_CHECK_CHAIN_ID })
 })
 
 // GET request for fetching faucet address for the specified chain
