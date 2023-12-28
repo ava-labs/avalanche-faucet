@@ -1,6 +1,7 @@
 import axios from "axios"
 
-export async function checkMainnetBalance(faucetConfigId: string, rpc: string, address: string, threshold = 0): Promise<boolean> {
+export async function checkMainnetBalance(rpc: string, address: string, threshold = 0): Promise<{isValid: boolean, balance: number}> {
+    const response = {isValid: false, balance: 0}
     try {
         const response = await axios.post<any, any>(rpc, {
             jsonrpc: "2.0",
@@ -10,18 +11,11 @@ export async function checkMainnetBalance(faucetConfigId: string, rpc: string, a
         })
         const balance = parseInt(response.data.result)
         if (balance > threshold) {
-            console.log(JSON.stringify({
-                type: "FaucetMainnetBalanceCheckSuccess",
-                chain: faucetConfigId,
-                address,
-                balance,
-                rpc,
-            }))
-            return true
+            return {isValid: true, balance}
         }
     } catch(err) {
         console.error('ERROR: checkMainnetBalance', err)
-        return false
+        return response
     }
-    return false
+    return response
 }

@@ -11,6 +11,7 @@ export type PipelineCheckValidity = {
     checkPassedType?: PIPELINE_CHECKS,
     errorMessage?: string,
     dripAmount: number,
+    mainnetBalance?: number,
 }
 
 export function pipelineFailureMessage(mainnetBalanceCheckEnabled: boolean | string, couponCheckEnabled: boolean): string {
@@ -47,11 +48,12 @@ export async function checkCouponPipeline(
     }
 }
 
-export async function checkMainnetBalancePipeline(pipelineCheckValidity: PipelineCheckValidity, faucetConfigId: string, rpc: string, address: string) {
-    const isValid = await checkMainnetBalance(faucetConfigId, rpc, address)
+export async function checkMainnetBalancePipeline(pipelineCheckValidity: PipelineCheckValidity, rpc: string, address: string) {
+    const {isValid, balance} = await checkMainnetBalance(rpc, address)
     if (isValid) {
         pipelineCheckValidity.isValid = true
         pipelineCheckValidity.checkPassedType = PIPELINE_CHECKS.MAINNET_BALANCE
+        pipelineCheckValidity.mainnetBalance = balance
     } else {
         pipelineCheckValidity.errorMessage = "Mainnet balance check failed! " 
     }

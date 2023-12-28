@@ -150,7 +150,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     !pipelineValidity.isValid && couponCheckEnabled && await checkCouponPipeline(couponService, pipelineValidity, faucetConfigId, coupon)
     
     // don't check mainnet balance, if coupon is provided
-    !pipelineValidity.isValid && !coupon && mainnetCheckEnabledRPC && await checkMainnetBalancePipeline(pipelineValidity, faucetConfigId, mainnetCheckEnabledRPC, address)
+    !pipelineValidity.isValid && !coupon && mainnetCheckEnabledRPC && await checkMainnetBalancePipeline(pipelineValidity, mainnetCheckEnabledRPC, address)
 
     if (
         (mainnetCheckEnabledRPC || couponCheckEnabled) &&
@@ -163,11 +163,15 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 
     // logging requests (if enabled)
     DEBUG && console.log(JSON.stringify({
-        "type": "NewFaucetRequest",
-        "address": address,
-        "chain": chain,
-        "erc20": erc20,
-        "ip": req.headers["cf-connecting-ip"] || req.ip
+        type: "NewFaucetRequest",
+        faucetConfigId,
+        address,
+        chain,
+        erc20,
+        checkPassedType: pipelineValidity.checkPassedType,
+        dripAmount: pipelineValidity.dripAmount,
+        mainnetBalance: pipelineValidity.mainnetBalance,
+        ip: req.headers["cf-connecting-ip"] || req.ip
     }))
 
     // send request
