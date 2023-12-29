@@ -37,7 +37,7 @@ export type ChainType = {
     DRIP_AMOUNT: number,
     RECALIBRATE?: number,
     COUPON_REQUIRED?: boolean,
-    MAINNET_BALANCE_CHECK_RPC?: string,
+    MAINNET_BALANCE_CHECK_ENABLED?: boolean,
     RATELIMIT: {
         WINDOW_SIZE: number,
         MAX_LIMIT: number
@@ -65,7 +65,7 @@ export type ERC20Type = {
     MAX_PRIORITY_FEE?: string,
     MAX_FEE?: string,
     COUPON_REQUIRED?: boolean,
-    MAINNET_BALANCE_CHECK_RPC?: string,
+    MAINNET_BALANCE_CHECK_ENABLED?: boolean,
 }
 
 export type CouponValidity = {
