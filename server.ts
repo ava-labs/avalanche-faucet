@@ -165,6 +165,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
 
     // logging requests (if enabled)
     DEBUG && console.log(JSON.stringify({
+        date: new Date(),
         type: "NewFaucetRequest",
         faucetConfigId,
         address,

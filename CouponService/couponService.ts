@@ -87,7 +87,11 @@ export class CouponService {
                     this.coupons.set(coupon.id, coupon)
                 }
             } else {
-                console.log("fetched invalid coupon data:", item)
+                console.log(JSON.stringify({
+                    date: new Date(),
+                    type: 'InvalidCouponFetched',
+                    item
+                }))
             }
         })
 

@@ -14,7 +14,11 @@ export async function checkMainnetBalance(rpc: string, address: string, threshol
             return {isValid: true, balance}
         }
     } catch(err) {
-        console.error('ERROR: checkMainnetBalance', err)
+        console.error(JSON.stringify({
+            date: new Date(),
+            type: 'MainnetBalanceCheckError',
+            item: err
+        }))
         return response
     }
     return response
