@@ -25,7 +25,11 @@ export class VerifyCaptcha {
                         return r
                     })
             } catch (err: any) {
-                console.log("Recaptcha V2 error:", err?.message)
+                console.log({
+                    date: new Date(),
+                    type: 'RecaptchaV2Error',
+                    item: err?.message
+                })
             }
 
             const data = response?.data
@@ -45,7 +49,11 @@ export class VerifyCaptcha {
         try {
             response = await axios.post(URL)
         } catch(err: any){
-            console.log("Recaptcha V3 error:", err?.message)
+            console.log({
+                date: new Date(),
+                type: 'RecaptchaV3Error',
+                item: err?.message
+            })
         }
         
         const data = response?.data
