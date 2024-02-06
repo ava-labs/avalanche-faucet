@@ -290,6 +290,26 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "2YBPw8vxrWQoVKLHooavpnCQej8yCpgK2EfqGQ8biELyfYfHfo",
+            "NAME": "Staava Subnet Fuji",
+            "TOKEN": "tSTAAV",
+            "RPC": "https://testnet-node.staava.network/",
+            "CHAINID": 603995,
+            "EXPLORER": "https://testnet.staava.network",
+            "IMAGE": "https://staava.network/wp-content/uploads/2023/11/cropped-transperent-staav-2.png",
+            "MAX_PRIORITY_FEE": "10000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "DECIMALS": 18,
+            "RECALIBRATE": 30,
+            "COUPON_REQUIRED": true,
+            "MAINNET_BALANCE_CHECK_ENABLED": false,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ]
 }
