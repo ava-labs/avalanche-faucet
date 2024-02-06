@@ -298,7 +298,7 @@
             "RPC": "https://testnet-node.staava.network/",
             "CHAINID": 603995,
             "EXPLORER": "https://testnet.staava.network",
-            "IMAGE": "https://staava.network/wp-content/uploads/2023/11/cropped-transperent-staav-2.png",
+            "IMAGE": "https://raw.githubusercontent.com/STAAVA/public/main/StaavaMainLogo.png",
             "MAX_PRIORITY_FEE": "10000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 2,
