@@ -30,6 +30,7 @@ import {
     checkMainnetBalancePipeline,
     pipelineFailureMessage
 } from './utils/pipelineChecks'
+import { MainnetCheckService } from './mainnetCheckService'
 
 dotenv.config()
 
@@ -64,6 +65,7 @@ new RateLimiter(app, [
 })
 
 const couponService = new CouponService(couponConfig)
+const mainnetCheckService = new MainnetCheckService(MAINNET_BALANCE_CHECK_RPC)
 
 const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET!)
 
@@ -152,7 +154,7 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
     !pipelineValidity.isValid && couponCheckEnabled && await checkCouponPipeline(couponService, pipelineValidity, faucetConfigId, coupon)
     
     // don't check mainnet balance, if coupon is provided
-    !pipelineValidity.isValid && !coupon && mainnetCheckEnabled && await checkMainnetBalancePipeline(pipelineValidity, MAINNET_BALANCE_CHECK_RPC, address)
+    !pipelineValidity.isValid && !coupon && mainnetCheckEnabled && await checkMainnetBalancePipeline(mainnetCheckService, pipelineValidity, MAINNET_BALANCE_CHECK_RPC, address)
 
     if (
         (mainnetCheckEnabled || couponCheckEnabled) &&
