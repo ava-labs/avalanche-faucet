@@ -10,6 +10,12 @@ type AddressStatus = {
     lastUsedNonce: number,
 }
 
+type ResponseType = {
+    isValid: boolean,
+    internalError: boolean,
+    message: string
+}
+
 export class MainnetCheckService {
     private readonly documentClient: DynamoDBDocumentClient
     private readonly RPC: string
@@ -35,30 +41,37 @@ export class MainnetCheckService {
      *    d. If diff == 0
      *       i. fail
      */
-    async checkAddressValidity(address: string): Promise<boolean> {
+    async checkAddressValidity(address: string): Promise<ResponseType> {
+        const response: ResponseType = { isValid: false, internalError: false, message: "" };
+
         let addressStatus = await this.getAddressStatus(address)
         if (!addressStatus) {
             // update address status
             addressStatus = await this.updateAddressStatus(address)
+            if (!addressStatus) {
+                response.internalError = true
+                return response
+            }
         }
 
         if (addressStatus.checkCount < MAX_ADDRESS_CHECK_COUNT) {
-            this.updateAddressStatus(address, ++addressStatus.checkCount, addressStatus.lastUsedNonce)
-            return true
+            this.updateAddressStatus(address, ++addressStatus.checkCount, addressStatus.lastUsedNonce);
+            response.isValid = true
         } else {
             const currentNonce = await getNonce(this.RPC, address)
             if (!currentNonce) {
-                throw "Error fetching nonce..."
+                response.internalError = true
+                return response
             }
             const diff = currentNonce - addressStatus.lastUsedNonce
             if (diff > 0) {
                 const updatedCheckCount = Math.max(0, addressStatus.checkCount - diff) + 1
                 this.updateAddressStatus(address, updatedCheckCount, currentNonce)
-                return true
-            } else {
-                return false
+                response.isValid = true
             }
         }
+
+        return response
     }
 
     // Utility
@@ -89,12 +102,12 @@ export class MainnetCheckService {
         }
     }
 
-    async updateAddressStatus(address: string, checkCount: number = 0, nonce?: number): Promise<AddressStatus> {
+    async updateAddressStatus(address: string, checkCount: number = 0, nonce?: number): Promise<AddressStatus | undefined> {
         // if nonce is not provided, fetch from network
         if (!nonce) {
             const currentNonce = await getNonce(this.RPC, address)
             if (!currentNonce) {
-                throw "Error fetching nonce..."
+                return
             }
             nonce = currentNonce
         }
@@ -118,6 +131,7 @@ export class MainnetCheckService {
                 type: 'PuttingAddressTrackerError',
                 item: error
             }));
+            return
         }
 
         return {
