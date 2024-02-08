@@ -57,12 +57,15 @@ export async function checkMainnetBalancePipeline(
 ) {
     const {isValid, balance} = await checkMainnetBalance(rpc, address)
     if (isValid) {
-        if (await mainnetCheckService.checkAddressValidity(address)) {
+        const mainnetAddressValidity = await mainnetCheckService.checkAddressValidity(address)
+        if (mainnetAddressValidity.isValid) {
             pipelineCheckValidity.isValid = true
             pipelineCheckValidity.checkPassedType = PIPELINE_CHECKS.MAINNET_BALANCE
             pipelineCheckValidity.mainnetBalance = balance
+        } else if (mainnetAddressValidity.internalError) {
+            pipelineCheckValidity.errorMessage = "Some internal error occurred during mainnet check. "
         } else {
-            pipelineCheckValidity.errorMessage = "Address has exhausted maximum balance checks! Please do some mainnet transactinos."
+            pipelineCheckValidity.errorMessage = "Address has exhausted maximum balance checks! Please do some mainnet transactions. "
         }
     } else {
         pipelineCheckValidity.errorMessage = "Mainnet balance check failed! " 
