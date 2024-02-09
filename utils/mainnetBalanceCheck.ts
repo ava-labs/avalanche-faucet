@@ -23,3 +23,22 @@ export async function checkMainnetBalance(rpc: string, address: string, threshol
     }
     return response
 }
+
+export async function getNonce(rpc: string, address: string): Promise<number | undefined> {
+    try {
+        const response = await axios.post<any, any>(rpc, {
+            jsonrpc: "2.0",
+            method: "eth_getTransactionCount",
+            params: [address, "latest"],
+            id: 1,
+        })
+        return parseInt(response.data.result)
+    } catch(err) {
+        console.error(JSON.stringify({
+            date: new Date(),
+            type: 'NonceCheckError',
+            item: err
+        }))
+        return undefined
+    }
+}

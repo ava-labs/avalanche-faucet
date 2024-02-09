@@ -1,4 +1,5 @@
 import { CouponService } from '../CouponService/couponService'
+import { MainnetCheckService } from '../mainnetCheckService'
 import { checkMainnetBalance } from './mainnetBalanceCheck'
 
 export enum PIPELINE_CHECKS {
@@ -48,12 +49,24 @@ export async function checkCouponPipeline(
     }
 }
 
-export async function checkMainnetBalancePipeline(pipelineCheckValidity: PipelineCheckValidity, rpc: string, address: string) {
+export async function checkMainnetBalancePipeline(
+    mainnetCheckService: MainnetCheckService,
+    pipelineCheckValidity: PipelineCheckValidity,
+    rpc: string,
+    address: string,
+) {
     const {isValid, balance} = await checkMainnetBalance(rpc, address)
     if (isValid) {
-        pipelineCheckValidity.isValid = true
-        pipelineCheckValidity.checkPassedType = PIPELINE_CHECKS.MAINNET_BALANCE
-        pipelineCheckValidity.mainnetBalance = balance
+        const mainnetAddressValidity = await mainnetCheckService.checkAddressValidity(address)
+        if (mainnetAddressValidity.isValid) {
+            pipelineCheckValidity.isValid = true
+            pipelineCheckValidity.checkPassedType = PIPELINE_CHECKS.MAINNET_BALANCE
+            pipelineCheckValidity.mainnetBalance = balance
+        } else if (mainnetAddressValidity.internalError) {
+            pipelineCheckValidity.errorMessage = "Some internal error occurred during mainnet check. "
+        } else {
+            pipelineCheckValidity.errorMessage = "Address has exhausted maximum balance checks! Please do some mainnet transactions. "
+        }
     } else {
         pipelineCheckValidity.errorMessage = "Mainnet balance check failed! " 
     }
