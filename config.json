@@ -151,6 +151,38 @@
             }
         },
         {
+            "ID": "DISPATCH",
+            "NAME": "Dispatch AWM Testnet",
+            "TOKEN": "DIS",
+            "RPC": "https://subnets.avax.network/dispatch/testnet/rpc",
+            "CHAINID": 779672,
+            "EXPLORER": "https://subnets-test.avax.network/dispatch",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/60XrKdf99PqQKrHiuYdwTE/908622f5204311dbb11be9c6008ead44/Dispatch_Subnet_Logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "ECHO",
+            "NAME": "Echo AWM Testnet",
+            "TOKEN": "ECH",
+            "RPC": "https://subnets.avax.network/echo/testnet/rpc",
+            "CHAINID": 173750,
+            "EXPLORER": "https://subnets-test.avax.network/echo",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/7kyTY75fdtnO6mh7f0osix/4c92c93dd688082bfbb43d5d910cbfeb/Echo_Subnet_Logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
             "ID": "BEAM",
             "NAME": "Beam Testnet",
             "TOKEN": "BEAM",
