@@ -59,7 +59,7 @@ export class MainnetCheckService {
             response.isValid = true
         } else {
             const currentNonce = await getNonce(this.RPC, address)
-            if (!currentNonce) {
+            if (!currentNonce && currentNonce !== 0) {
                 response.internalError = true
                 return response
             }
@@ -104,9 +104,9 @@ export class MainnetCheckService {
 
     async updateAddressStatus(address: string, checkCount: number = 0, nonce?: number): Promise<AddressStatus | undefined> {
         // if nonce is not provided, fetch from network
-        if (!nonce) {
+        if (!nonce && nonce !== 0) {
             const currentNonce = await getNonce(this.RPC, address)
-            if (!currentNonce) {
+            if (!currentNonce && currentNonce !== 0) {
                 return
             }
             nonce = currentNonce
