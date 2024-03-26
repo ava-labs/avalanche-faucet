@@ -158,7 +158,7 @@
             "RPC": "https://subnets.avax.network/masatestne/testnet/rpc",
             "CHAINID": 103454,
             "EXPLORER": "https://subnets-test.avax.network/masatestnet",
-            "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/103454/chain-logo.png",
+            "IMAGE": "https://safe.masa.finance/images/networks/masa.png",
             "MAX_PRIORITY_FEE": "300000000000",
             "MAX_FEE": "10000000000000",
             "DRIP_AMOUNT": 2,
