@@ -152,6 +152,23 @@
             }
         },
         {
+            "ID": "MASA",
+            "NAME": "Masa Testnet",
+            "TOKEN": "MASA",
+            "RPC": "https://subnets.avax.network/masatestne/testnet/rpc",
+            "CHAINID": 103454,
+            "EXPLORER": "https://subnets-test.avax.network/masatestnet",
+            "IMAGE": "https://safe.masa.finance/images/networks/masa.png",
+            "MAX_PRIORITY_FEE": "300000000000",
+            "MAX_FEE": "10000000000000",
+            "DRIP_AMOUNT": 2,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
             "ID": "LT0",
             "NAME": "LT0 Testnet",
             "TOKEN": "LT",
