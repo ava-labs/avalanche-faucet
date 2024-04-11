@@ -203,6 +203,22 @@
             }
         },
         {
+            "ID": "MXSGAMES",
+            "NAME": "MXS Games Testnet",
+            "TOKEN": "XSEED",
+            "RPC": "https://subnets.avax.network/mxsgameste/testnet/rpc",
+            "CHAINID": 78170,
+            "EXPLORER": "https://subnets-test.avax.network/mxsgameste",
+            "IMAGE": "https://firebasestorage.googleapis.com/v0/b/prodmxs.appspot.com/o/branding%2Fmxs_games%2Fv1%2Fblack%2Fmxs_logo_black_stack_white_bg_512_512.png?alt=media&token=373d259b-8725-4325-a5fa-26fa07faeb3f",
+            "MAX_PRIORITY_FEE": "10000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
             "ID": "ECLIPSET",
             "NAME": "Eclipse Testnet",
             "TOKEN": "ECLP",
