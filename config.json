@@ -210,9 +210,9 @@
             "CHAINID": 555666,
             "EXPLORER": "https://subnets-test.avax.network/eclipsecha",
             "IMAGE": "https://raw.githubusercontent.com/Thor-Financial/Eclipse-assets/main/eclipse-logo.png",
-            "MAX_PRIORITY_FEE": "300000000000",
+            "MAX_PRIORITY_FEE": "100000000000",
             "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 1000000000,
+            "DRIP_AMOUNT": 100000000,
             "DECIMALS": 18,
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
