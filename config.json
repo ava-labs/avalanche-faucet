@@ -221,7 +221,7 @@
         {
             "ID": "ECLIPSET",
             "NAME": "Eclipse Testnet",
-            "TOKEN": "ECLP",
+            "TOKEN": "ECLPS",
             "RPC": "https://subnets.avax.network/eclipsecha/testnet/rpc",
             "CHAINID": 555666,
             "EXPLORER": "https://subnets-test.avax.network/eclipsecha",
