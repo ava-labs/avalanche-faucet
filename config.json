@@ -234,6 +234,23 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "ORANGET",
+            "NAME": "Orange Testnet",
+            "TOKEN": "JUICE",
+            "RPC": "https://subnets.avax.network/orangetest/testnet/rpc",
+            "CHAINID": 987,
+            "EXPLORER": "https://subnets-test.avax.network/orangetest",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/3XEEyo14stfm16l3lKzmkV/6f3253c86be493713625385d2d2ccf8d/Orange_Icon.png",
+            "MAX_PRIORITY_FEE": "10000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 1,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 2,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
