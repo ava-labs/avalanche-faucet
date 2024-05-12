@@ -251,6 +251,22 @@
                 "MAX_LIMIT": 2,
                 "WINDOW_SIZE": 1440
             }
+        },
+	{
+            "ID": "testsel5",
+            "NAME": "testsel5 Testnet",
+            "TOKEN": "tsel5",
+            "RPC": "https://api.avax-test.network/ext/bc/jyx7D5ovHF7RUUAXy1xpPXDMhF1bwMNK4sMhiFW8K7x4zncj9/rpc",
+            "CHAINID": 7865345789,
+            "EXPLORER": "https://subnets-test.avax.network/testsel5",
+            "IMAGE": "",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
