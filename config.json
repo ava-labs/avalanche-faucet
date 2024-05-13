@@ -251,6 +251,23 @@
                 "MAX_LIMIT": 2,
                 "WINDOW_SIZE": 1440
             }
+        },
+		{
+            "ID": "PLYRT",
+            "NAME": "PLYR TAU Testnet",
+            "TOKEN": "PLYR",
+            "RPC": "https://subnets.avax.network/plyr/testnet/rpc",
+            "CHAINID": 62831,
+            "EXPLORER": "https://subnets-test.avax.network/plyr",
+            "IMAGE": "https://plyr.network/plyr_logo.png",
+            "MAX_PRIORITY_FEE": "100000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 1,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
