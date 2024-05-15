@@ -262,7 +262,7 @@
             "IMAGE": "https://plyr.network/plyr_logo.png",
             "MAX_PRIORITY_FEE": "100000000000",
             "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 1,
+            "DRIP_AMOUNT": 5,
             "DECIMALS": 18,
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
