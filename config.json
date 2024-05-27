@@ -253,7 +253,7 @@
             }
         },
 		{
-            "ID": "PLYRT",
+            "ID": "PLYR",
             "NAME": "PLYR TAU Testnet",
             "TOKEN": "PLYR",
             "RPC": "https://subnets.avax.network/plyr/testnet/rpc",
