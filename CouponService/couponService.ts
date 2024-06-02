@@ -7,7 +7,10 @@ type Coupon = {
     id: string,
     faucetConfigId: string,
     maxLimitAmount: number,
-    consumedAmount: number,
+    dailyLimitAmount: number,
+    totalConsumedAmount: number,
+    todayConsumedAmount: number,
+    todayConsumedLastReset: number,
     expiry: number,
     amountPerCoupon: number,
     reset: boolean,
@@ -24,7 +27,11 @@ function validateCouponData(coupon: any, couponConfig: CouponConfig): Coupon | u
         coupon.faucetConfigId &&
         coupon.maxLimitAmount > 0 &&
         coupon.maxLimitAmount <= couponConfig.MAX_LIMIT_CAP &&
-        coupon.consumedAmount <= coupon.maxLimitAmount &&
+        coupon.dailyLimitAmount > 0 &&
+        coupon.dailyLimitAmount <= coupon.maxLimitAmount &&
+        coupon.totalConsumedAmount <= coupon.maxLimitAmount &&
+        coupon.todayConsumedAmount <= coupon.dailyLimitAmount &&
+        coupon.todayConsumedLastReset > 0 &&
         coupon.expiry > 0
     ) {
         return coupon
@@ -69,12 +76,12 @@ export class CouponService {
         const params = new ScanCommand({
             TableName: 'coupons',
         })
-    
+
         const result = await this.documentClient?.send(params)
 
         // Required for quick lookup of coupons in DB fetched list
         const dbItemSet = new Set<string>()
-    
+
         // Fetches new coupons from database into memory
         result?.Items?.forEach((item: Record<string, any>) => {
             const coupon: Coupon | undefined = validateCouponData(item, this.couponConfig)
@@ -116,14 +123,14 @@ export class CouponService {
                 },
                 UpdateExpression: 'SET consumedAmount = :consumedAmount',
                 ExpressionAttributeValues: {
-                    ':consumedAmount': couponItem.consumedAmount,
+                    ':totalConsumedAmount': couponItem.totalConsumedAmount,
                 },
             }
 
             const params = new UpdateCommand(updateRequest)
             await this.documentClient?.send(params)
         })
-    }  
+    }
 
     async consumeCouponAmount(id: string, faucetConfigId: string, amount: number): Promise<CouponValidity> {
         // Return `true` early, if coupon system is disabled (for debugging)
@@ -133,16 +140,24 @@ export class CouponService {
         try {
             const coupon = this.coupons.get(id)
             const couponAmount = coupon?.amountPerCoupon ?? amount
+
+            if (coupon && coupon.todayConsumedLastReset < (Date.now() / 1000)) {
+                coupon.todayConsumedAmount = 0
+                coupon.todayConsumedLastReset = Date.now() / 1000
+            }
+
             if (
                 coupon &&
                 coupon.faucetConfigId === faucetConfigId &&
                 coupon.expiry > (Date.now() / 1000) &&
-                coupon.consumedAmount + couponAmount < coupon.maxLimitAmount
+                coupon.totalConsumedAmount + couponAmount < coupon.maxLimitAmount &&
+                coupon.todayConsumedAmount + couponAmount < coupon.dailyLimitAmount
             ) {
-                coupon.consumedAmount += couponAmount
-                return { isValid: true, amount: couponAmount}
+                coupon.totalConsumedAmount += couponAmount
+                coupon.todayConsumedAmount += couponAmount
+                return { isValid: true, amount: couponAmount }
             }
-            return { isValid: false, amount: couponAmount}
+            return { isValid: false, amount: couponAmount }
         } finally {
             release()
         }
@@ -156,9 +171,9 @@ export class CouponService {
             if (
                 coupon &&
                 coupon.expiry > (Date.now() / 1000) &&
-                coupon.consumedAmount - amount > 0
+                coupon.totalConsumedAmount - amount > 0
             ) {
-                coupon.consumedAmount -= amount
+                coupon.totalConsumedAmount -= amount
             }
         } finally {
             release()
