@@ -8,7 +8,7 @@ import ReCaptcha from './ReCaptcha'
 import FooterBox from './FooterBox'
 import queryString from 'query-string'
 import { DropdownOption } from './types'
-import { connectAccount } from './Metamask'
+import { connectAccount } from './Wallet'
 import { AxiosResponse } from 'axios'
 
 const FaucetForm = (props: any) => {
@@ -540,8 +540,8 @@ const FaucetForm = (props: any) => {
                                 autoFocus
                             />
 
-                            <span className='connect-metamask' onClick={ () => connectAccount(updateAddress) }>
-                                <img alt='metamask' src="/memtamask.webp"/>
+                            <span className='connect-wallet' onClick={ () => connectAccount(updateAddress) }>
+                                <img alt='wallet' src="/wallet.svg"/>
                                 Connect
                             </span>
                         </div>
