@@ -41,7 +41,7 @@ On server-side, we need to configure 2 files - `server/.env` for secret keys and
 
 ### Setup Environment Variables
 
-Setup the environment variable with your private key and recaptcha secret. Make a `.env` file inside the `/server` directory with following credentials. The faucet server can handle multiple EVM chains, and threfore requires private keys for addresses with funds on each of the chain.
+Setup the environment variable with your private key and recaptcha secret. Make a `.env` file inside the `/server` directory with following credentials. The faucet server can handle multiple EVM chains, and therefore requires private keys for addresses with funds on each of the chain.
 
 If you have funds on the same address on every chain, then you can just use `PK` variable. But if you have funds on different addresses on different chains, then you can provide each of the private key against their chain name, as shown below.
 

@@ -346,9 +346,9 @@ export default class EVM {
         try {
             /*
             * asyncCallWithTimeout function can return
-            * 1. successfull response
-            * 2. throw API error (will be catched by catch block)
-            * 3. throw timeout error (will be catched by catch block)
+            * 1. successful response
+            * 2. throw API error (will be caught by catch block)
+            * 3. throw timeout error (will be caught by catch block)
             */
             await asyncCallWithTimeout(
                 this.web3.eth.sendSignedTransaction(rawTransaction),
