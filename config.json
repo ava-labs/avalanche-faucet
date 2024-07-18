@@ -358,6 +358,21 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "GAMR",
+            "HOSTID": "PLYR",
+            "NAME": "GAMR",
+            "TOKEN": "GAMR",
+            "IMAGE": "https://plyr.network/gamr_logo.png",
+            "CONTRACTADDRESS": "0xa875625fe8A955406523E52E485f351b92908ce1",
+            "DRIP_AMOUNT": 1000,
+            "GASLIMIT": "150000",
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ]
 }
