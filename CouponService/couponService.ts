@@ -18,12 +18,12 @@ type CouponConfig = {
     MAX_LIMIT_CAP: number,
 }
 
-function validateCouponData(coupon: any, couponConfig: CouponConfig): Coupon | undefined {
+function validateCouponData(coupon: any, couponConfig: CouponConfig, ignoreCouponLimitCheck = true): Coupon | undefined {
     if (
         coupon.id &&
         coupon.faucetConfigId &&
         coupon.maxLimitAmount > 0 &&
-        coupon.maxLimitAmount <= couponConfig.MAX_LIMIT_CAP &&
+        (ignoreCouponLimitCheck || coupon.maxLimitAmount <= couponConfig.MAX_LIMIT_CAP) &&
         coupon.consumedAmount <= coupon.maxLimitAmount &&
         coupon.expiry > 0
     ) {
@@ -77,7 +77,7 @@ export class CouponService {
     
         // Fetches new coupons from database into memory
         result?.Items?.forEach((item: Record<string, any>) => {
-            const coupon: Coupon | undefined = validateCouponData(item, this.couponConfig)
+            const coupon: Coupon | undefined = validateCouponData(item, this.couponConfig, true)
             if (coupon) {
                 dbItemSet.add(coupon.id)
 
@@ -114,9 +114,10 @@ export class CouponService {
                 Key: {
                     id: couponItem.id,
                 },
-                UpdateExpression: 'SET consumedAmount = :consumedAmount',
+                UpdateExpression: 'SET consumedAmount = :consumedAmount, reset = :reset',
                 ExpressionAttributeValues: {
                     ':consumedAmount': couponItem.consumedAmount,
+                    ':reset': couponItem.reset ?? false,
                 },
             }
 
