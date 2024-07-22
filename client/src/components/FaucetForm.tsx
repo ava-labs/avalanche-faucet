@@ -54,7 +54,7 @@ const FaucetForm = (props: any) => {
         }
     }, [props.config.V2_SITE_KEY, recaptcha, widgetID, window.grecaptcha])
 
-    // Update balance whenver chain changes or after transaction is processed
+    // Update balance whenever chain changes or after transaction is processed
     useEffect(() => {
         updateBalance()
     }, [chain, token, sendTokenResponse, chainConfigs])
