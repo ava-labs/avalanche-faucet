@@ -114,10 +114,14 @@ export class CouponService {
                 Key: {
                     id: couponItem.id,
                 },
-                UpdateExpression: 'SET consumedAmount = :consumedAmount, reset = :reset',
+                UpdateExpression: 'SET consumedAmount = :consumedAmount, #resetBool = :resetBool',
+                ExpressionAttributeNames: {
+                    // 'reset' is a reserved keyword in DynamoDB
+                    '#resetBool': 'reset'
+                },
                 ExpressionAttributeValues: {
                     ':consumedAmount': couponItem.consumedAmount,
-                    ':reset': couponItem.reset ?? false,
+                    ':resetBool': couponItem.reset ?? false,
                 },
             }
 
