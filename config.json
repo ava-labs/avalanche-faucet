@@ -268,6 +268,23 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "PTNEWLO",
+            "NAME": "PTNEWLO Testnet",
+            "TOKEN": "PTNL",
+            "RPC": "https://subnets.avax.network/ptnewlo/testnet/rpc",
+            "CHAINID": 57487,
+            "EXPLORER": "https://subnets-test.avax.network/ptnewlo",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/4wnyhip4JrhrRueC21kmUP/bfaa12a82cb2894f8316fba2827c9d58/AvaCloud_subnet_PTNEWLO.png",
+            "MAX_PRIORITY_FEE": "100000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 5,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
