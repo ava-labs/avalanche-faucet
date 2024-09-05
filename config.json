@@ -268,6 +268,22 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "INTERSECT",
+            "NAME": "Intersect Testnet",
+            "TOKEN": "PEARL",
+            "RPC": "https://subnets.avax.network/pearl/testnet/rpc",
+            "CHAINID": 1612,
+            "EXPLORER": "https://subnets-test.avax.network/intersect",
+            "IMAGE": "https://raw.githubusercontent.com/UzairHannure/Subnet-Brand-Assets/main/ddd.webp",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "50000000000",
+            "DRIP_AMOUNT": 5,
+            "RATELIMIT": {
+                "MAX_LIMIT": 3,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
