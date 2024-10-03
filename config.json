@@ -308,7 +308,7 @@
             "TOKEN": "AVAX",
             "RPC": "https://etna.avax-dev.network/ext/bc/C/rpc",
             "CHAINID": 43117,
-            "EXPLORER": "https://subnets-test.avax.network/c-chain",
+            "EXPLORER": "https://feat-etna-devnet.subnets.pages.dev/devnet-c-chain",
             "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/43113/chain-logo.png",
             "MAX_PRIORITY_FEE": "10000000000",
             "MAX_FEE": "100000000000",
