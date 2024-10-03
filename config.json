@@ -306,7 +306,7 @@
             "ID": "CDEVNET",
             "NAME": "Devnet (C-Chain)",
             "TOKEN": "AVAX",
-            "RPC": "https://api.avax-test.network/ext/C/rpc",
+            "RPC": "https://etna.avax-dev.network/ext/bc/C/rpc",
             "CHAINID": 43117,
             "EXPLORER": "https://subnets-test.avax.network/c-chain",
             "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/43113/chain-logo.png",
