@@ -252,7 +252,7 @@
                 "WINDOW_SIZE": 1440
             }
         },
-		{
+        {
             "ID": "PLYR",
             "NAME": "PLYR TAU Testnet",
             "TOKEN": "PLYR",
@@ -313,6 +313,23 @@
             "MAX_PRIORITY_FEE": "10000000000",
             "MAX_FEE": "100000000000",
             "DRIP_AMOUNT": 5,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "ONIGIRI",
+            "NAME": "ONIGIRI Testnet",
+            "TOKEN": "ONGR",
+            "RPC": "https://subnets.avax.network/onigiri/testnet/rpc",
+            "CHAINID": 5039,
+            "EXPLORER": "https://subnets-test.avax.network/onigiri",
+            "IMAGE": "https://gateway.pinata.cloud/ipfs/QmVyXNxhtyS6Ei6MXqcyYsFAJxHnSa1QkHtnfUmCMTs9Sb",
+            "MAX_PRIORITY_FEE": "10000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
             "DECIMALS": 18,
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
