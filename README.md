@@ -410,7 +410,7 @@ This is not just it. Using the buttons shown below, you can go to the Subnet exp
 
 ### Probable Errors and Troubleshooting
 
-Errors are not expected, but if you are facing some of the errors shown, then you could try troubleshooting as shown below. If none of the troubleshooting works, reach us through [Discord](https://discord.com/channels/578992315641626624/).
+Errors are not expected, but if you are facing some of the errors shown, then you could try troubleshooting as shown below. If none of the troubleshooting works, reach us through [Discord](https://discord.com/invite/RwXY7P6).
 
 * **Too many requests. Please try again after X minutes**
 This is a rate-limiting message. Every Subnet can set its drop limits. The above message suggests that you have reached your drop limit i.e. the number of times you could request coins within the window of X minutes. You should try requesting after X minutes. If you are facing this problem, even when you are requesting for the first time in the window, you may be behind some proxy, WiFi, or VPN service that is also being used by some other user.
@@ -422,7 +422,7 @@ We are using v3 of [Google's ReCaptcha](https://developers.google.com/recaptcha/
 This is an internal error in the Subnet's node, on which we are making an RPC for sending transactions. A regular check will update the RPC's health status every 30 seconds (default) or whatever is set in the configuration. This may happen only in rare scenarios and you cannot do much about it, rather than waiting.
 
 * **Timeout of 10000ms exceeded**
-There could be many reasons for this message. It could be an internal server error, or the request didn't receive by the server, slow internet, etc. You could try again after some time, and if the problem persists, then you should raise this issue on our [Discord](https://discord.com/channels/578992315641626624/) server.
+There could be many reasons for this message. It could be an internal server error, or the request didn't receive by the server, slow internet, etc. You could try again after some time, and if the problem persists, then you should raise this issue on our [Discord](https://discord.com/invite/RwXY7P6) server.
 
 * **Couldn't see any transaction status on explorer**
 The transaction hash that you get for each drop is pre-computed using the expected nonce, amount, and receiver's address. Though transactions on Avalanche are near-instant, the explorer may take time to index those transactions. You should wait for a few more seconds, before raising any issue or reaching out to us.
