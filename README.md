@@ -4,7 +4,7 @@ Right now there are thousands of networks and chains in the blockchain space, ea
 
 But we cannot risk our funds on the network or on any applications hosted on that network, without testing them first. So, these networks often have test networks or testnets, where the native coins do not have any monetary value, and thus can be obtained freely through faucets. 
 
-These testnets are often the testbeds for any new native feature of the network itself, or any dApp or [Subnet](https://www.avax.network/subnets) that is going live on the main network (mainnet). For example, [Fuji](https://docs.avax.network/quickstart/fuji-workflow) network is the testnet for Avalanche's mainnet.
+These testnets are often the testbeds for any new native feature of the network itself, or any dApp or [Subnet](https://www.avax.network/subnets) that is going live on the main network (mainnet). For example, [Fuji](https://docs.avax.network/dapps/end-to-end/fuji-workflow) network is the testnet for Avalanche's mainnet.
 
 Besides Fuji Testnet, [Avalanche Faucet](https://faucet.avax.network/) can be used to get free coins on these testnets Subnets like -
 * [WAGMI Testnet](https://faucet.avax.network?subnet=wagmi)
