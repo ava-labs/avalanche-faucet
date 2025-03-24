@@ -335,6 +335,23 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "MYTH",
+            "NAME": "Myth Games Testnet",
+            "TOKEN": "MYTH",
+            "RPC": "https://subnets.avax.network/mythgames2/testnet/rpc",
+            "CHAINID": 13576,
+            "EXPLORER": "https://subnets-test.avax.network/mythgames2",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/2Tq9PpuVonvuvZGcup4QXD/3f59bfc8106c718f0fa14138c9a2f3cf/logo_2.png",
+            "MAX_PRIORITY_FEE": "300000000000",
+            "MAX_FEE": "10000000000000",
+            "DRIP_AMOUNT": 2,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
