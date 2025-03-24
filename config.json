@@ -335,6 +335,23 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "KITE",
+            "NAME": "KiteAI Testnet",
+            "TOKEN": "KITE",
+            "RPC": "https://rpc-testnet.gokite.ai",
+            "CHAINID": 2368,
+            "EXPLORER": "https://testnet.kitescan.ai/ ",
+            "IMAGE": "https://testnet.gokite.ai/assets/logo-CVvOyPms.png",
+            "MAX_PRIORITY_FEE": "10000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
