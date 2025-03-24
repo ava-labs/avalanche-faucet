@@ -39,6 +39,26 @@
             }
         },
         {
+            "ID": "BITCOINL1",
+            "NAME": "Bitcoin L1 Testnet",
+            "TOKEN": "BTC",
+            "RPC": "https://rpc.bitcoinl1.net/main/evm/132008",
+            "CHAINID": 132008,
+            "EXPLORER": "https://testnet.bitcoinl1.net",
+            "IMAGE": "https://cdn.blockviper.com/bitcoinl1/BTCL1-Logo-Icon-XPAR.png",
+            "MAX_PRIORITY_FEE": "25000000",
+            "MAX_FEE": "250000000",
+            "DRIP_AMOUNT": 0.001,
+            "DECIMALS": 18,
+            "RECALIBRATE": 30,
+            "COUPON_REQUIRED": false,
+            "MAINNET_BALANCE_CHECK_ENABLED": false,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
             "ID": "WAGMI",
             "NAME": "WAGMI Testnet",
             "TOKEN": "WGM",
