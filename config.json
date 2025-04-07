@@ -16,19 +16,19 @@
         "MAX_LIMIT_CAP": 5000
     },
     "MAINNET_BALANCE_CHECK_RPC": "https://api.avax.network/ext/C/rpc",
-    "MAINNET_BALANCE_CHECK_CHAIN_ID": 48169,
+    "MAINNET_BALANCE_CHECK_CHAIN_ID": 43114,
     "evmchains": [
         {
-            "ID": "GOOD",
-            "NAME": "GOOD",
-            "TOKEN": "GOOD",
-            "RPC": "https://subnets.avax.network/goodtest/testnet/rpc",
-            "CHAINID": 48169,
-            "EXPLORER": "https://subnets-test.avax.network/goodtest",
+            "ID": "C",
+            "NAME": "Fuji (C-Chain)",
+            "TOKEN": "AVAX",
+            "RPC": "https://api.avax-test.network/ext/C/rpc",
+            "CHAINID": 43113,
+            "EXPLORER": "https://subnets-test.avax.network/c-chain",
             "IMAGE": "https://glacier-api.avax.network/proxy/chain-assets/main/chains/43113/chain-logo.png",
             "MAX_PRIORITY_FEE": "10000000000",
             "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 2000,
+            "DRIP_AMOUNT": 2,
             "DECIMALS": 18,
             "RECALIBRATE": 30,
             "COUPON_REQUIRED": true,
@@ -38,10 +38,29 @@
                 "WINDOW_SIZE": 1440
             }
         },
-        {
-            "ID": "GOOD",
-            "NAME": "GOOD L1 Testnet",
+         {
+            "ID": "GOOD Test",
+            "NAME": "GOOD CARE Testnet",
             "TOKEN": "GOOD",
+            "RPC": "https://subnets.avax.network/goodtest/testnet/rpc",
+            "CHAINID": 48169,
+            "EXPLORER": "https://subnets-test.avax.network/goodtest",
+            "IMAGE": "https://bit.ly/goodcarelogo",
+            "MAX_PRIORITY_FEE": "25000000",
+            "MAX_FEE": "250000000",
+            "DRIP_AMOUNT": 1000,
+            "DECIMALS": 18,
+            "RECALIBRATE": 30,
+            "COUPON_REQUIRED": false,
+            "MAINNET_BALANCE_CHECK_ENABLED": false,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            },
+        {
+            "ID": "BITCOINL1",
+            "NAME": "Bitcoin L1 Testnet",
+            "TOKEN": "BTC",
             "RPC": "https://rpc.bitcoinl1.net/main/evm/132008",
             "CHAINID": 132008,
             "EXPLORER": "https://testnet.bitcoinl1.net",
@@ -481,10 +500,11 @@
             }
         },
         {
-            "ID": "GOOD",
-            "HOSTID": "GOOD",
-            "NAME": "GOOD",
-            "TOKEN": "GOOD",
+            "ID": "GAMR",
+            "HOSTID": "PLYR",
+            "NAME": "GAMR",
+            "TOKEN": "GAMR",
+            "IMAGE": "https://plyr.network/gamr_logo.png",
             "CONTRACTADDRESS": "0xa875625fe8A955406523E52E485f351b92908ce1",
             "DRIP_AMOUNT": 1000,
             "GASLIMIT": "150000",
