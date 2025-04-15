@@ -38,64 +38,6 @@
                 "WINDOW_SIZE": 1440
             }
         },
-         {
-            "ID": "GOOD Test",
-            "NAME": "GOOD CARE Testnet",
-            "TOKEN": "GOOD",
-            "RPC": "https://subnets.avax.network/goodtest/testnet/rpc",
-            "CHAINID": 48169,
-            "EXPLORER": "https://subnets-test.avax.network/goodtest",
-            "IMAGE": "https://bit.ly/goodcarelogo",
-            "MAX_PRIORITY_FEE": "25000000",
-            "MAX_FEE": "250000000",
-            "DRIP_AMOUNT": 1000,
-            "DECIMALS": 18,
-            "RECALIBRATE": 30,
-            "COUPON_REQUIRED": false,
-            "MAINNET_BALANCE_CHECK_ENABLED": false,
-            "RATELIMIT": {
-                "MAX_LIMIT": 1,
-                "WINDOW_SIZE": 1440
-            },
-        {
-            "ID": "SOSHI",
-            "NAME": "Soshi L1",
-            "TOKEN": "SOSHI",
-            "RPC": "https://subnets.avax.network/soshi/testnet/rpc",
-            "CHAINID": 3278,
-            "EXPLORER": "https://subnets-test.avax.network/soshi",
-            "IMAGE": "https://soshi.network/assets/images/soshi-logo.png",
-            "MAX_PRIORITY_FEE": "2000000000",
-            "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 2,
-            "DECIMALS": 18,
-            "COUPON_REQUIRED": false,
-            "MAINNET_BALANCE_CHECK_ENABLED": false,
-            "RATELIMIT": {
-                "MAX_LIMIT": 1,
-                "WINDOW_SIZE": 1440
-            }
-        },
-        {
-            "ID": "BITCOINL1",
-            "NAME": "Bitcoin L1 Testnet",
-            "TOKEN": "BTC",
-            "RPC": "https://rpc.bitcoinl1.net/main/evm/132008",
-            "CHAINID": 132008,
-            "EXPLORER": "https://testnet.bitcoinl1.net",
-            "IMAGE": "https://cdn.blockviper.com/bitcoinl1/BTCL1-Logo-Icon-XPAR.png",
-            "MAX_PRIORITY_FEE": "25000000",
-            "MAX_FEE": "250000000",
-            "DRIP_AMOUNT": 0.001,
-            "DECIMALS": 18,
-            "RECALIBRATE": 30,
-            "COUPON_REQUIRED": false,
-            "MAINNET_BALANCE_CHECK_ENABLED": false,
-            "RATELIMIT": {
-                "MAX_LIMIT": 1,
-                "WINDOW_SIZE": 1440
-            }
-        },
         {
             "ID": "WAGMI",
             "NAME": "WAGMI Testnet",
@@ -423,6 +365,65 @@
             "MAX_FEE": "10000000000000",
             "DRIP_AMOUNT": 2,
             "DECIMALS": 18,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "BITCOINL1",
+            "NAME": "Bitcoin L1 Testnet",
+            "TOKEN": "BTC",
+            "RPC": "https://rpc.bitcoinl1.net/main/evm/132008",
+            "CHAINID": 132008,
+            "EXPLORER": "https://testnet.bitcoinl1.net",
+            "IMAGE": "https://cdn.blockviper.com/bitcoinl1/BTCL1-Logo-Icon-XPAR.png",
+            "MAX_PRIORITY_FEE": "25000000",
+            "MAX_FEE": "250000000",
+            "DRIP_AMOUNT": 0.001,
+            "DECIMALS": 18,
+            "RECALIBRATE": 30,
+            "COUPON_REQUIRED": false,
+                "MAINNET_BALANCE_CHECK_ENABLED": false,
+                "RATELIMIT": {
+                    "MAX_LIMIT": 1,
+                    "WINDOW_SIZE": 1440
+                }
+        },
+        {
+            "ID": "SOSHI",
+            "NAME": "Soshi L1",
+            "TOKEN": "SOSHI",
+            "RPC": "https://subnets.avax.network/soshi/testnet/rpc",
+            "CHAINID": 3278,
+            "EXPLORER": "https://subnets-test.avax.network/soshi",
+            "IMAGE": "https://soshi.network/assets/images/soshi-logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "DECIMALS": 18,
+            "COUPON_REQUIRED": false,
+            "MAINNET_BALANCE_CHECK_ENABLED": false,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
+            "ID": "GOODTEST",
+            "NAME": "GOOD CARE Testnet",
+            "TOKEN": "GOOD",
+            "RPC": "https://subnets.avax.network/goodtest/testnet/rpc",
+            "CHAINID": 48169,
+            "EXPLORER": "https://subnets-test.avax.network/goodtest",
+            "IMAGE": "https://bit.ly/goodcarelogo",
+            "MAX_PRIORITY_FEE": "25000000",
+            "MAX_FEE": "250000000",
+            "DRIP_AMOUNT": 1000,
+            "DECIMALS": 18,
+            "RECALIBRATE": 30,
+            "COUPON_REQUIRED": false,
+            "MAINNET_BALANCE_CHECK_ENABLED": false,
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
