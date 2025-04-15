@@ -1,0 +1,52 @@
+name: Build and push core-base image
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-base-core-image:
+    name: Build, Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_MASTER }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_MASTER }}
+          aws-region: "eu-west-1"
+          role-duration-seconds: 7200
+          role-to-assume: ${{ secrets.MASTER_DEPLOYMENT_ROLE }}
+          role-session-name: ${{ secrets.MASTER_DEPLOYMENT_SESSION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Check if merging to master branch
+        id: master_branch_check
+        run: |
+          if [ "$GITHUB_REF" == "refs/heads/main" ]; then
+            echo "github_tag_dry_run=false" >> $GITHUB_OUTPUT
+          else
+            echo "github_tag_dry_run=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Bump version and push tag
+        id: bump_version_and_push_tag
+        uses: anothrNick/github-tag-action@v1
+        env:
+          DEFAULT_BUMP: patch
+          DRY_RUN: ${{ steps.master_branch_check.outputs.github_tag_dry_run }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_BRANCHES: .*
+          WITH_V: true
+      - name: Build the soshi-faucet image
+        run: docker build . --file ./Dockerfile --tag 700714871688.dkr.ecr.eu-west-1.amazonaws.com/soshi-faucet:${{ steps.bump_version_and_push_tag.outputs.new_tag }}
+      - name: Push soshi-faucet image
+        if: github.ref == 'refs/heads/master'
+        run: docker push 700714871688.dkr.ecr.eu-west-1.amazonaws.com/soshi-faucet:${{ steps.bump_version_and_push_tag.outputs.new_tag }}
