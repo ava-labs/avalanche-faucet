@@ -410,7 +410,7 @@
             }
         },
         {
-            "ID": "GOOD Test",
+            "ID": "GOODTEST",
             "NAME": "GOOD CARE Testnet",
             "TOKEN": "GOOD",
             "RPC": "https://subnets.avax.network/goodtest/testnet/rpc",
