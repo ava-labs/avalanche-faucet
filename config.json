@@ -409,6 +409,25 @@
                 "WINDOW_SIZE": 1440
             }
         },
+         {
+            "ID": "Amichain",
+            "NAME": "Amichain Testnet",
+            "TOKEN": "AMI",
+            "RPC": "https://testnet-rpc.amichain.org",
+            "CHAINID": 588785741,
+            "EXPLORER": "https://devnet.routescan.io/?rpc=https://testnet-rpc.amichain.org",
+            "IMAGE": "https://www.amichain.org/images/ami-logo.png",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 2,
+            "DECIMALS": 18,
+            "COUPON_REQUIRED": false,
+            "MAINNET_BALANCE_CHECK_ENABLED": false,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
         {
             "ID": "GOODTEST",
             "NAME": "GOOD CARE Testnet",
