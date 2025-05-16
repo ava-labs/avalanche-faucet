@@ -45,27 +45,27 @@ if (NATIVE_CLIENT) {
     app.use(express.static(path.join(__dirname, "client")))
 }
 
-new RateLimiter(app, [GLOBAL_RL])
+const couponService = new CouponService(couponConfig)
+const mainnetCheckService = new MainnetCheckService(MAINNET_BALANCE_CHECK_RPC)
+
+new RateLimiter(app, [GLOBAL_RL], 'global', couponService)
 
 new RateLimiter(app, [
     ...evmchains,
     ...erc20tokens
-])
+], 'ip', couponService)
 
 // address rate limiter
 new RateLimiter(app, [
     ...evmchains,
     ...erc20tokens
-], (req: any, res: any) => {
+], 'wallet', couponService, (req: any, res: any) => {
     const addr = req.body?.address
 
     if(typeof addr == "string" && addr) {
         return addr.toUpperCase()
     }
 })
-
-const couponService = new CouponService(couponConfig)
-const mainnetCheckService = new MainnetCheckService(MAINNET_BALANCE_CHECK_RPC)
 
 const captcha: VerifyCaptcha = new VerifyCaptcha(app, process.env.CAPTCHA_SECRET!, process.env.V2_CAPTCHA_SECRET!)
 
@@ -165,6 +165,13 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
         return
     }
 
+    let skippedIpRateLimit, skippedWalletRateLimit;
+    if (coupon) {
+        const couponItem = couponService.getCoupon(coupon)
+        skippedIpRateLimit = couponItem?.skipIpRateLimit
+        skippedWalletRateLimit = couponItem?.skipWalletRateLimit
+    }
+
     // logging requests (if enabled)
     DEBUG && console.log(JSON.stringify({
         date: new Date(),
@@ -176,6 +183,8 @@ router.post('/sendToken', captcha.middleware, async (req: any, res: any) => {
         checkPassedType: pipelineValidity.checkPassedType,
         dripAmount: pipelineValidity.dripAmount,
         mainnetBalance: pipelineValidity.mainnetBalance,
+        skippedIpRateLimit,
+        skippedWalletRateLimit,
         ip: req.headers["cf-connecting-ip"] || req.ip
     }))
 
