@@ -428,6 +428,22 @@
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
             }
+        },
+        {
+            "ID": "Monsoon",
+            "NAME": "Monsoon testnet",
+            "TOKEN": "RDP",
+            "RPC": "https://testnet.monsoon.rainfall.one/ext/bc/rDJjduekrs96YivEy2i4fHLM8Xt4sEWZn5gSFqoRhZe1fK2Hu/rpc",
+            "CHAINID": 100610,
+            "EXPLORER": "http://scout.testnet.monsoon.rainfall.one/",
+            "IMAGE": "https://cyan-neighbouring-aphid-25.mypinata.cloud/ipfs/bafkreihx36qamvg2s2si7jjn3rl7dfpv7swavx3ko2ov3qjidfi43cajfu",
+            "MAX_PRIORITY_FEE": "2000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 0.5,
+            "RATELIMIT": {
+              "MAX_LIMIT": 1,
+              "WINDOW_SIZE": 1440
+            }
         }
     ],
     "erc20tokens": [
@@ -532,22 +548,6 @@
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
-            }
-        },
-        {
-            "ID": "Monsoon",
-            "NAME": "Monsoon testnet",
-            "TOKEN": "RDP",
-            "RPC": "https://testnet.monsoon.rainfall.one/ext/bc/rDJjduekrs96YivEy2i4fHLM8Xt4sEWZn5gSFqoRhZe1fK2Hu/rpc",
-            "CHAINID": 100610,
-            "EXPLORER": "http://scout.testnet.monsoon.rainfall.one/",
-            "IMAGE": "https://cyan-neighbouring-aphid-25.mypinata.cloud/ipfs/bafkreihx36qamvg2s2si7jjn3rl7dfpv7swavx3ko2ov3qjidfi43cajfu",
-            "MAX_PRIORITY_FEE": "2000000000",
-            "MAX_FEE": "100000000000",
-            "DRIP_AMOUNT": 0.5,
-            "RATELIMIT": {
-              "MAX_LIMIT": 1,
-              "WINDOW_SIZE": 1440
             }
         }
     ]
