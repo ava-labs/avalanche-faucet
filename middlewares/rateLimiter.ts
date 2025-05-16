@@ -1,12 +1,21 @@
 import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit'
 import { searchIP } from 'range_check'
 import { RateLimiterConfig } from '../types'
+import { CouponService } from '../CouponService/couponService'
 
 export class RateLimiter {
     PATH: string
+    type: 'ip' | 'wallet' | 'global'
 
-    constructor(app: any, configs: RateLimiterConfig[], keyGenerator?: any) {
+    constructor(
+        app: any,
+        configs: RateLimiterConfig[],
+        type: 'ip' | 'wallet' | 'global',
+        couponService: CouponService,
+        keyGenerator?: any,
+    ) {
         this.PATH = configs[0].RATELIMIT.PATH || '/api/sendToken'
+        this.type = type
 
         let rateLimiters: any = new Map()
         configs.forEach((config: any) => {
@@ -26,6 +35,17 @@ export class RateLimiter {
         }
 
         app.use(this.PATH, (req: any, res: any, next: any) => {
+            // skip rate limit based on coupon - coupon limit verification is done in the request handler
+            const couponId = req.body?.couponId
+            if (couponId) {
+                const coupon = couponService.getCoupon(couponId)
+                if (this.type === 'ip' && coupon && coupon.skipIpRateLimit) {
+                    return next()
+                } else if (this.type === 'wallet' && coupon && coupon.skipWalletRateLimit) {
+                    return next()
+                }
+            }
+
             if(this.PATH == '/api/sendToken' && req.body.chain) {
                 return rateLimiters.get(req.body.erc20 ? req.body.erc20 : req.body.chain)(req, res, next)
             } else {
