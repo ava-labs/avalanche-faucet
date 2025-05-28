@@ -3,7 +3,7 @@ import { DynamoDBDocumentClient, UpdateCommand, ScanCommand } from "@aws-sdk/lib
 import { Mutex, MutexInterface } from 'async-mutex'
 import { CouponValidity } from "../types"
 
-type Coupon = {
+export type Coupon = {
     id: string,
     faucetConfigId: string,
     maxLimitAmount: number,
@@ -11,6 +11,8 @@ type Coupon = {
     expiry: number,
     amountPerCoupon: number,
     reset: boolean,
+    skipIpRateLimit?: boolean,
+    skipWalletRateLimit?: boolean,
 }
 
 type CouponConfig = {
@@ -168,5 +170,9 @@ export class CouponService {
         } finally {
             release()
         }
+    }
+
+    getCoupon(id: string): Coupon | undefined {
+        return this.coupons.get(id)
     }
 }
