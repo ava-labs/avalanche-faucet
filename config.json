@@ -297,7 +297,7 @@
             }
         },
         {
-            "ID": "Monsoon",
+            "ID": "MONSOON",
             "NAME": "Monsoon testnet",
             "TOKEN": "RDP",
             "RPC": "https://testnet.monsoon.rainfall.one/ext/bc/rDJjduekrs96YivEy2i4fHLM8Xt4sEWZn5gSFqoRhZe1fK2Hu/rpc",
