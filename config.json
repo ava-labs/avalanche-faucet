@@ -39,6 +39,26 @@
             }
         },
         {
+            "ID": "CX",
+            "NAME": "CX Chain Testnet",
+            "TOKEN": "TCX",
+            "RPC": "https://subnets.avax.network/cxctestnet/testnet/rpc",
+            "CHAINID": 70707,
+            "EXPLORER": "https://subnets-test.avax.network/cxctestnet",
+            "IMAGE": "https://images.ctfassets.net/gcj8jwzm6086/3wVuWA4oz9iMadkIpywUMM/377249d5b8243e4dfa3a426a1af5eaa5/14.png",
+            "MAX_PRIORITY_FEE": "10000000000",
+            "MAX_FEE": "100000000000",
+            "DRIP_AMOUNT": 50,
+            "DECIMALS": 18,
+            "RECALIBRATE": 30,
+            "COUPON_REQUIRED": false,
+            "MAINNET_BALANCE_CHECK_ENABLED": false,
+            "RATELIMIT": {
+                "MAX_LIMIT": 1,
+                "WINDOW_SIZE": 1440
+            }
+        },
+        {
             "ID": "DFK",
             "NAME": "DeFi Kingdoms Testnet",
             "TOKEN": "JEWEL",
