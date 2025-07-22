@@ -33,7 +33,7 @@ export class RateLimiter {
                 SKIP_FAILED_REQUESTS: RATELIMIT.SKIP_FAILED_REQUESTS || true,
             }
             
-            rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG, keyGenerator))
+            rateLimiters.set(config.ID, this.getLimiter(RL_CONFIG, config.ID, type, keyGenerator))
         })
 
         if(configs[0]?.RATELIMIT?.REVERSE_PROXIES) {
@@ -62,15 +62,30 @@ export class RateLimiter {
         })
     }
 
-    getLimiter(config: any, keyGenerator?: any): RateLimitRequestHandler {
+    getLimiter(
+        config: any,
+        faucetConfigId: string,
+        type: 'ip' | 'wallet' | 'global' | 'common_token_disbursal',
+        keyGenerator?: any,
+    ): RateLimitRequestHandler {
         const limiter = rateLimit({
             windowMs: config.WINDOW_SIZE * 60 * 1000,
             max: config.MAX_LIMIT,
             standardHeaders: true,
             legacyHeaders: false,
             skipFailedRequests: config.SKIP_FAILED_REQUESTS,
-            message: {
-                message: `Too many requests. Please try again after ${config.WINDOW_SIZE} minutes`
+            handler: (req, res, next, options) => {
+                if(type === 'common_token_disbursal') {
+                    console.log(JSON.stringify({
+                        date: new Date(),
+                        type: "CommonTokenDisbursalRateLimit",
+                        faucetConfigId,
+                        ip: req.headers["cf-connecting-ip"] || req.ip
+                    }))
+                }
+                res.status(options.statusCode).send({
+                    message: `Too many requests. Please try again after ${config.WINDOW_SIZE} minutes`
+                })
             },
             keyGenerator: keyGenerator ? keyGenerator : (req, res) => {
                 const ip = this.getIP(req)
