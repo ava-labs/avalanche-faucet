@@ -13,6 +13,7 @@ export type Coupon = {
     reset: boolean,
     skipIpRateLimit?: boolean,
     skipWalletRateLimit?: boolean,
+    skipCommonTokenDisbursalRateLimit?: boolean,
 }
 
 type CouponConfig = {

@@ -10,6 +10,8 @@ import {
     SendTokenResponse,
     ChainType,
     EVMInstanceAndConfig,
+    ERC20Type,
+    RateLimiterConfig,
 } from './types'
 
 import {
@@ -49,6 +51,23 @@ const couponService = new CouponService(couponConfig)
 const mainnetCheckService = new MainnetCheckService(MAINNET_BALANCE_CHECK_RPC)
 
 new RateLimiter(app, [GLOBAL_RL], 'global', couponService)
+
+// create array of common token disbursal rate limiter config from evmchains.COMMON_TOKEN_DISBURSAL_RL
+const commonTokenDisbursalRl = [...evmchains, ...erc20tokens].map((chain: ChainType | ERC20Type) => {
+    if (chain.COMMON_TOKEN_DISBURSAL_RL) {
+        return {
+            ID: chain.ID,
+            RATELIMIT: {
+                MAX_LIMIT: chain.COMMON_TOKEN_DISBURSAL_RL.MAX_LIMIT,
+                WINDOW_SIZE: chain.COMMON_TOKEN_DISBURSAL_RL.WINDOW_SIZE,
+            }
+        }
+    }
+}).filter(Boolean) as RateLimiterConfig[]
+new RateLimiter(app, commonTokenDisbursalRl, 'common_token_disbursal', couponService, (req: any, res: any) => {
+    // this common key will be used for all user requests allowing a unified rate limit.
+    return 'global'
+})
 
 new RateLimiter(app, [
     ...evmchains,
