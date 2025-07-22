@@ -55,7 +55,11 @@ export class RateLimiter {
             }
 
             if(this.PATH == '/api/sendToken' && req.body.chain) {
-                return rateLimiters.get(req.body.erc20 ? req.body.erc20 : req.body.chain)(req, res, next)
+                const rateLimiter = rateLimiters.get(req.body.erc20 ? req.body.erc20 : req.body.chain)
+                if(rateLimiter) {
+                    return rateLimiter(req, res, next)
+                }
+                next()
             } else {
                 return rateLimiters.get(configs[0].ID)(req, res, next)
             }
