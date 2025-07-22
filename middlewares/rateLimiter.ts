@@ -5,15 +5,21 @@ import { CouponService } from '../CouponService/couponService'
 
 export class RateLimiter {
     PATH: string
-    type: 'ip' | 'wallet' | 'global'
+    type: 'ip' | 'wallet' | 'global' | 'common_token_disbursal'
 
     constructor(
         app: any,
         configs: RateLimiterConfig[],
-        type: 'ip' | 'wallet' | 'global',
+        type: 'ip' | 'wallet' | 'global' | 'common_token_disbursal',
         couponService: CouponService,
         keyGenerator?: any,
     ) {
+        if (configs.length === 0) {
+            this.PATH = '/api/sendToken'
+            this.type = 'common_token_disbursal'
+            return
+        }
+
         this.PATH = configs[0].RATELIMIT.PATH || '/api/sendToken'
         this.type = type
 
@@ -42,6 +48,8 @@ export class RateLimiter {
                 if (this.type === 'ip' && coupon && coupon.skipIpRateLimit) {
                     return next()
                 } else if (this.type === 'wallet' && coupon && coupon.skipWalletRateLimit) {
+                    return next()
+                } else if (this.type === 'common_token_disbursal' && coupon && coupon.skipCommonTokenDisbursalRateLimit) {
                     return next()
                 }
             }

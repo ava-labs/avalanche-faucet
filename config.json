@@ -36,6 +36,10 @@
             "RATELIMIT": {
                 "MAX_LIMIT": 1,
                 "WINDOW_SIZE": 1440
+            },
+            "COMMON_TOKEN_DISBURSAL_RL": {
+                "MAX_LIMIT": 20,
+                "WINDOW_SIZE": 60
             }
         },
         {

@@ -41,6 +41,10 @@ export type ChainType = {
     RATELIMIT: {
         WINDOW_SIZE: number,
         MAX_LIMIT: number
+    },
+    COMMON_TOKEN_DISBURSAL_RL?: {
+        WINDOW_SIZE: number,
+        MAX_LIMIT: number
     }
 }
 
@@ -54,6 +58,10 @@ export type ERC20Type = {
     DRIP_AMOUNT: number,
     DECIMALS: number,
     RATELIMIT: {
+        WINDOW_SIZE: number,
+        MAX_LIMIT: number
+    },
+    COMMON_TOKEN_DISBURSAL_RL?: {
         WINDOW_SIZE: number,
         MAX_LIMIT: number
     },
