@@ -404,7 +404,7 @@ Put your wallet address where you want to get a drop, and click the **Request** 
 
 ### More Interactions
 
-This is not just it. Using the buttons shown below, you can go to the Subnet explorer or add the Subnet to your browser wallet extensions like Metamask with a single click.
+This is not just it. Using the buttons shown below, you can go to the Subnet explorer or add the Subnet to your browser wallet extensions like Metamask or Trust Wallet with a single click.
 
 ![](https://raw.githubusercontent.com/ava-labs/avalanche-docs/master/static/img/faucet-4.png)
 
