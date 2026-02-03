@@ -233,7 +233,7 @@
             "TOKEN": "KITE",
             "RPC": "https://rpc-testnet.gokite.ai",
             "CHAINID": 2368,
-            "EXPLORER": "https://testnet.kitescan.ai/ ",
+            "EXPLORER": "https://testnet.kitescan.ai/",
             "IMAGE": "https://testnet.gokite.ai/assets/logo-CVvOyPms.png",
             "MAX_PRIORITY_FEE": "10000000000",
             "MAX_FEE": "100000000000",
