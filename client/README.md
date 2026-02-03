@@ -33,7 +33,7 @@ We need to configure our application with the server API endpoints and Captcha s
 
 Put the Google's ReCaptcha site-key without which the faucet client can't send the necessary captcha response to the server. This key is not a secret and could be public.
 
-In the above file, `apiBaseEndpoint` is the base endpoint of the faucet server. It should be a valid URL where the server's APIs are hosted. If the endpoints for API has a leading `/v1/api` and the server is running on localhost at port 3000, then you should use `http://localhost:3000/v1/api`.
+In the above file, `apiBaseEndpoint` is the base endpoint of the faucet server. It should be a valid URL where the server's APIs are hosted. If the endpoints for API have a leading `/v1/api` and the server is running on localhost at port 3000, then you should use `http://localhost:3000/v1/api`.
 
 ## Server Side Configuration
 
@@ -41,9 +41,9 @@ On server-side, we need to configure 2 files - `server/.env` for secret keys and
 
 ### Setup Environment Variables
 
-Setup the environment variable with your private key and recaptcha secret. Make a `.env` file inside the `/server` directory with following credentials. The faucet server can handle multiple EVM chains, and therefore requires private keys for addresses with funds on each of the chain.
+Setup the environment variable with your private key and ReCaptcha secret. Make a `.env` file inside the `/server` directory with the following credentials. The faucet server can handle multiple EVM chains, and therefore requires private keys for addresses with funds on each of the chains.
 
-If you have funds on the same address on every chain, then you can just use `PK` variable. But if you have funds on different addresses on different chains, then you can provide each of the private key against their chain name, as shown below.
+If you have funds on the same address on every chain, then you can just use the `PK` variable. But if you have funds on different addresses on different chains, then you can provide each private key against its chain ID, as shown below.
 
 ```env
 C="C chain private key"
