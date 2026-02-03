@@ -418,11 +418,11 @@ This is a rate-limiting message. Every Subnet can set its drop limits. The above
 * **Captcha verification failed! Try refreshing**
 We are using v3 of [Google's ReCaptcha](https://developers.google.com/recaptcha/docs/v3). This version uses scores between 0 and 1 to rate the interaction of humans with the website, with 0 being the most suspicious one. You do not have to solve any puzzle or mark the **I am not a Robot** checkbox. The score will be automatically calculated. We want our users to score at least 0.3 to use the faucet. This is configurable, and we will update the threshold after having broader data. But if you are facing this issue, then you can try refreshing your page, disabling ad-blockers, or switching off any VPN. You can follow this [guide](https://2captcha.com/blog/google-doesnt-accept-recaptcha-answers) to get rid of this issue.
 
-* **Internal RPC error! Please try after sometime**
+* **Internal RPC error! Please try again after some time**
 This is an internal error in the Subnet's node, on which we are making an RPC for sending transactions. A regular check will update the RPC's health status every 30 seconds (default) or whatever is set in the configuration. This may happen only in rare scenarios and you cannot do much about it, rather than waiting.
 
 * **Timeout of 10000ms exceeded**
-There could be many reasons for this message. It could be an internal server error, or the request didn't receive by the server, slow internet, etc. You could try again after some time, and if the problem persists, then you should raise this issue on our [Discord](https://discord.com/invite/RwXY7P6) server.
+There could be many reasons for this message. It could be an internal server error, or the request wasn't received by the server, slow internet, etc. You could try again after some time, and if the problem persists, then you should raise this issue on our [Discord](https://discord.com/invite/RwXY7P6) server.
 
 * **Couldn't see any transaction status on explorer**
 The transaction hash that you get for each drop is pre-computed using the expected nonce, amount, and receiver's address. Though transactions on Avalanche are near-instant, the explorer may take time to index those transactions. You should wait for a few more seconds, before raising any issue or reaching out to us.
