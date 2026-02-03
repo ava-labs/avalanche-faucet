@@ -12,7 +12,7 @@ const MEMPOOL_LIMIT = 15
 // pending tx timeout should be a function of MEMPOOL_LIMIT
 const PENDING_TX_TIMEOUT = 40 * 1000 // 40 seconds
 
-const BLOCK_FAUCET_DRIPS_TIMEOUT = 1 * 1000 // 60 seconds
+const BLOCK_FAUCET_DRIPS_TIMEOUT = 1 * 1000 // 1 second
 
 export default class EVM {
     web3: Web3
