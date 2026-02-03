@@ -6,7 +6,7 @@ But we cannot risk our funds on the network or on any applications hosted on tha
 
 These testnets are often the testbeds for any new native feature of the network itself, or any dApp or [Subnet](https://www.avax.network/subnets) that is going live on the main network (mainnet). For example, [Fuji](https://docs.avax.network/dapps/end-to-end/fuji-workflow) network is the testnet for Avalanche's mainnet.
 
-Besides Fuji Testnet, [Avalanche Faucet](https://faucet.avax.network/) can be used to get free coins on these testnets Subnets like -
+Besides Fuji Testnet, [Avalanche Faucet](https://faucet.avax.network/) can be used to get free coins on testnet Subnets like:
 * [WAGMI Testnet](https://faucet.avax.network?subnet=wagmi)
 * [DeFI Kingdoms Testnet](https://faucet.avax.network?subnet=dfk)
 * [Dexalot Testnet](https://faucet.avax.network?subnet=dexalot) and many more.
@@ -103,13 +103,13 @@ The URL path should be valid, where the server's APIs are hosted. If the endpoin
 
 ### Server-Side Configurations
 
-On the server side, we need to configure 2 files - `.env` for secret keys and `config.json` for chain and API's rate limiting configurations.
+On the server side, we need to configure 2 files - `.env` for secret keys and `config.json` for chain and API rate-limiting configurations.
 
 #### Setup Environment Variables
 
 Setup the environment variable with your private key and ReCaptcha secret. Make a `.env` file in your preferred location with the following credentials, as this file will not be committed to the repository. The faucet server can handle multiple EVM chains, and therefore requires private keys for addresses with funds on each of the chains.
 
-If you have funds on the same address on every chain, then you can specify them with the single variable`PK`. But if you have funds on different addresses on different chains, then you can provide each of the private keys against the ID of the chain, as shown below.
+If you have funds on the same address on every chain, then you can specify them with the single variable `PK`. But if you have funds on different addresses on different chains, then you can provide each of the private keys against the ID of the chain, as shown below.
 
 ```env
 C="C chain private key"
@@ -287,7 +287,7 @@ It is also quite common to have Cloudflare as the last reverse proxy or the expo
 
 Captcha is required to prove the user is a human and not a bot. For this purpose, we will use [Google's Recaptcha](https://www.google.com/recaptcha/intro/v3.html). The server side will require `CAPTCHA_SECRET` that should not be exposed. You can set the threshold score to pass the captcha test by the users [here](https://github.com/ava-labs/avalanche-faucet/blob/23eb300635b64130bc9ce10d9e894f0a0b3d81ea/middlewares/verifyCaptcha.ts#L20).
 
-You can disable these Captcha verifications and rate limiters for testing the purpose, by tweaking in the `server.ts` file.
+You can disable these Captcha verifications and rate limiters for testing purposes by tweaking the `server.ts` file.
 
 ### Disabling Rate Limiters
 
