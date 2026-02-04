@@ -70,8 +70,8 @@ export class VerifyCaptcha {
     }
 
     async shouldAllow(token: string, v2Token: string): Promise<boolean> {
-        // temporarily turn-off recaptcha v3 verifications
-        if(false && await this.verifyV3Token(token)) {
+        // Enable v3 verification
+        if(await this.verifyV3Token(token)) {
             return true
         } else {
             if(await this.verifyV2Token(v2Token)) {
