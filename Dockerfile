@@ -3,6 +3,7 @@ FROM node:20-slim AS builder
 WORKDIR /avalanche-faucet
 
 COPY package*.json ./
+COPY client/package*.json ./client/
 RUN npm ci
 
 COPY . .
@@ -13,9 +14,9 @@ FROM node:20-slim
 WORKDIR /avalanche-faucet
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
-COPY --from=builder /avalanche-faucet/dist ./dist
+COPY --from=builder /avalanche-faucet/build ./build
 
 EXPOSE 8000
 
