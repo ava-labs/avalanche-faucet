@@ -3,13 +3,19 @@ name: Prod - release Docker image
 on:
   release:
     types: [published]
+permissions: {}
+
 jobs:
   push_to_registry:
+    permissions:
+      contents: read
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:

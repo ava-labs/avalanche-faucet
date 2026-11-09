@@ -5,13 +5,19 @@ on:
     branches:
       - main
       - community-faucet
+permissions: {}
+
 jobs:
   build:
+    permissions:
+      contents: read
     name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false
       - name: Build docker image
         uses: docker/build-push-action@v3
         with:
